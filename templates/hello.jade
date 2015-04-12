@@ -1,0 +1,91 @@
+doctype html
+html(ng-app="craneApp")
+  head
+    title= Crane
+    link(href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet")
+    link(href="css/crane.css" rel="stylesheet")
+    script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js")
+    script(src="http://code.angularjs.org/1.1.5/angular.min.js")
+    script(src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.3.0.js")
+    script(src="js/crane.js")
+  body(ng-controller="CraneControl")
+    .nav.navbar.navbar-default.navbar-inverse(role="navigation")
+      .container-fluid
+       .navbar-header 
+         .navbar-brand Crane &#40372;
+       .div
+         ul.nav.navbar-nav
+           li(ng-class="getactive('host') ")
+             a(href="#",ng-click="setactive('host')") Hosts
+           li(ng-class="getactive('container')")
+             a(href="#",ng-click="setactive('container')") Containers
+
+    .container(ng-show="active.host")
+      table.table.table-striped
+       tr(ng-repeat="host in hosts")
+        td [[host.name]]
+        td [[host.host]]
+        td [[host.username]]
+        td [[host.sshkey]]
+        td [[host.password]]
+        td 
+          .btn.btn-large.btn-danger(ng-click="remove_host(host)") Delete
+      .btn.btn-large.btn-primary(ng-click="add_new_host()") Add host
+      form.form-horizontal(ng-show="add_host.active",role="form")
+        .form-group
+          label.control-label.col-sm-2(for="name") Name:
+          .col-sm-2
+            input#name.form-control(ng-model="add_host.host.name")
+        .form-group
+          label.control-label.col-sm-2(for="host") Host:
+          .col-sm-2
+            input#host.form-control(ng-model="add_host.host.host")
+        .form-group
+          label.control-label.col-sm-2(for="username") Username:
+          .col-sm-2
+            input#username.form-control(ng-model="add_host.host.username")
+        .form-group
+          label.control-label.col-sm-2(for="password") Password:
+          .col-sm-2
+            input#password.form-control(ng-model="add_host.host.password")
+        .form-group
+          label.control-label.col-sm-2(for="sshkey") SSH key:
+          .col-sm-4
+            textarea#sshkey.form-control(ng-model="add_host.host.sshkey")
+        .btn.btn-large.btn-primary(ng-click="save_new_host()") Add
+    .container(ng-show="active.container")
+      table.table.table-striped
+       thead
+        td Name
+        td Image
+        td Command
+        td State
+        td Host
+       tr(ng-repeat="container in containers")
+        td [[container.name]]
+        td [[container.image]]
+        td [[container.cmd]]
+        td [[container.state]]
+        td [[container.hostname]]
+        td(ng-show="container.state == 'Running'")
+          .btn.btn-large.btn-warning(ng-click="stop_container(container)") Stop
+        td(ng-show="container.state != 'Running'")
+          .btn.btn-large.btn-success(ng-click="start_container(container)") Start
+        td 
+          .btn.btn-large.btn-danger(ng-click="remove_container(container)") Delete
+      .btn.btn-large.btn-primary(ng-click="start_deploy()") Deploy container
+      form.form-horizontal(ng-show="add_container.active",role="form")
+        .form-group
+          label.control-label.col-sm-2(for="name") Name:
+          .col-sm-2
+            input#name.form-control(ng-model="add_container.container.name")
+        .form-group
+          label.control-label.col-sm-2(for="image") Image:
+          .col-sm-2
+            input#image.form-control(ng-model="add_container.container.image")
+        .form-group
+          label.control-label.col-sm-2(for="host") Host:
+          .col-sm-2
+            select#host.form-control(ng-options="host.id as host.name for host in hosts" ng-model="add_container.container.host")
+        .btn.btn-large.btn-primary(ng-click="deploy_container()") Deploy
+
