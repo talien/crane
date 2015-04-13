@@ -8,14 +8,18 @@
     td Password
     td  
 
-   tr(ng-repeat="host in hosts")
-    td [[host.name]]
-    td [[host.host]]
-    td [[host.username]]
-    td [[host.sshkey]]
-    td &lt;sensitive data&gt;
-    td  
-      .btn.btn-large.btn-danger(ng-click="remove_host(host)") Delete
+   tbody(ng-repeat="host in hosts")
+    tr
+      td(ng-click="host_details(host)") [[host.name]]
+      td [[host.host]]
+      td [[host.username]]
+      td [[host.sshkey]]
+      td &lt;sensitive data&gt;
+      td  
+        .btn.btn-large.btn-danger(ng-click="remove_host(host)") Delete
+    tr(ng-show="host.details.active")
+      td(colspan=6)
+        pre [[host.details.info]]
   .btn.btn-large.btn-primary(ng-click="add_new_host()") Add host
   form.form-horizontal(ng-show="add_host.active",role="form")
     .form-group

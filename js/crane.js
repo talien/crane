@@ -47,6 +47,19 @@ crane.controller('CraneControl', function ($scope, $http) {
 
   }
 
+  $scope.host_details = function(host) {
+    if (host.details && host.details.active) { host.details.active = false; }
+    else
+    {
+      $http.get("/host/" + String(host.id)).success(function(data) {
+         host.details = {};
+         host.details.info = data.result;
+         host.details.active = true;
+      });
+    }
+
+  }
+
   $scope.remove_container = function(container) {
     $http.delete("/host/" + String(container.hostid) + "/container/" + String(container.id));
     $scope.load_containers();

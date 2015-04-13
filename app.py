@@ -81,6 +81,14 @@ def query_hosts():
     transformed_hosts = map(lambda x:dict(x), hosts)
     return jsonify(result=map(lambda x:use_fingerprint_for_key(x), transformed_hosts))
 
+@app.route('/host/<id>', methods=['GET'])
+def get_host(id):
+    host = Host.query.filter_by(id=id).first()
+    ssh = host.get_connection()
+    ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker info; docker version")
+    info = ssh_stdout.read()
+    return jsonify(result=info)
+
 @app.route('/host/<id>', methods=['DELETE'])
 def delete_host(id):
     host = Host.query.filter_by(id=id).first()
@@ -153,14 +161,37 @@ def stop_container(host_id, container_id):
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker stop {0}".format(container_id))
     return ""
 
+def generate_environment_params(json):
+    envs = json.get('environment', [])
+    result = ""
+    for env in envs:
+      result = result + "-e {0}".format(env)
+    return result
+
+def generate_portmapping_params(json):
+    ports = json.get('portmapping', [])
+    result = ""
+    for port in ports:
+      result = result + "-p {0}".format(port)
+    return result
+
 @app.route('/host/<host_id>/container', methods=['POST'])
 def deploy_container(host_id):
     json = request.get_json()
     host = Host.query.filter_by(id=host_id).first()
     ssh = host.get_connection()
-    ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker run -d -name {0} {1}".format(json['name'],json['image']))
-    ssh_stdout.read()
-    return ""
+    env_variables = generate_environment_params(json)
+    port_mapping = generate_portmapping_params(json)
+    restart = "--restart={0}".format(json['restart']) if json.has_key('restart') else ""
+    command = json.get('command',"")
+    ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker run -d -name {0} {2} {3} {4} {1} {5}".format(json['name'],json['image'],env_variables, port_mapping, restart, command))
+    output = ssh_stdout.read()
+    error = ssh_stderr.read()
+    ret = ssh_stdout.channel.recv_exit_status()
+    if ret == 0:
+       return "Success"
+    else:
+       return jsonify(return_code=ret, output=output, error=error)
 
 @app.route("/")
 def index():
