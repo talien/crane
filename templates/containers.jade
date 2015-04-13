@@ -1,0 +1,41 @@
+.container
+  table.table.table-striped
+    thead
+      td Name
+      td Image
+      td Command
+      td State
+      td Host
+    tbody(ng-repeat="container in containers")
+     tr
+      td(ng-click="container_details(container)") [[container.name]]
+      td [[container.image]]
+      td [[container.cmd]]
+      td [[container.state]]
+      td [[container.hostname]]
+      td(ng-show="container.state == 'Running'")
+        .btn.btn-large.btn-warning(ng-click="stop_container(container)") Stop
+      td(ng-show="container.state != 'Running'")
+        .btn.btn-large.btn-success(ng-click="start_container(container)") Start
+      td 
+        .btn.btn-large.btn-danger(ng-click="remove_container(container)") Delete
+     tr
+      td(colspan=6,ng-show="container.details.active")
+        pre [[container.details | json ]]
+   
+  .btn.btn-large.btn-primary(ng-click="start_deploy()") Deploy container
+  form.form-horizontal(ng-show="add_container.active",role="form")
+    .form-group
+      label.control-label.col-sm-2(for="name") Name:
+      .col-sm-2
+        input#name.form-control(ng-model="add_container.container.name")
+    .form-group
+      label.control-label.col-sm-2(for="image") Image:
+      .col-sm-2
+        input#image.form-control(ng-model="add_container.container.image")
+    .form-group
+      label.control-label.col-sm-2(for="host") Host:
+      .col-sm-2
+        select#host.form-control(ng-options="host.id as host.name for host in hosts" ng-model="add_container.container.host")
+    .btn.btn-large.btn-primary(ng-click="deploy_container()") Deploy
+

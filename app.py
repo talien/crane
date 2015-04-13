@@ -41,6 +41,10 @@ class Host(db.Model):
             ssh.connect(self.host, username=self.username, password=self.password)
         return ssh
 
+@app.route('/templates/<template>')
+def templates(template):
+    return render_template(template)
+
 @app.route('/host', methods=['POST'])
 def add_host():
     json = request.get_json()

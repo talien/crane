@@ -3,6 +3,18 @@ var crane = angular.module('craneApp', [], function($interpolateProvider) {
     $interpolateProvider.endSymbol(']]');
 });
 
+crane.config(function($routeProvider){
+  $routeProvider.when("/hosts",
+    {
+      templateUrl: "/templates/hosts.jade",
+      controller: "CraneControl"
+    }).when("/containers",
+    {
+      templateUrl: "/templates/containers.jade",
+      controller: "CraneControl"
+    });
+});
+
 function Host(name, host, username, sshkey, password)
 {
   this.name = name;
@@ -29,8 +41,6 @@ crane.controller('CraneControl', function ($scope, $http) {
 
   $scope.load_containers();
 
-  $scope.active = { 'name':"" };
-
   $scope.remove_host = function(host) {
     $http.delete("/host/" + String(host.id));
     $scope.load_hosts();
@@ -41,18 +51,7 @@ crane.controller('CraneControl', function ($scope, $http) {
     $http.delete("/host/" + String(container.hostid) + "/container/" + String(container.id));
     $scope.load_containers();
   }
-
-  $scope.setactive = function(tab) {
-    $scope.active[$scope.active.name] = false;
-    $scope.active.name = tab;
-    $scope.active[$scope.active.name] = true;
-  }
-
-  $scope.getactive = function (tab) {
-    if ($scope.active.name == tab) return "active";
-    return "";
-  }
-  
+ 
   $scope.add_new_host = function($event) {
     $scope.add_host.active = true;
   }
