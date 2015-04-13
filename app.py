@@ -29,6 +29,12 @@ class Host(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username  
 
+    def get_connection(self):
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(self.host, username=self.username, password=self.password)
+        return ssh
+
 @app.route('/host', methods=['POST'])
 def add_host():
     json = request.get_json()
@@ -77,9 +83,7 @@ def get_info_from_container(container, host):
     return result
 
 def get_container_from_host(host):
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(host.host, username=host.username, password=host.password)
+    ssh = host.get_connection()
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker ps -a -q")
     result = ssh_stdout.read()
     if result == "":
@@ -102,27 +106,21 @@ def get_containers():
 @app.route('/host/<host_id>/container/<container_id>', methods=['DELETE'])
 def remove_container(host_id, container_id):
     host = Host.query.filter_by(id=host_id).first()
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(host.host, username=host.username, password=host.password)
+    ssh = host.get_connection()
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker rm {0}".format(container_id))
     return ""
 
 @app.route('/host/<host_id>/container/<container_id>/start', methods=['POST'])
 def start_container(host_id, container_id):
     host = Host.query.filter_by(id=host_id).first()
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(host.host, username=host.username, password=host.password)
+    ssh = host.get_connection()
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker start {0}".format(container_id))
     return ""
 
 @app.route('/host/<host_id>/container/<container_id>/stop', methods=['POST'])
 def stop_container(host_id, container_id):
     host = Host.query.filter_by(id=host_id).first()
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(host.host, username=host.username, password=host.password)
+    ssh = host.get_connection()
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker stop {0}".format(container_id))
     return ""
 
@@ -130,9 +128,7 @@ def stop_container(host_id, container_id):
 def deploy_container(host_id):
     json = request.get_json()
     host = Host.query.filter_by(id=host_id).first()
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(host.host, username=host.username, password=host.password)
+    ssh = host.get_connection()
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker run -d -name {0} {1}".format(json['name'],json['image']))
     ssh_stdout.read()
     return ""
