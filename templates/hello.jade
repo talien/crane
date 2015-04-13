@@ -22,12 +22,20 @@ html(ng-app="craneApp")
 
     .container(ng-show="active.host")
       table.table.table-striped
+       thead
+        td Name
+        td Host
+        td Username
+        td SSH Key
+        td Password
+        td 
+
        tr(ng-repeat="host in hosts")
         td [[host.name]]
         td [[host.host]]
         td [[host.username]]
         td [[host.sshkey]]
-        td [[host.password]]
+        td &lt;sensitive data&gt;
         td 
           .btn.btn-large.btn-danger(ng-click="remove_host(host)") Delete
       .btn.btn-large.btn-primary(ng-click="add_new_host()") Add host
@@ -47,7 +55,7 @@ html(ng-app="craneApp")
         .form-group
           label.control-label.col-sm-2(for="password") Password:
           .col-sm-2
-            input#password.form-control(ng-model="add_host.host.password")
+            input#password.form-control(ng-model="add_host.host.password",type="password")
         .form-group
           label.control-label.col-sm-2(for="sshkey") SSH key:
           .col-sm-4
