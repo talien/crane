@@ -55,24 +55,29 @@ html(ng-app="craneApp")
         .btn.btn-large.btn-primary(ng-click="save_new_host()") Add
     .container(ng-show="active.container")
       table.table.table-striped
-       thead
-        td Name
-        td Image
-        td Command
-        td State
-        td Host
-       tr(ng-repeat="container in containers")
-        td [[container.name]]
-        td [[container.image]]
-        td [[container.cmd]]
-        td [[container.state]]
-        td [[container.hostname]]
-        td(ng-show="container.state == 'Running'")
-          .btn.btn-large.btn-warning(ng-click="stop_container(container)") Stop
-        td(ng-show="container.state != 'Running'")
-          .btn.btn-large.btn-success(ng-click="start_container(container)") Start
-        td 
-          .btn.btn-large.btn-danger(ng-click="remove_container(container)") Delete
+        thead
+          td Name
+          td Image
+          td Command
+          td State
+          td Host
+        tbody(ng-repeat="container in containers")
+         tr
+          td(ng-click="container_details(container)") [[container.name]]
+          td [[container.image]]
+          td [[container.cmd]]
+          td [[container.state]]
+          td [[container.hostname]]
+          td(ng-show="container.state == 'Running'")
+            .btn.btn-large.btn-warning(ng-click="stop_container(container)") Stop
+          td(ng-show="container.state != 'Running'")
+            .btn.btn-large.btn-success(ng-click="start_container(container)") Start
+          td 
+            .btn.btn-large.btn-danger(ng-click="remove_container(container)") Delete
+         tr
+          td(colspan=6,ng-show="container.details.active")
+            pre [[container.details | json ]]
+       
       .btn.btn-large.btn-primary(ng-click="start_deploy()") Deploy container
       form.form-horizontal(ng-show="add_container.active",role="form")
         .form-group

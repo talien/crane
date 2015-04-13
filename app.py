@@ -127,6 +127,14 @@ def remove_container(host_id, container_id):
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker rm {0}".format(container_id))
     return ""
 
+@app.route('/host/<host_id>/container/<container_id>', methods=['GET'])
+def inspect_container(host_id, container_id):
+    host = Host.query.filter_by(id=host_id).first()
+    ssh = host.get_connection()
+    ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker inspect {0}".format(container_id))
+    data = ssh_stdout.read()
+    return jsonify(result=json.loads(data)[0])
+
 @app.route('/host/<host_id>/container/<container_id>/start', methods=['POST'])
 def start_container(host_id, container_id):
     host = Host.query.filter_by(id=host_id).first()
