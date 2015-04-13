@@ -4,6 +4,7 @@ from flask import render_template, send_from_directory, request, jsonify
 import subprocess
 import paramiko
 import json
+import StringIO
 
 app = Flask(__name__, static_url_path='')
 app.debug = True
@@ -32,7 +33,12 @@ class Host(db.Model):
     def get_connection(self):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.host, username=self.username, password=self.password)
+        if not self.username and self.sshkey:
+            keybuffer = StringIO.StringIO(self.sshkey)
+            pkey = paramiko.PKey.from_private_key(keybuffer)
+            ssh.connect(self.host, username=self.username, pkey=pkey)
+        else:
+            ssh.connect(self.host, username=self.username, password=self.password)
         return ssh
 
 @app.route('/host', methods=['POST'])
