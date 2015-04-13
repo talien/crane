@@ -25,6 +25,12 @@ function Host(name, host, username, sshkey, password)
 }
 
 crane.controller('CraneControl', function ($scope, $http) {
+  $scope.restart_policies = [
+    'no',
+    'on-failure:5',
+    'always'
+  ];
+
   $scope.load_hosts = function() {
     $http.get("/host").success(function(data, status) {
       $scope.hosts = data.result;
@@ -70,7 +76,7 @@ crane.controller('CraneControl', function ($scope, $http) {
   }
 
   $scope.start_deploy = function() {
-    $scope.add_container.active = true;
+    $scope.add_container.status = 'active';
   }
 
   $scope.start_container = function(container) {
@@ -84,8 +90,15 @@ crane.controller('CraneControl', function ($scope, $http) {
   }
 
   $scope.deploy_container = function() {
-    $http.post("/host/" + String($scope.add_container.container.host) + "/container", $scope.add_container.container);
-    $scope.load_containers();
+    $scope.add_container.status = 'deploying';
+    $http.post("/host/" + String($scope.add_container.container.host) + "/container", $scope.add_container.container).success(function(data) {
+       $scope.add_container.status = 'finished';
+       $scope.add_container.output = data;
+       $scope.load_containers();
+    }).error(function(data) {
+       $scope.add_container.status = 'finished';
+       $scope.add_container.output = "Error happened:" + data;
+    });
   }
 
   $scope.container_details = function(container) {
