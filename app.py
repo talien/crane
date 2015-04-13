@@ -62,9 +62,20 @@ def send_js(path):
 def send_css(path):
     return send_from_directory('css', path)
 
+def use_fingerprint_for_key(host):
+    print "FP"
+    if host['sshkey']:
+        keybuffer = StringIO.StringIO(host['sshkey'])
+        pkey = paramiko.RSAKey.from_private_key(keybuffer)
+        fingerprint = pkey.get_fingerprint().encode('hex')
+        host['sshkey'] = fingerprint
+    return host
+
 @app.route('/host', methods=['GET'])
 def query_hosts(): 
-    return jsonify(result=map(lambda x:dict(x),db.session.execute(Host.__table__ .select())))
+    hosts = db.session.execute(Host.__table__ .select())
+    transformed_hosts = map(lambda x:dict(x), hosts)
+    return jsonify(result=map(lambda x:use_fingerprint_for_key(x), transformed_hosts))
 
 @app.route('/host/<id>', methods=['DELETE'])
 def delete_host(id):
