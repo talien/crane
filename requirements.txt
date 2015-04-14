@@ -2,3 +2,4 @@ paramiko
 Flask
 Flask-SQLAlchemy
 pyjade
+futures

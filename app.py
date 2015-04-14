@@ -5,6 +5,7 @@ import subprocess
 import paramiko
 import json
 import StringIO
+import concurrent.futures
 
 app = Flask(__name__, static_url_path='')
 app.debug = True
@@ -128,8 +129,12 @@ def get_container_from_host(host):
 def get_containers():
     result = []
     hosts = Host.query.all()
-    for host in hosts:
-        result = result + get_container_from_host(host)
+    futures = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        for host in hosts:
+            futures.append(executor.submit(get_container_from_host, host))
+    for f in concurrent.futures.as_completed(futures):
+        result = result + f.result()
     return jsonify(result=result)
 
 @app.route('/host/<host_id>/container/<container_id>', methods=['DELETE'])
