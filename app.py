@@ -1,6 +1,5 @@
-from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask import render_template, send_from_directory, request, jsonify
+from flask import render_template, send_from_directory, request, jsonify, Flask, Response
 import subprocess
 import paramiko
 import json
@@ -165,6 +164,24 @@ def stop_container(host_id, container_id):
     ssh = host.get_connection()
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker stop {0}".format(container_id))
     return ""
+
+def get_container_logs(host_id, container_id, tail):
+    host = Host.query.filter_by(id=host_id).first()
+    ssh = host.get_connection()
+    ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker logs --tail={1} {0}".format(container_id, tail))
+    data = ssh_stdout.read()
+    return data
+
+@app.route('/host/<host_id>/container/<container_id>/lastlog', methods=['GET'])
+def get_container_lastlog(host_id, container_id):
+    data = get_container_logs(host_id, container_id, 200);
+    return jsonify(result=data)
+
+@app.route('/host/<host_id>/container/<container_id>/fulllog', methods=['GET'])
+def get_container_fulllog(host_id, container_id):
+    data = get_container_logs(host_id, container_id, "all");
+    return Response(data, content_type='text/plain')
+
 
 def generate_environment_params(json):
     envs = json.get('environment', [])

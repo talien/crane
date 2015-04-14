@@ -8,7 +8,10 @@
       td Host
     tbody(ng-repeat="container in containers")
      tr
-      td(ng-click="container_details(container)") [[container.name]]
+      td [[container.name]]
+        br
+        button.glyphicon.glyphicon-stats(ng-click="container_details(container)")
+        button.glyphicon.glyphicon-th-list(ng-click="container_logs(container)")
       td [[container.image]]
       td [[container.cmd]]
       td [[container.state]]
@@ -21,7 +24,15 @@
         .btn.btn-large.btn-danger(ng-click="remove_container(container)") Delete
      tr
       td(colspan=6,ng-show="container.details.active")
-        pre [[container.details | json ]]
+        pre [[container.details.data | json]]
+     tr
+      td(colspan=6,ng-show="container.logs.active")
+        p 
+        | Showing only the last 200 log lines. Click 
+        a(href="/host/[[container.hostid]]/container/[[container.id]]/fulllog") here
+        |  to view full log
+        pre [[container.logs.data]]
+
    
   .btn.btn-large.btn-primary(ng-click="start_deploy()") Deploy container
   form.form-horizontal(ng-show="(add_container.status == 'active')",role="form")

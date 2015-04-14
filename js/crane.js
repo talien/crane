@@ -102,12 +102,27 @@ crane.controller('CraneControl', function ($scope, $http) {
   }
 
   $scope.container_details = function(container) {
+    if (container.logs) { container.logs.active = false; }
     if (container.details && container.details.active) { container.details.active = false; }
     else
     {
-      $http.get("/host/" + String(container.hostid) + "/container/" + String(container.id)).success(function(data) {
-         container.details = data.result
-         container.details.active = true
+      $http.get("/host/" + String(container.hostid) + "/container/" + String(container.id) ).success(function(data) {
+         container.details = {};
+         container.details.data = data.result;
+         container.details.active = true;
+      });
+    }
+  }
+  
+  $scope.container_logs = function(container) {
+    if (container.details) { container.details.active = false; }
+    if (container.logs && container.logs.active) { container.logs.active = false; }
+    else
+    {
+      $http.get("/host/" + String(container.hostid) + "/container/" + String(container.id) + "/lastlog").success(function(data) {
+         container.logs = {};
+         container.logs.data = data.result;
+         container.logs.active = true;
       });
     }
   }
