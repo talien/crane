@@ -1,4 +1,4 @@
-var crane = angular.module('craneApp', [], function($interpolateProvider) {
+var crane = angular.module('crane', [], function($interpolateProvider) {
     $interpolateProvider.startSymbol('[[');
     $interpolateProvider.endSymbol(']]');
 });
@@ -6,13 +6,18 @@ var crane = angular.module('craneApp', [], function($interpolateProvider) {
 crane.config(function($routeProvider){
   $routeProvider.when("/hosts",
     {
-      templateUrl: "/templates/hosts.jade",
-      controller: "CraneControl"
+      templateUrl: "/frontend/hosts.jade",
+      controller: "HostControl"
     }).when("/containers",
     {
-      templateUrl: "/templates/containers.jade",
-      controller: "CraneControl"
+      templateUrl: "/frontend/containers.jade",
+      controller: "ContainerControl"
+    }).when("/templates",
+    {
+      templateUrl: "/frontend/templates.jade",
+      controller: "TemplatesControl"
     });
+
 });
 
 function Host(name, host, username, sshkey, password)
@@ -24,28 +29,14 @@ function Host(name, host, username, sshkey, password)
   this.password = password;
 }
 
-crane.controller('CraneControl', function ($scope, $http) {
-  $scope.restart_policies = [
-    'no',
-    'on-failure:5',
-    'always'
-  ];
-
+crane.controller('HostControl', function($scope, $http) {
   $scope.load_hosts = function() {
     $http.get("/host").success(function(data, status) {
       $scope.hosts = data.result;
     });
   }
 
-  $scope.load_containers = function() {
-    $http.get("/container").success(function(data, status) {
-      $scope.containers = data.result;
-    });
-  }
-
   $scope.load_hosts();
-
-  $scope.load_containers();
 
   $scope.remove_host = function(host) {
     $http.delete("/host/" + String(host.id));
@@ -66,15 +57,62 @@ crane.controller('CraneControl', function ($scope, $http) {
 
   }
 
+  $scope.add_new_host = function($event) {
+    $scope.add_host.active = true;
+  }
+
+  $scope.add_host = { 'active':false, 'host': new Host() };
+
+  $scope.save_new_host = function($event) {
+    $http.post("/host", $scope.add_host.host)
+    $scope.load_hosts()
+    $scope.add_host.active = false;
+  }
+});
+
+crane.controller('ContainerControl', function ($scope, $http) {
+  $scope.restart_policies = [
+    'no',
+    'on-failure:5',
+    'always'
+  ];
+
+  $scope.deployment_types = [ 
+    'Raw',
+    'Template'
+  ]
+
+  $scope.deployment_type = 'Raw';
+
+  $scope.load_containers = function() {
+    $http.get("/container").success(function(data, status) {
+      $scope.containers = data.result;
+    });
+  }
+
+  $scope.load_hosts = function() {
+    $http.get("/host").success(function(data, status) {
+      $scope.hosts = data.result;
+    });
+  }
+
+  $scope.load_hosts();
+
+  $scope.load_containers();
+
+  $scope.load_templates = function() {
+      $http.get("/template").success(function(data) {
+          $scope.templates = data.result;
+      }); 
+  };  
+
+  $scope.load_templates();
+
   $scope.remove_container = function(container) {
     $http.delete("/host/" + String(container.hostid) + "/container/" + String(container.id));
     $scope.load_containers();
   }
  
-  $scope.add_new_host = function($event) {
-    $scope.add_host.active = true;
-  }
-
   $scope.start_deploy = function() {
     $scope.add_container.status = 'active';
   }
@@ -91,7 +129,15 @@ crane.controller('CraneControl', function ($scope, $http) {
 
   $scope.deploy_container = function() {
     $scope.add_container.status = 'deploying';
-    $http.post("/host/" + String($scope.add_container.container.host) + "/container", $scope.add_container.container).success(function(data) {
+    if ($scope.deployment_type == 'Raw')
+     {
+       data = { 'deploy' : 'raw', 'container' : $scope.add_container.container };
+     }
+    else
+     {
+       data = { 'deploy' : 'template', 'template' : $scope.add_container.selected_template, 'parameters' : $scope.add_container.template };
+     }
+    $http.post("/host/" + String($scope.add_container.container.host) + "/container", data).success(function(data) {
        $scope.add_container.status = 'finished';
        $scope.add_container.output = data;
        $scope.load_containers();
@@ -127,13 +173,6 @@ crane.controller('CraneControl', function ($scope, $http) {
     }
   }
 
-  $scope.add_host = { 'active':false, 'host': new Host() };
+  $scope.add_container = { 'active':false, 'container': {}, 'template':{} };
 
-  $scope.add_container = { 'active':false, 'container': {} };
-
-  $scope.save_new_host = function($event) {
-    $http.post("/host", $scope.add_host.host)
-    $scope.load_hosts()
-    $scope.add_host.active = false;
-  }
-});
+ });

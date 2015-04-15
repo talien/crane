@@ -1,0 +1,61 @@
+.container
+  table.table
+    thead
+      td Name
+      td Variables
+      td Actions
+    tr(ng-repeat="template in templates")
+      td [[template.name]]
+      td
+        ul
+         li(ng-repeat="parameter in template.parameters") [[ parameter.name ]]
+      td 
+        .btn.btn-danger(ng-click="delete_template(template)") Delete
+
+  .btn.btn-large.btn-primary(ng-click="start_add_template()") Add template
+  form.form-horizontal(ng-show="(add_template.active)",role="form")
+    .form-group
+      label.control-label.col-sm-2(for="template_name") Template Name:
+      .col-sm-3
+        input#template_name.form-control(ng-model="add_template.name")
+    .h3 Variables
+    .btn.btn-primary(ng-click="add_parameter()") Add parameter
+    .form-group(ng-repeat="parameter in parameters")
+      label.control-label.col-sm-2(for="variable") Variable:
+      .col-sm-3
+        input#variable.form-control(ng-model="parameter.name")
+    .h3 Template
+    .form-group
+      label.control-label.col-sm-2(for="name") Container Name:
+      .col-sm-3
+        input#name.form-control(ng-model="add_template.deploy.name",crane-auto-complete,ui-items="parameters")
+    .form-group
+      label.control-label.col-sm-2(for="image") Image:
+      .col-sm-3
+        input#image.form-control(ng-model="add_template.deploy.image",crane-auto-complete,ui-items="parameters")
+    .form-group
+      label.control-label.col-sm-2(for="environment") Environment variables (eg: name1=value1 name2=value2):
+      .col-sm-3
+        textarea#environment.form-control(ng-model="add_template.deploy.environment",crane-auto-complete,ui-items="parameters")
+    .form-group
+      label.control-label.col-sm-2(for="portmapping") Portmapping (eg: port1:port2 port3:port4):
+      .col-sm-3
+        textarea#portmapping.form-control(ng-model="add_template.deploy.portmapping",crane-auto-complete,ui-items="parameters")
+    .form-group
+      label.control-label.col-sm-2(for="predeploy") Pre-deploy script
+      .col-sm-4
+        textarea#predeploy.form-control(ng-model="add_template.deploy.predeploy",crane-auto-complete,ui-items="parameters")
+    .form-group
+      label.control-label.col-sm-2(for="postdeploy") Pre-deploy script
+      .col-sm-4
+        textarea#postdeploy.form-control(ng-model="add_template.deploy.postdeploy",crane-auto-complete,ui-items="parameters")
+    .form-group
+      label.control-label.col-sm-2(for="restart") Restart policy:
+      .col-sm-3
+        select#restart.form-control(ng-options="restart_policy for restart_policy in restart_policies" ng-model="add_template.deploy.restart") 
+    .form-group
+      label.control-label.col-sm-2(for="command") Command:
+      .col-sm-3
+        input#command.form-control(ng-model="add_template.deploy.command",crane-auto-complete,ui-items="parameters")
+    .btn.btn-large.btn-primary(ng-click="save_template()") Save template
+

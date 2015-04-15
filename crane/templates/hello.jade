@@ -1,22 +1,27 @@
 doctype html
-html(ng-app="craneApp")
+html(ng-app="crane")
   head
     title= Crane
     link(href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet")
     link(href="css/crane.css" rel="stylesheet")
+    link(href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet")
     script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js")
+    script(src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js")
     script(src="http://code.angularjs.org/1.1.5/angular.min.js")
     script(src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.3.0.js")
     script(src="js/crane.js")
-  body(ng-controller="CraneControl")
+    script(src="js/templates.js")
+  body
     .nav.navbar.navbar-default.navbar-inverse(role="navigation")
       .container-fluid
        .navbar-header 
          .navbar-brand Crane &#40372;
        .div
          ul.nav.navbar-nav
-           li(ng-class="getactive('host') ")
+           li
              a(href="#hosts") Hosts
-           li(ng-class="getactive('container')")
+           li
              a(href="#containers") Containers
+           li
+             a(href="#templates") Templates
     ng-view
