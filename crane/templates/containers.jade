@@ -1,4 +1,7 @@
 .container
+  div(ng-show="loading")
+    .glyphicon.glyphicon-refresh.glyphicon-refresh-animate
+    span Loading
   table.table.table-striped
     thead
       td Name
@@ -35,6 +38,7 @@
 
    
   .btn.btn-large.btn-primary(ng-click="start_deploy()") Deploy container
+  .btn.btn-large.btn-primary(ng-click="load_containers()") Refresh
   form.form-horizontal(ng-show="(add_container.status == 'active')",role="form")
     .form-group
       label.control-label.col-sm-2(for="dtype") Deployment type:

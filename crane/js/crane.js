@@ -85,9 +85,13 @@ crane.controller('ContainerControl', function ($scope, $http) {
   $scope.deployment_type = 'Raw';
 
   $scope.load_containers = function() {
+    $scope.loading = true;
     $http.get("/container").success(function(data, status) {
       $scope.containers = data.result;
-    });
+      $scope.loading = false;
+    }).error(function(data, status) {
+      $scope.loading = false;
+    }) ;
   }
 
   $scope.load_hosts = function() {
