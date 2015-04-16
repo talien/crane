@@ -13,8 +13,9 @@
      tr
       td [[container.name]]
         br
-        button.glyphicon.glyphicon-stats(ng-click="container_details(container)")
-        button.glyphicon.glyphicon-th-list(ng-click="container_logs(container)")
+        .btn-group.btn-group.xs
+          .btn.btn-xs.btn-default.glyphicon.glyphicon-stats(ng-click="container_details(container)")
+          .btn.btn-xs.btn-default.glyphicon.glyphicon-th-list(ng-click="container_logs(container)")
       td [[container.image]]
       td [[container.cmd]]
       td [[container.state]]
@@ -22,9 +23,9 @@
       td(ng-show="container.state == 'Running'")
         .btn.btn-large.btn-warning(ng-click="stop_container(container)") Stop
       td(ng-show="container.state != 'Running'")
-        .btn.btn-large.btn-success(ng-click="start_container(container)") Start
-      td 
-        .btn.btn-large.btn-danger(ng-click="remove_container(container)") Delete
+        .btn-group
+          .btn.btn-large.btn-success(ng-click="start_container(container)") Start
+          .btn.btn-large.btn-danger(ng-click="remove_container(container)") Delete
      tr
       td(colspan=6,ng-show="container.details.active")
         pre [[container.details.data | json]]
