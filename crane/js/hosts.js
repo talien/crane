@@ -24,6 +24,11 @@ crane.controller('HostControl', function($scope, $http) {
 
   }
 
+  $scope.edit_host = function(host) {
+    $scope.add_host.active = true;
+    $scope.add_host.host = host;
+  }
+
   $scope.host_details = function(host) {
     if (host.details && host.details.active) { host.details.active = false; }
     else
@@ -44,7 +49,13 @@ crane.controller('HostControl', function($scope, $http) {
   $scope.add_host = { 'active':false, 'host': new Host() };
 
   $scope.save_new_host = function($event) {
-    $http.post("/host", $scope.add_host.host)
+    if ($scope.add_host.host.id)
+    {
+      $http.post("/host/" + String($scope.add_host.host.id), $scope.add_host.host);
+    }
+    else {
+      $http.post("/host", $scope.add_host.host);
+    }
     $scope.load_hosts()
     $scope.add_host.active = false;
   }

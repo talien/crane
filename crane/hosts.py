@@ -19,7 +19,7 @@ class Host(db.Model):
         self.sshkey = sshkey
 
     def __repr__(self):
-        return '<User %r>' % self.username  
+        return '<User %r>' % self.username
 
     def get_connection(self):
         ssh = paramiko.SSHClient()
@@ -30,7 +30,7 @@ class Host(db.Model):
             ssh.connect(self.host, username=self.username, pkey=pkey)
         else:
             ssh.connect(self.host, username=self.username, password=self.password)
-        return ssh 
+        return ssh
 
 @app.route('/host', methods=['POST'])
 def add_host():
@@ -45,6 +45,20 @@ def add_host():
     db.session.commit()
     return ""
 
+
+@app.route('/host/<id>', methods=['POST'])
+def update_host(id):
+    json = request.get_json()
+    host = Host.query.filter_by(id=id).first()
+    host.name = json['name']
+    host.host = json['host']
+    host.username = json['username']
+    host.password = json['password'] if json.has_key('password') else ""
+    host.sshkey = json['sshkey'] if json.has_key('sshkey') else ""
+    db.session.add(host)
+    db.session.commit()
+    return ""
+
 def use_fingerprint_for_key(host):
     if host['sshkey']:
         keybuffer = StringIO.StringIO(host['sshkey'])
@@ -54,7 +68,7 @@ def use_fingerprint_for_key(host):
     return host
 
 @app.route('/host', methods=['GET'])
-def query_hosts(): 
+def query_hosts():
     hosts = db.session.execute(Host.__table__ .select())
     transformed_hosts = map(lambda x:dict(x), hosts)
     return jsonify(result=map(lambda x:use_fingerprint_for_key(x), transformed_hosts))
