@@ -1,4 +1,4 @@
-var crane = angular.module('crane', [], function($interpolateProvider) {
+var crane = angular.module('crane', ['ngRoute'], function($interpolateProvider) {
     $interpolateProvider.startSymbol('[[');
     $interpolateProvider.endSymbol(']]');
 });
