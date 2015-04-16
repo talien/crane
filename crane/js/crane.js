@@ -127,13 +127,19 @@ crane.controller('ContainerControl', function ($scope, $http) {
   }
 
   $scope.start_container = function(container) {
-    $http.post("/host/" + String(container.hostid) + "/container/" + String(container.id) + "/start" );
-    $scope.load_containers();
+    container.starting = true;
+    $http.post("/host/" + String(container.hostid) + "/container/" + String(container.id) + "/start" ).success(function(data, status) {
+      container.starting = false;
+      $scope.load_containers();
+    });
   }
 
   $scope.stop_container = function(container) {
-    $http.post("/host/" + String(container.hostid) + "/container/" + String(container.id) + "/stop" );
-    $scope.load_containers();
+    container.stopping = true;
+    $http.post("/host/" + String(container.hostid) + "/container/" + String(container.id) + "/stop" ).success(function(data, status) {
+       container.stopping = false;
+       $scope.load_containers();
+    });
   }
 
   $scope.deploy_container = function() {

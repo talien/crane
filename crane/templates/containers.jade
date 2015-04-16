@@ -21,10 +21,16 @@
       td [[container.state]]
       td [[container.hostname]]
       td(ng-show="container.state == 'Running'")
-        .btn.btn-large.btn-warning(ng-click="stop_container(container)") Stop
+        .btn.btn-large.btn-warning(ng-show="container.stopping") 
+          .glyphicon.glyphicon-refresh.glyphicon-refresh-animate 
+          span Stopping
+        .btn.btn-large.btn-warning(ng-click="stop_container(container)",ng-show="!container.stopping") Stop
       td(ng-show="container.state != 'Running'")
         .btn-group
-          .btn.btn-large.btn-success(ng-click="start_container(container)") Start
+          .btn.btn-large.btn-success(ng-click="start_container(container)",ng-show="!container.starting" ) Start
+          .btn.btn-large.btn-success(ng-show="container.starting") 
+            .glyphicon.glyphicon-refresh.glyphicon-refresh-animate 
+            span Starting
           .btn.btn-large.btn-danger(ng-click="remove_container(container)") Delete
      tr
       td(colspan=6,ng-show="container.details.active")
