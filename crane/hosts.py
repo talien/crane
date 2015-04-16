@@ -1,6 +1,7 @@
 import paramiko
 from flask import jsonify, request
 from crane import app, db
+import StringIO
 
 class Host(db.Model):
     id = db.Column(db.Integer, primary_key=True)
