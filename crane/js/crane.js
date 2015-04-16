@@ -117,6 +117,11 @@ crane.controller('ContainerControl', function ($scope, $http) {
     $scope.add_container.status = 'active';
   }
 
+  $scope.cancel_deploy = function ()
+  {
+    $scope.add_container.status = 'inactive';
+  }
+
   $scope.start_container = function(container) {
     $http.post("/host/" + String(container.hostid) + "/container/" + String(container.id) + "/start" );
     $scope.load_containers();
@@ -173,6 +178,6 @@ crane.controller('ContainerControl', function ($scope, $http) {
     }
   }
 
-  $scope.add_container = { 'active':false, 'container': {}, 'template':{} };
+  $scope.add_container = { 'container': {}, 'template':{} };
 
  });

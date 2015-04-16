@@ -85,7 +85,8 @@
            .col-sm-3
               input.form-control(ng-model="add_container.template[parameter.name]")
           
-    .btn.btn-large.btn-primary(ng-click="deploy_container()") Deploy
+    .btn.btn-large.btn-success(ng-click="deploy_container()") Deploy
+    .btn.btn-large.btn-info(ng-click="cancel_deploy()") Cancel
   div(ng-show="(add_container.status == 'deploying')") Deploying...
   div(ng-show="(add_container.status == 'finished')") Finished: [[add_container.output]]
 
