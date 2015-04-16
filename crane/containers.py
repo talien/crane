@@ -42,6 +42,7 @@ def get_containers():
             futures.append(executor.submit(get_container_from_host, host))
     for f in concurrent.futures.as_completed(futures):
         result = result + f.result()
+    result.sort(key=lambda x:x['name'])
     return jsonify(result=result)
 
 @app.route('/host/<host_id>/container/<container_id>', methods=['DELETE'])
