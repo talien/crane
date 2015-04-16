@@ -126,14 +126,14 @@ def interpolate_string(string, params):
 def interpolate_array(array, params):
     result = []
     for item in array:
-        result.append(iterpolate_string(item, params))
+        result.append(interpolate_string(item, params))
     return result
 
 def interpolate_variables(template, parameters):
     deploy = template['deploy']
     container = {}
     container['environment'] = generate_environment_params(interpolate_array(deploy['environment'], parameters)) if deploy.has_key('environment') else ""
-    container['portmapping'] = generate_environment_params(interpolate_array(deploy['portmapping'], parameters)) if deploy.has_key('portmapping') else ""
+    container['portmapping'] = generate_portmapping_params(interpolate_array(deploy['portmapping'], parameters)) if deploy.has_key('portmapping') else ""
     container['restart'] = "--restart={0}".format(deploy['restart']) if deploy.has_key('restart') else ""
     container['command'] = interpolate_string(deploy['command'], parameters) if deploy.has_key('command') else ""
     container['name'] = interpolate_string(deploy['name'], parameters) if deploy.has_key('name') else ""
