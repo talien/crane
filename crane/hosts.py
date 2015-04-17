@@ -54,7 +54,7 @@ def update_host(id):
     host.host = json['host']
     host.username = json['username']
     host.password = json['password'] if json.has_key('password') else ""
-    host.sshkey = json['sshkey'] if json.has_key('sshkey') else ""
+    host.sshkey = json['sshkey'] if json.has_key('sshkey') and (json['sshkey'][:3] != "FP:") else ""
     db.session.add(host)
     db.session.commit()
     return ""
@@ -64,7 +64,7 @@ def use_fingerprint_for_key(host):
         keybuffer = StringIO.StringIO(host['sshkey'])
         pkey = paramiko.RSAKey.from_private_key(keybuffer)
         fingerprint = pkey.get_fingerprint().encode('hex')
-        host['sshkey'] = fingerprint
+        host['sshkey'] = "FP:" + fingerprint
     return host
 
 @app.route('/host', methods=['GET'])
