@@ -34,6 +34,10 @@
       .col-sm-3
         input#image.form-control(ng-model="add_template.deploy.image",crane-auto-complete,ui-items="parameters")
     .form-group
+      label.control-label.col-sm-2(for="hostname") Hostname of container:
+      .col-sm-3
+        input#hostname.form-control(ng-model="add_template.deploy.hostname",crane-auto-complete,ui-items="parameters")
+    .form-group
       label.control-label.col-sm-2(for="environment") Environment variables (eg: name1=value1 name2=value2):
       .col-sm-3
         textarea#environment.form-control(ng-model="add_template.deploy.environment",crane-auto-complete,ui-items="parameters")
@@ -41,6 +45,14 @@
       label.control-label.col-sm-2(for="portmapping") Portmapping (eg: port1:port2 port3:port4):
       .col-sm-3
         textarea#portmapping.form-control(ng-model="add_template.deploy.portmapping",crane-auto-complete,ui-items="parameters")
+    .form-group
+      label.control-label.col-sm-2(for="volumes") Volumes (eg: hostdir1:containerdir1 hostdir2:containerdir2):
+      .col-sm-3
+        textarea#volumes.form-control(ng-model="add_template.deploy.volumes",crane-auto-complete,ui-items="parameters")
+    .form-group
+      label.control-label.col-sm-2(for="capabilities") Capabilities (eg: capability1 capability2):
+      .col-sm-3
+        textarea#capabilities.form-control(ng-model="add_template.deploy.capabilities",crane-auto-complete,ui-items="parameters")
     .form-group
       label.control-label.col-sm-2(for="predeploy") Pre-deploy script
       .col-sm-4
@@ -58,4 +70,3 @@
       .col-sm-3
         input#command.form-control(ng-model="add_template.deploy.command",crane-auto-complete,ui-items="parameters")
     .btn.btn-large.btn-primary(ng-click="save_template()") Save template
-

@@ -84,11 +84,20 @@ crane.controller('ContainerControl', function ($scope, $http) {
      }
     $http.post("/host/" + String($scope.add_container.container.host) + "/container", data).success(function(data) {
        $scope.add_container.status = 'finished';
-       $scope.add_container.output = data;
+       if (data.status == "error")
+       {
+          $scope.add_container.finish_error = true;
+          $scope.add_container.output = data;
+       }
+       else
+       {
+          $scope.add_container.finish_error = false;
+       }
        $scope.load_containers();
     }).error(function(data) {
        $scope.add_container.status = 'finished';
-       $scope.add_container.output = "Error happened:" + data;
+       $scope.add_container.output = { "error" : data };
+       $scope.add_container.finish_error = false;
     });
   }
 

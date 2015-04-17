@@ -67,13 +67,25 @@
           .col-sm-3
             select#host.form-control(ng-options="host.id as host.name for host in hosts" ng-model="add_container.container.host")
         .form-group
+          label.control-label.col-sm-2(for="hostname") Hostname for container:
+          .col-sm-3
+            input#hostname.form-control(ng-model="add_container.container.hostname")
+        .form-group
           label.control-label.col-sm-2(for="environment") Environment variables (eg: name1=value1 name2=value2):
           .col-sm-3
-            textarea#environment.form-control(ng-list=" ",ng-model="add_container.container.environment")
+            textarea#environment.form-control(ng-model="add_container.container.environment")
         .form-group
           label.control-label.col-sm-2(for="portmapping") Portmapping (eg: port1:port2 port3:port4):
           .col-sm-3
-            textarea#portmapping.form-control(ng-list=" ",ng-model="add_container.container.portmapping")
+            textarea#portmapping.form-control(ng-model="add_container.container.portmapping")
+        .form-group
+          label.control-label.col-sm-2(for="volumes") Volumes (eg: hostdir1:containerdir1 hostdir2:containerdir2):
+          .col-sm-3
+            textarea#volumes.form-control(ng-model="add_container.container.volumes")
+        .form-group
+          label.control-label.col-sm-2(for="capabilities") Capabilities (eg: capability1 capability2):
+          .col-sm-3
+            textarea#capabilities.form-control(ng-model="add_container.container.capabilities")
         .form-group
           label.control-label.col-sm-2(for="restart") Restart policy:
           .col-sm-3
@@ -99,6 +111,6 @@
     .btn.btn-large.btn-success(ng-click="deploy_container()") Deploy
     .btn.btn-large.btn-info(ng-click="cancel_deploy()") Cancel
   div(ng-show="(add_container.status == 'deploying')") Deploying...
-  div(ng-show="(add_container.status == 'finished')") Finished: [[add_container.output]]
-
-
+  div(ng-show="(add_container.status == 'finished')") Finished
+    div(ng-show="add_container.finish_error") 
+      pre.alert.alert-danger [[add_container.output | json ]]

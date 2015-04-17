@@ -69,10 +69,6 @@ crane.controller('TemplatesControl', function ($scope, $http) {
   };
 
   $scope.save_template = function() {
-     if ($scope.add_template.deploy.environment)
-        $scope.add_template.deploy.environment = $scope.add_template.deploy.environment.split(" ")
-     if ($scope.add_template.deploy.portmapping)
-        $scope.add_template.deploy.portmapping = $scope.add_template.deploy.portmapping.split(" ")
      data = { 'name' : $scope.add_template.name, 'template': { 'parameters': $scope.parameters, 'deploy': $scope.add_template.deploy } };
      $http.post("/template",data);
      $scope.load_templates();

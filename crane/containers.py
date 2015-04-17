@@ -92,15 +92,31 @@ def get_container_fulllog(host_id, container_id):
     return Response(data, content_type='text/plain')
 
 def generate_environment_params(envs):
+    envs = envs.split()
     result = ""
     for env in envs:
-      result = result + "-e {0}".format(env)
+      result = result + "-e {0} ".format(env)
     return result
 
 def generate_portmapping_params(ports):
+    ports = ports.split()
     result = ""
     for port in ports:
-      result = result + "-p {0}".format(port)
+      result = result + "-p {0} ".format(port)
+    return result
+
+def generate_volume_params(volumes):
+    volumes=volumes.split()
+    result = ""
+    for volume in volumes:
+      result = result + "-v {0} ".format(volume)
+    return result
+
+def generate_capabilities_params(caps):
+    caps = caps.split()
+    result = ""
+    for cap in caps:
+      result = result + "--cap-add {0} ".format(cap)
     return result
 
 def interpolate_string(string, params):
@@ -108,21 +124,21 @@ def interpolate_string(string, params):
     result = ""
     while (has_work):
       start = string.find("%(")
-      if start == -1: 
+      if start == -1:
          result += string
          has_work = False
       else:
          end = string.find(")%", start)
-         if end == -1: 
+         if end == -1:
             result += string
             has_work = False
          else:
             param = string[start+2:end]
             result += string[0:start]
-            value = params.get(param, "") 
+            value = params.get(param, "")
             result += value
             string = string[end+2:]
-    return result 
+    return result
 
 def interpolate_array(array, params):
     result = []
@@ -130,15 +146,17 @@ def interpolate_array(array, params):
         result.append(interpolate_string(item, params))
     return result
 
-def interpolate_variables(template, parameters):
-    deploy = template['deploy']
+def interpolate_variables(deploy, parameters):
     container = {}
-    container['environment'] = generate_environment_params(interpolate_array(deploy['environment'], parameters)) if deploy.has_key('environment') else ""
-    container['portmapping'] = generate_portmapping_params(interpolate_array(deploy['portmapping'], parameters)) if deploy.has_key('portmapping') else ""
+    container['environment'] = generate_environment_params(interpolate_string(deploy['environment'], parameters)) if deploy.has_key('environment') else ""
+    container['portmapping'] = generate_portmapping_params(interpolate_string(deploy['portmapping'], parameters)) if deploy.has_key('portmapping') else ""
+    container['volumes'] = generate_volume_params(interpolate_string(deploy['volumes'], parameters)) if deploy.has_key('volumes') else ""
+    container['capabilities'] = generate_capabilities_params(interpolate_string(deploy['capabilities'], parameters)) if deploy.has_key('capabilities') else ""
     container['restart'] = "--restart={0}".format(deploy['restart']) if deploy.has_key('restart') else ""
     container['command'] = interpolate_string(deploy['command'], parameters) if deploy.has_key('command') else ""
-    container['name'] = interpolate_string(deploy['name'], parameters) if deploy.has_key('name') else ""
-    container['image'] = interpolate_string(deploy['image'], parameters) if deploy.has_key('image') else ""
+    container['name'] = interpolate_string(deploy['name'], parameters)
+    container['image'] = interpolate_string(deploy['image'], parameters)
+    container['hostname'] = "--hostname={0}".format(interpolate_string(deploy['hostname'], parameters)) if deploy.has_key('hostname') else ""
     container['predeploy'] = interpolate_string(deploy['predeploy'], parameters) if deploy.has_key('predeploy') else ""
     container['postdeploy'] = interpolate_string(deploy['postdeploy'], parameters) if deploy.has_key('postdeploy') else ""
     return container
@@ -151,8 +169,10 @@ def run_deploy_hook(ssh, container, hook):
     script = sftp.file("/tmp/script", "w")
     script.write(container['predeploy'])
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("/bin/bash /tmp/script")
-    res = ssh_stdout.read()
-    return res
+    stdout = ssh_stdout.read()
+    stderr = ssh_stderr.read()
+    exit_code = ssh_stdout.channel.recv_exit_status()
+    return { 'stdout': stdout, 'stderr' : stderr, 'exit_code': exit_code }
 
 @app.route('/host/<host_id>/container', methods=['POST'])
 def deploy_container(host_id):
@@ -161,21 +181,30 @@ def deploy_container(host_id):
     ssh = host.get_connection()
     container = {};
     if json['deploy'] == 'raw':
-       container['environment'] = generate_environment_params(json['container']['environment']) if json['container'].has_key('environment') else ""
-       container['portmapping'] = generate_portmapping_params(json['container']['portmapping']) if json['container'].has_key('portmapping') else ""
-       container['restart'] = "--restart={0}".format(json['container']['restart']) if json['container'].has_key('restart') else ""
-       container['command'] = json['container'].get('command',"")
-       container['name'] = json['container']['name']
-       container['image'] = json['container']['image']
+       container = interpolate_variables(json['container'], {})
     else:
-       container = interpolate_variables(json['template'], json['parameters'])
+       container = interpolate_variables(json['template']['deploy'], json['parameters'])
     predeploy = run_deploy_hook(ssh, container, "predeploy")
-    ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker run -d -name {0} {2} {3} {4} {1} {5}".format(container['name'],container['image'],container['environment'], container['portmapping'], container['restart'], container['command']))
-    output = ssh_stdout.read()
-    error = ssh_stderr.read()
-    ret = ssh_stdout.channel.recv_exit_status()
+    if predeploy['exit_code'] != 0:
+        return jsonify(predeploy=predeploy, status="error", message="Predeploy script failed!")
+    ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker run -d -name {0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
+            container['name'],
+            container['volumes'],
+            container['capabilities'],
+            container['hostname'],
+            container['environment'],
+            container['portmapping'],
+            container['restart'],
+            container['image'],
+            container['command']
+        ))
+    deploy = {}
+    deploy['stdout'] = ssh_stdout.read()
+    deploy['stderr'] = ssh_stderr.read()
+    deploy['exit_code'] = ssh_stdout.channel.recv_exit_status()
+    if deploy['exit_code'] != 0:
+        return jsonify(predeploy=predeploy, deploy=deploy, status="error", message="Starting container failed!")
     postdeploy = run_deploy_hook(ssh, container, "postdeploy")
-    if ret == 0:
-       return "Success"
-    else:
-       return jsonify(return_code=ret, output=output, error=error)
+    if postdeploy['exit_code'] != 0:
+        return jsonify(predeploy=predeploy, deploy=deploy, postdeploy=postdeploy, status="error", message="Postdeploy script failed!")
+    return jsonify(status="success", container=deploy['stdout'].strip())
