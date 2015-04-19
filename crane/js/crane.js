@@ -1,4 +1,4 @@
-var crane = angular.module('crane', ['ngRoute'], function($interpolateProvider) {
+var crane = angular.module('crane', ['ngRoute','ui.bootstrap'], function($interpolateProvider) {
     $interpolateProvider.startSymbol('[[');
     $interpolateProvider.endSymbol(']]');
 });
@@ -16,6 +16,9 @@ crane.config(function($routeProvider){
     {
       templateUrl: "/frontend/templates.jade",
       controller: "TemplatesControl"
+    }).when("/registry",
+    {
+      templateUrl: "/frontend/registry.jade",
+      controller: "RegistryControl"
     });
-
 });

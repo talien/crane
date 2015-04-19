@@ -1,0 +1,60 @@
+.container.container-fluid
+  table.table.table-striped
+   thead
+    td Name
+    td URL
+    td Username
+    td Password
+    td Provider
+    td
+
+   tbody(ng-repeat="registry in registries")
+    tr
+      td [[registry.name]]
+      td [[registry.url]]
+      td [[registry.username]]
+      td &lt;sensitive data&gt;
+      td [[registry.provider]]
+      td 
+        .btn.btn-large.btn-danger(ng-click="remove_registry(registry)") Delete
+
+  .btn.btn-large.btn-primary(ng-click="start_add_registry()") Add registry
+  form.form-horizontal(ng-show="add_registry.active",role="form")
+    .form-group
+      label.control-label.col-sm-2(for="name") Name:
+      .col-sm-2
+        input#name.form-control(ng-model="add_registry.registry.name")
+    .form-group
+      label.control-label.col-sm-2(for="url") URL:
+      .col-sm-2
+        input#url.form-control(ng-model="add_registry.registry.url")
+    .form-group
+      label.control-label.col-sm-2(for="username") Username:
+      .col-sm-2
+        input#username.form-control(ng-model="add_registry.registry.username")
+    .form-group
+      label.control-label.col-sm-2(for="password") Password:
+      .col-sm-2
+        input#password.form-control(ng-model="add_registry.registry.password",type="password")
+    .form-group
+      label.control-label.col-sm-2(for="restart") Provider:
+      .col-sm-3
+        select#restart.form-control(ng-options="provider for provider in providers" ng-model="add_registry.registry.provider")
+    .btn.btn-large.btn-primary(ng-click="do_add_registry()") Save
+    .btn.btn-large.btn-warning(ng-click="cancel_add_registry()") Cancel
+  .jumbotron(style="padding-top:30px")
+    .h3 Search registry
+    .input-group.col-sm-3
+      input.form-control(type="text",placeholder="Search image...",ng-model="query")
+      span.input-group-btn
+        button.btn.btn-default(type="button",ng-click="search()") Go!
+    table.table(ng-show="results.length != 0")
+     thead
+      td Image
+      td Registry
+      td Description
+     tr(ng-repeat="result in results")
+      td [[result.name]]
+      td [[result.registry]]
+      td [[result.description]]
+    

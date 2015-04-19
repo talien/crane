@@ -29,5 +29,5 @@ def index():
 import templates
 import hosts
 import containers
-
+import registry
 

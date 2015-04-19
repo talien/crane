@@ -60,8 +60,10 @@
             input#name.form-control(ng-model="add_container.container.name")
         .form-group
           label.control-label.col-sm-2(for="image") Image:
-          .col-sm-3
+          .col-sm-3.input-group
             input#image.form-control(ng-model="add_container.container.image")
+            span.input-group-btn
+              button.btn.btn-default.glyphicon.glyphicon-search(ng-click="search_dialog()")
         .form-group
           label.control-label.col-sm-2(for="host") Host:
           .col-sm-3

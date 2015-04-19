@@ -1,6 +1,6 @@
 var crane = angular.module('crane');
 
-crane.controller('ContainerControl', function ($scope, $http) {
+crane.controller('ContainerControl', function ($scope, $http, $modal) {
   $scope.restart_policies = [
     'no',
     'on-failure:5',
@@ -13,6 +13,23 @@ crane.controller('ContainerControl', function ($scope, $http) {
   ]
 
   $scope.deployment_type = 'Raw';
+
+  $scope.search_dialog = function() {
+    var modalInstance = $modal.open({
+      templateUrl: 'frontend/imagesearch.jade',
+      controller: 'ImageSearchControl',
+      size: 'lg',
+      resolve: {
+        items: function () {
+          return $scope.items;
+        }
+      }
+    });
+
+    modalInstance.result.then(function (selectedItem) {
+      $scope.add_container.container.image = selectedItem;
+    })
+  }
 
   $scope.load_containers = function() {
     $scope.loading = true;

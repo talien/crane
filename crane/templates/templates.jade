@@ -31,8 +31,10 @@
         input#name.form-control(ng-model="add_template.deploy.name",crane-auto-complete,ui-items="parameters")
     .form-group
       label.control-label.col-sm-2(for="image") Image:
-      .col-sm-3
+      .col-sm-3.input-group
         input#image.form-control(ng-model="add_template.deploy.image",crane-auto-complete,ui-items="parameters")
+        span.input-group-btn
+          button.btn.btn-default.glyphicon.glyphicon-search(ng-click="search_dialog()")
     .form-group
       label.control-label.col-sm-2(for="hostname") Hostname of container:
       .col-sm-3
@@ -70,3 +72,4 @@
       .col-sm-3
         input#command.form-control(ng-model="add_template.deploy.command",crane-auto-complete,ui-items="parameters")
     .btn.btn-large.btn-primary(ng-click="save_template()") Save template
+    .btn.btn-large.btn-primary(ng-click="cancel_add_template()") Save template

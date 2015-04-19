@@ -1,0 +1,18 @@
+.jumbotron(style="padding:20px")
+  .h3 Search registry
+  .div Selected image: [[selected_image.name]]
+  .input-group.col-sm-3
+    input.form-control(type="text",placeholder="Search image...",ng-model="query")
+    span.input-group-btn
+      button.btn.btn-default(type="button",ng-click="search()") Go!
+  table.table.table-hover.table-condensed.table-bordered
+   thead
+    td Image
+    td Registry
+    td Description
+   tr(ng-repeat="result in results",ng-click="selected(result)")
+    td [[result.name]]
+    td [[result.registry]]
+    td [[result.description]]
+  button.btn.btn-default(type="button",ng-click="select()") Select
+  button.btn.btn-default(type="button",ng-click="cancel()") Cancel

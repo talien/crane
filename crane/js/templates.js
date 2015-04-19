@@ -44,7 +44,7 @@ crane.directive('craneAutoComplete', function($timeout) {
     };
 });
 
-crane.controller('TemplatesControl', function ($scope, $http) {
+crane.controller('TemplatesControl', function ($scope, $http, $modal) {
   $scope.parameters = [];
 
   $scope.load_templates = function() {
@@ -52,6 +52,23 @@ crane.controller('TemplatesControl', function ($scope, $http) {
      $scope.templates = data.result;
    });
   };
+
+  $scope.search_dialog = function() {
+    var modalInstance = $modal.open({
+      templateUrl: 'frontend/imagesearch.jade',
+      controller: 'ImageSearchControl',
+      size: 'lg',
+      resolve: {
+        items: function () {
+          return $scope.items;
+        }
+      }
+    });
+
+    modalInstance.result.then(function (selectedItem) {
+      $scope.add_template.deploy.image = selectedItem;
+    })
+  }
 
   $scope.load_templates();
 
@@ -74,5 +91,9 @@ crane.controller('TemplatesControl', function ($scope, $http) {
      $scope.load_templates();
      $scope.add_template.active = false;
   };
+
+  $scope.cancel_add_template = function() {
+     $scope.add_template.active = false;
+  }
 
 });
