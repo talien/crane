@@ -50,10 +50,14 @@
         button.btn.btn-default(type="button",ng-click="search()") Go!
     table.table(ng-show="results.length != 0")
      thead
+      td
       td Image
       td Registry
       td Description
      tr(ng-repeat="result in results")
+      td
+        .btn-group.btn-group
+          a.btn.btn.btn-default.glyphicon.glyphicon-stats(href="#/repository/[[result.registry_id]]/[[safe_repository_name(result)]]")
       td [[result.name]]
       td [[result.registry]]
       td [[result.description]]

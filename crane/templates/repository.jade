@@ -1,0 +1,19 @@
+.container
+  h1 [[repository]]
+  table.table
+    tbody(ng-repeat="tag in tags")
+      tr
+        td
+          .btn-group.btn-group
+            .btn.btn.btn-default.glyphicon.glyphicon-stats(ng-click="detailed(tag)")
+        td 
+          span(ng-repeat="tagname in tag.tags")[[tagname]],
+        td [[tag.name]]
+      tr(ng-show="tag.details.active")
+        td(colspan="3")
+          table.table
+            tr(ng-repeat="data in tag.details.data")
+              td [[ human_readable_size(data.Size) ]]
+              td [[ data.container_config.Cmd ]]
+              td [[ data.id ]]
+        

@@ -39,4 +39,8 @@ crane.controller("RegistryControl", function($scope, $http) {
     })
   }
 
+  $scope.safe_repository_name = function(repository) {
+    return repository.name.replace("/","--")
+  }
+
 });
