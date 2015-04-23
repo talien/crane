@@ -145,6 +145,7 @@ class DockerPrivate(CommonRegistry):
 
     def request(self, url):
         res = requests.get(url, verify=False)
+        return res
 
     def query_tags(self, reponame):
         res = self.request("{1}/v1/repositories/{0}/tags".format(reponame, self.url))
