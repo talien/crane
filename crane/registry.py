@@ -75,8 +75,8 @@ class DockerHub(CommonRegistry):
             image_map[image['id'][0:8]] = image['id']
         images = {}
         for tag in tags:
-            #result.append({'name':tag['name'],'image':image_map[tag['layer']]})
-            result = add_tag(images, image_map[tag['layer']], tag['name'])
+            if image_map.has_key(tag['layer']):
+                result = add_tag(images, image_map[tag['layer']], tag['name'])
         result = []
         for k,v in images.iteritems():
             result.append({'name':k,'tags':v})
@@ -89,6 +89,12 @@ class DockerHub(CommonRegistry):
         endpoint = res.headers['x-docker-endpoints']
         image_list = json.loads(res.text)
         return (token, endpoint, image_list)
+
+    def query_image(self, image_id, endpoint, token):
+        headers = {'Authorization':'Token {0}'.format(token)}
+        res = requests.get("https://{0}/v1/images/{1}/json".format(endpoint, image_id), headers=headers, verify=False)
+        image_detail = json.loads(res.text)
+        return image_detail
 
     def images(self, reponame):
         def query_image(image_id, endpoint, token):
@@ -116,14 +122,22 @@ class DockerHub(CommonRegistry):
         return {'tags':tags, 'images': images}
 
     def image(self, reponame, image):
+
         (token, endpoint, image_list) = self.query_images(reponame)
         headers = {'Authorization':'Token {0}'.format(token)}
         res = requests.get("https://{0}/v1/images/{1}/ancestry".format(endpoint, image), headers=headers, verify=False)
         ancestors = json.loads(res.text)
+        images = {}
+        futures = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for image in ancestors:
+                futures.append(executor.submit(self.query_image, image, endpoint, token))
+        for f in concurrent.futures.as_completed(futures):
+            image = f.result()
+            images[image['id']] = image
         result = []
         for i in ancestors:
-            res = requests.get("https://{0}/v1/images/{1}/json".format(endpoint, i), headers=headers, verify=False)
-            result.append(json.loads(res.text))
+            result.append(images[i])
         return result
 
 
