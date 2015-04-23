@@ -1,11 +1,17 @@
 .container
   h1 [[repository]]
+  div(ng-show="loading")
+    .glyphicon.glyphicon-refresh.glyphicon-refresh-animate
+    span &nbsp; Loading tags
   table.table
     tbody(ng-repeat="tag in tags")
       tr
         td
-          .btn-group.btn-group
-            .btn.btn.btn-default.glyphicon.glyphicon-stats(ng-click="detailed(tag)")
+          .btn-group.btn-group(ng-show="tag.loading")
+            .btn.btn-default
+              .glyphicon.glyphicon-refresh.glyphicon-refresh-animate
+          .btn-group.btn-group(ng-show="!tag.loading")
+            .btn.btn-default.glyphicon.glyphicon-stats(ng-click="detailed(tag)")
         td 
           span(ng-repeat="tagname in tag.tags")[[tagname]],
         td [[tag.name]]

@@ -47,7 +47,10 @@
     .input-group.col-sm-3
       input.form-control(type="text",placeholder="Search image...",ng-model="query")
       span.input-group-btn
-        button.btn.btn-default(type="button",ng-click="search()") Go!
+        button.btn.btn-default(type="button",ng-click="search()",ng-show="!searching") Go!
+        .btn-group.btn-group(ng-show="searching")
+          .btn.btn-default
+            .glyphicon.glyphicon-refresh.glyphicon-refresh-animate
     table.table(ng-show="results.length != 0")
      thead
       td
