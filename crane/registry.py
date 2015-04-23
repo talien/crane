@@ -31,12 +31,12 @@ class CommonRegistry(object):
         self.username = username
         self.password = password
 
+class DockerHub(CommonRegistry):
+
     def query_tags(self, reponame):
         res = requests.get("{1}/v1/repositories/{0}/tags".format(reponame, self.url), verify=False)
         tags = json.loads(res.text)
         return tags
-
-class DockerHub(CommonRegistry):
 
     def search(self, query):
 
@@ -129,8 +129,16 @@ class DockerHub(CommonRegistry):
 
 class DockerPrivate(CommonRegistry):
 
+    def request(self, url):
+        res = requests.get(url, verify=False)
+
+    def query_tags(self, reponame):
+        res = self.request("{1}/v1/repositories/{0}/tags".format(reponame, self.url))
+        tags = json.loads(res.text)
+        return tags
+
     def search(self, query):
-        res = requests.get("{1}/v1/search?q={0}".format(query, self.url), verify=False)
+        res = self.request("{1}/v1/search?q={0}".format(query, self.url))
         result = json.loads(res.text)
         results = result['results']
         return results
@@ -139,11 +147,11 @@ class DockerPrivate(CommonRegistry):
         tags = self.query_tags(reponame)
         if tags.has_key('error'):
             return {}
-        res = requests.get("{0}/v1/repositories/{1}/images".format(self.url, reponame), verify=False)
+        res = self.request("{0}/v1/repositories/{1}/images".format(self.url, reponame))
         image_list = json.loads(res.text)
         images = {}
         for image in image_list:
-            res = requests.get("{0}/v1/images/{1}/json".format(self.url, image['id']), verify=False)
+            res = self.request("{0}/v1/images/{1}/json".format(self.url, image['id']))
             image_detail = json.loads(res.text)
             images[image['id']] = image_detail
         return {'tags':tags, 'images': images}
@@ -165,11 +173,11 @@ class DockerPrivate(CommonRegistry):
         return result
 
     def image(self, reponame, image):
-        res = requests.get("{0}/v1/images/{1}/ancestry".format(self.url, image), verify=False)
+        res = self.request("{0}/v1/images/{1}/ancestry".format(self.url, image))
         ancestors = json.loads(res.text)
         result = []
         for i in ancestors:
-            res = requests.get("{0}/v1/images/{1}/json".format(self.url, i), verify=False)
+            res = self.request("{0}/v1/images/{1}/json".format(self.url, i))
             result.append(json.loads(res.text))
         return result
 
