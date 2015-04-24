@@ -4,6 +4,7 @@ from requests.auth import HTTPBasicAuth
 from flask import jsonify, request
 import json
 import concurrent.futures
+from utils import parallel_map_reduce
 
 class Registry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,12 +54,7 @@ class DockerHub(CommonRegistry):
         result = json.loads(res.text)
         results = results + result['results']
         num_pages = result['num_pages']
-        futures = []
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            for page in range(2,num_pages + 1):
-                futures.append(executor.submit(query_page, query, page, self.url))
-        for f in concurrent.futures.as_completed(futures):
-            results = results + f.result()
+        results = parallel_map_reduce(lambda x: query_page(query, x, self.url), lambda x,y: x+y, range(2,num_pages + 1), results)
         results.sort(key=lambda x:x['star_count'], reverse=True)
         return results
 
@@ -123,19 +119,14 @@ class DockerHub(CommonRegistry):
         return {'tags':tags, 'images': images}
 
     def image(self, reponame, image):
-
+        def reduce_func(images, image):
+            images[image['id']] = image
+            return images
         (token, endpoint, image_list) = self.query_images(reponame)
         headers = {'Authorization':'Token {0}'.format(token)}
         res = requests.get("https://{0}/v1/images/{1}/ancestry".format(endpoint, image), headers=headers, verify=False)
         ancestors = json.loads(res.text)
-        images = {}
-        futures = []
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            for image in ancestors:
-                futures.append(executor.submit(self.query_image, image, endpoint, token))
-        for f in concurrent.futures.as_completed(futures):
-            image = f.result()
-            images[image['id']] = image
+        images = parallel_map_reduce(lambda x: self.query_image(x, endpoint, token), reduce_func, ancestors, {})
         result = []
         for i in ancestors:
             result.append(images[i])
