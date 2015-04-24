@@ -1,5 +1,6 @@
 from webserver import app, db
 import requests
+from requests.auth import HTTPBasicAuth
 from flask import jsonify, request
 import json
 import concurrent.futures
@@ -144,7 +145,10 @@ class DockerHub(CommonRegistry):
 class DockerPrivate(CommonRegistry):
 
     def request(self, url):
-        res = requests.get(url, verify=False)
+        if self.username:
+            res = requests.get(url, verify=False, auth=HTTPBasicAuth(self.username, self.password))
+        else:
+            res = requests.get(url, verify=False)
         return res
 
     def query_tags(self, reponame):
