@@ -1,6 +1,6 @@
 import paramiko
 from flask import jsonify, request
-from crane import app, db
+from webserver import app, db
 import StringIO
 
 class Host(db.Model):
