@@ -1,7 +1,12 @@
-var crane = angular.module('crane');
+(function(){
 
-function Host(name, host, username, sshkey, password)
-{
+angular.module('crane')
+
+.controller('HostController', HostController);
+
+HostController.$inject = ['$scope', '$http'];
+
+function Host(name, host, username, sshkey, password) {
   this.name = name;
   this.host = host;
   this.username = username;
@@ -9,54 +14,59 @@ function Host(name, host, username, sshkey, password)
   this.password = password;
 }
 
-crane.controller('HostControl', function($scope, $http) {
-  $scope.load_hosts = function() {
+function HostController($scope, $http) {
+  $scope.add_host = { 'active':false, 'host': new Host() };
+
+  $scope.load_hosts = load_hosts;
+  $scope.remove_host = remove_host;
+  $scope.edit_host = edit_host;
+  $scope.host_details = host_details;
+  $scope.add_new_host = add_new_host;
+  $scope.save_new_host = save_new_host;
+
+  function load_hosts() {
     $http.get("/host").success(function(data, status) {
       $scope.hosts = data.result;
     });
   }
 
-  $scope.load_hosts();
-
-  $scope.remove_host = function(host) {
+  function remove_host(host) {
     $http.delete("/host/" + String(host.id));
     $scope.load_hosts();
-
   }
 
-  $scope.edit_host = function(host) {
+  function edit_host(host) {
     $scope.add_host.active = true;
     $scope.add_host.host = host;
   }
 
-  $scope.host_details = function(host) {
-    if (host.details && host.details.active) { host.details.active = false; }
-    else
-    {
+  function host_details(host) {
+    if (host.details && host.details.active) {
+      host.details.active = false;
+    } else {
       $http.get("/host/" + String(host.id)).success(function(data) {
          host.details = {};
          host.details.info = data.result;
          host.details.active = true;
       });
     }
-
   }
 
-  $scope.add_new_host = function($event) {
+  function add_new_host($event) {
     $scope.add_host.active = true;
   }
 
-  $scope.add_host = { 'active':false, 'host': new Host() };
-
-  $scope.save_new_host = function($event) {
-    if ($scope.add_host.host.id)
-    {
+  function save_new_host($event) {
+    if ($scope.add_host.host.id) {
       $http.post("/host/" + String($scope.add_host.host.id), $scope.add_host.host);
-    }
-    else {
+    } else {
       $http.post("/host", $scope.add_host.host);
     }
-    $scope.load_hosts()
+    $scope.load_hosts();
     $scope.add_host.active = false;
   }
+
+  $scope.load_hosts();
 });
+
+})();
