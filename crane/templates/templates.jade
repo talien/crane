@@ -4,13 +4,21 @@
       td Name
       td Variables
       td Actions
-    tr(ng-repeat="template in templates")
-      td [[template.name]]
-      td
-        ul
-         li(ng-repeat="parameter in template.parameters") [[ parameter.name ]]
-      td 
-        .btn.btn-danger(ng-click="delete_template(template)") Delete
+    tbody(ng-repeat="template in templates")
+      tr
+        td 
+          .btn.btn-default.glyphicon.glyphicon-stats(ng-click="template_details(template)")
+          span &nbsp; [[template.name]]
+        td
+          ul
+           li(ng-repeat="parameter in template.parameters") [[ parameter.name ]]
+        td 
+          .btn-group
+            .btn.btn-primary(ng-click="edit_template(template)") Edit
+            .btn.btn-danger(ng-click="delete_template(template)") Delete
+      tr
+        td(colspan=3,ng-show="template.details")
+          pre [[template.deploy | json]]
 
   .btn.btn-large.btn-primary(ng-click="start_add_template()") Add template
   form.form-horizontal(ng-show="(add_template.active)",role="form")
@@ -72,4 +80,4 @@
       .col-sm-3
         input#command.form-control(ng-model="add_template.deploy.command",crane-auto-complete,ui-items="parameters")
     .btn.btn-large.btn-primary(ng-click="save_template()") Save template
-    .btn.btn-large.btn-primary(ng-click="cancel_add_template()") Save template
+    .btn.btn-large.btn-warning(ng-click="cancel_add_template()") Cancel
