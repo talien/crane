@@ -161,6 +161,6 @@ function ContainerController($scope, $http, $modal) {
   $scope.load_hosts();
   $scope.load_containers();
   $scope.load_templates();
-});
+}
 
 })();
