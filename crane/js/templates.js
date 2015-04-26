@@ -87,13 +87,29 @@ crane.controller('TemplatesControl', function ($scope, $http, $modal) {
 
   $scope.save_template = function() {
      data = { 'name' : $scope.add_template.name, 'template': { 'parameters': $scope.parameters, 'deploy': $scope.add_template.deploy } };
-     $http.post("/template",data);
+     if ($scope.add_template.id)
+     {
+       $http.post("/template/" + String($scope.add_template.id),data);
+     }
+     else
+     {
+       $http.post("/template",data);
+     }
      $scope.load_templates();
      $scope.add_template.active = false;
   };
 
   $scope.cancel_add_template = function() {
      $scope.add_template.active = false;
+  }
+
+  $scope.edit_template = function(template) {
+    $scope.add_template = { 'active': true, 'name': template.name, 'id': template.id, 'deploy': template.deploy}
+    $scope.parameters = template.parameters
+  }
+
+  $scope.template_details = function(template) {
+    if (template.details ) { template.details = false } else { template.details = true }
   }
 
 });
