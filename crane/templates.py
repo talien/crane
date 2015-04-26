@@ -1,4 +1,4 @@
-from crane import db, app
+from webserver import db, app
 from flask import jsonify, request
 import json
 

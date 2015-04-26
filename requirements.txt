@@ -3,3 +3,5 @@ Flask
 Flask-SQLAlchemy
 pyjade
 futures
+pytest
+pytest-cov
