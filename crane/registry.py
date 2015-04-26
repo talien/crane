@@ -93,31 +93,6 @@ class DockerHub(CommonRegistry):
         image_detail = json.loads(res.text)
         return image_detail
 
-    def images(self, reponame):
-        def query_image(image_id, endpoint, token):
-            headers = {'Authorization':'Token {0}'.format(token)}
-            res = requests.get("https://{0}/v1/images/{1}/json".format(endpoint, image_id), headers=headers, verify=False)
-            image_detail = json.loads(res.text)
-            return image_detail
-
-        tags = self.query_tags(reponame)
-        print "Tags: {0}".format(len(tags))
-        (token, endpoint, image_list) = self.query_images(reponame)
-        print "Images: {0}".format(len(image_list))
-        images = {}
-        futures = []
-        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-            for image in image_list[:100]:
-                futures.append(executor.submit(query_image, image['id'], endpoint, token))
-        i = 0
-        for f in concurrent.futures.as_completed(futures):
-            image = f.result()
-            images[image['id']] = image
-            i = i + 1
-            print "{0}/{1}".format(i, len(image_list))
-        print res.headers
-        return {'tags':tags, 'images': images}
-
     def image(self, reponame, image):
         def reduce_func(images, image):
             images[image['id']] = image
@@ -152,19 +127,6 @@ class DockerPrivate(CommonRegistry):
         result = json.loads(res.text)
         results = result['results']
         return results
-
-    def images(self, reponame):
-        tags = self.query_tags(reponame)
-        if tags.has_key('error'):
-            return {}
-        res = self.request("{0}/v1/repositories/{1}/images".format(self.url, reponame))
-        image_list = json.loads(res.text)
-        images = {}
-        for image in image_list:
-            res = self.request("{0}/v1/images/{1}/json".format(self.url, image['id']))
-            image_detail = json.loads(res.text)
-            images[image['id']] = image_detail
-        return {'tags':tags, 'images': images}
 
     def tags(self, reponame):
         def add_tag(images, image, tag):
@@ -223,16 +185,6 @@ def delete_registry(registry_id):
       db.session.delete(registry)
       db.session.commit()
     return ""
-
-@app.route("/registry/<registry_id>/repository/<namespace>/<repo_name>")
-@app.route("/registry/<registry_id>/repository/<repo_name>", defaults={'namespace':''})
-def get_images(registry_id, namespace, repo_name):
-    if namespace != "":
-        repo_name = "{0}/{1}".format(namespace, repo_name)
-    registry = Registry.query.filter_by(id=registry_id).first()
-    provider = registry.get_provider()
-    result = provider.images(repo_name)
-    return jsonify(result=result)
 
 @app.route("/registry/<registry_id>/repository/<namespace>/<repo_name>/tags")
 @app.route("/registry/<registry_id>/repository/<repo_name>/tags", defaults={'namespace':''})
