@@ -5,3 +5,5 @@ pyjade
 futures
 pytest
 pytest-cov
+requests
+pyOpenSSL
