@@ -34,9 +34,15 @@ crane.controller("RegistryControl", function($scope, $http) {
   }
 
   $scope.search = function() {
+    $scope.searching = true;
     $http.get("/search",{ params: {q:$scope.query}}).success(function(data){
         $scope.results = data.result
+        $scope.searching = false;
     })
+  }
+
+  $scope.safe_repository_name = function(repository) {
+    return repository.name.replace("/","--")
   }
 
 });

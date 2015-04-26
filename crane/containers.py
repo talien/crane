@@ -4,6 +4,7 @@ from flask import jsonify, Response, request
 import json
 import concurrent.futures
 import paramiko
+from utils import parallel_map_reduce
 
 def get_info_from_container(container, host):
     result = {}
@@ -36,12 +37,7 @@ def get_container_from_host(host):
 def get_containers():
     result = []
     hosts = Host.query.all()
-    futures = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        for host in hosts:
-            futures.append(executor.submit(get_container_from_host, host))
-    for f in concurrent.futures.as_completed(futures):
-        result = result + f.result()
+    result = parallel_map_reduce(lambda x: get_container_from_host(x), lambda x,y: x+y, hosts, [])
     result.sort(key=lambda x:x['name'])
     return jsonify(result=result)
 

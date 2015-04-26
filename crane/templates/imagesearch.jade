@@ -4,7 +4,9 @@
   .input-group.col-sm-3
     input.form-control(type="text",placeholder="Search image...",ng-model="query")
     span.input-group-btn
-      button.btn.btn-default(type="button",ng-click="search()") Go!
+      button.btn.btn-default(type="button",ng-click="search()",ng-show="!searching") Go!
+      button.btn.btn-default(ng-show="searching")
+        .glyphicon.glyphicon-refresh.glyphicon-refresh-animate
   table.table.table-hover.table-condensed.table-bordered
    thead
     td Image

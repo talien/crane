@@ -67,6 +67,6 @@ function HostController($scope, $http) {
   }
 
   $scope.load_hosts();
-});
+}
 
 })();

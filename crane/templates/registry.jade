@@ -47,13 +47,20 @@
     .input-group.col-sm-3
       input.form-control(type="text",placeholder="Search image...",ng-model="query")
       span.input-group-btn
-        button.btn.btn-default(type="button",ng-click="search()") Go!
+        button.btn.btn-default(type="button",ng-click="search()",ng-show="!searching") Go!
+        .btn-group.btn-group(ng-show="searching")
+          .btn.btn-default
+            .glyphicon.glyphicon-refresh.glyphicon-refresh-animate
     table.table(ng-show="results.length != 0")
      thead
+      td
       td Image
       td Registry
       td Description
      tr(ng-repeat="result in results")
+      td
+        .btn-group.btn-group
+          a.btn.btn.btn-default.glyphicon.glyphicon-stats(href="#/repository/[[result.registry_id]]/[[safe_repository_name(result)]]")
       td [[result.name]]
       td [[result.registry]]
       td [[result.description]]

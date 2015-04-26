@@ -59,8 +59,8 @@ crane.controller('TemplatesControl', function ($scope, $http, $modal) {
       controller: 'ImageSearchControl',
       size: 'lg',
       resolve: {
-        items: function () {
-          return $scope.items;
+        image: function () {
+          return $scope.add_template.deploy.image;
         }
       }
     });
