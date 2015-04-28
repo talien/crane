@@ -33,11 +33,16 @@ function router($routeProvider){
       controller: "RegistryControl"
     })
   .when("/repository/:registry_id/:reponame",
-    {   
+    {
       templateUrl: "/frontend/repository.jade",
       controller: "RepositoryControl"
     })
-  .otherwise({ redirectTo: '/hosts' });
+  .when("/index",
+    {
+      templateUrl: "/frontend/index.jade",
+      controller: "IndexController"
+    })
+  .otherwise({ redirectTo: '/index' });
 }
 
 })();

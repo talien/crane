@@ -24,7 +24,7 @@ def send_css(path):
 
 @app.route("/")
 def index():
-    return render_template("hello.jade", render_template=render_template)
+    return render_template("crane.jade", render_template=render_template)
 
 import templates
 import hosts
