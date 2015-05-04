@@ -50,8 +50,8 @@
     .form-group
       label.control-label.col-sm-2(for="dtype") Deployment type:
       .col-sm-3
-         select#dtype(ng-model="deployment_type")
-           option(ng-repeat="deployment_type in deployment_types") [[deployment_type]]
+        .btn-group
+          label.btn.btn-primary(ng-repeat="deploy_type in deployment_types",ng-model="$parent.deployment_type",btn-radio="deploy_type") [[deploy_type]]
     div(ng-switch="deployment_type")
       div(ng-switch-when="Raw")
         .form-group
