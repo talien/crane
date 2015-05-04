@@ -11,7 +11,10 @@ def get_info_from_container(container, host):
     result['id'] = container['Id']
     result['name'] = container['Name']
     result['image'] = container['Config']['Image']
-    result['cmd'] = " ".join(container['Config']['Cmd'])
+    if container['Config']['Cmd']:
+      result['cmd'] = " ".join(container['Config']['Cmd'])
+    else:
+      result['cmd'] = "None"
     if container['State']['Running']:
        result['state'] = 'Running'
     else:
