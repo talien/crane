@@ -23,9 +23,9 @@ class Registry(db.Model):
 
     def get_provider(self):
         if self.provider == 'dockerhub':
-           return DockerHub(self.url, self.username, self.password)
+            return DockerHub(self.url, self.username, self.password, requests)
         elif self.provider == 'private':
-           return DockerPrivate(self.url, self.username, self.password)
+            return DockerPrivate(self.url, self.username, self.password, requests)
 
 class CommonRegistry(object):
     def __init__(self, url, username, password):
@@ -34,24 +34,27 @@ class CommonRegistry(object):
         self.password = password
 
 class DockerHub(CommonRegistry):
+    def __init__(self, url, username, password, requests):
+        super(DockerHub, self).__init__(url, username, password)
+        self.requests = requests
 
     def query_tags(self, reponame):
-        res = requests.get("{1}/v1/repositories/{0}/tags".format(reponame, self.url), verify=False)
+        res = self.requests.get("{1}/v1/repositories/{0}/tags".format(reponame, self.url), verify=False)
         tags = json.loads(res.text)
         return tags
 
     def search(self, query):
 
         def query_page(query, page, url):
-            res = requests.get("{2}/v1/search?q={0}&page={1}".format(query, page, self.url), verify=False)
+            res = self.requests.get("{2}/v1/search?q={0}&page={1}".format(query, page, url), verify=False)
             result = json.loads(res.text)
             return result['results']
 
         num_page = 1000;
         actual_page = 1
         results = []
-        res = requests.get("{2}/v1/search?q={0}&page={1}".format(query, actual_page, self.url), verify=False)
-        result = json.loads(res.text)
+        response = self.requests.get("{2}/v1/search?q={0}&page={1}".format(query, actual_page, self.url), verify=False)
+        result = json.loads(response.text)
         results = results + result['results']
         num_pages = result['num_pages']
         results = parallel_map_reduce(lambda x: query_page(query, x, self.url), lambda x, y: x+y, range(2, num_pages + 1), results)
@@ -81,7 +84,7 @@ class DockerHub(CommonRegistry):
 
     def query_images(self, reponame):
         headers = {'X-Docker-Token': 'true'}
-        res = requests.get("{1}/v1/repositories/{0}/images".format(reponame, self.url), headers=headers, verify=False)
+        res = self.requests.get("{1}/v1/repositories/{0}/images".format(reponame, self.url), headers=headers, verify=False)
         token = res.headers['x-docker-token']
         endpoint = res.headers['x-docker-endpoints']
         image_list = json.loads(res.text)
@@ -89,7 +92,7 @@ class DockerHub(CommonRegistry):
 
     def query_image(self, image_id, endpoint, token):
         headers = {'Authorization': 'Token {0}'.format(token)}
-        res = requests.get("https://{0}/v1/images/{1}/json".format(endpoint, image_id), headers=headers, verify=False)
+        res = self.requests.get("https://{0}/v1/images/{1}/json".format(endpoint, image_id), headers=headers, verify=False)
         image_detail = json.loads(res.text)
         return image_detail
 
@@ -99,7 +102,7 @@ class DockerHub(CommonRegistry):
             return images
         (token, endpoint, image_list) = self.query_images(reponame)
         headers = {'Authorization': 'Token {0}'.format(token)}
-        res = requests.get("https://{0}/v1/images/{1}/ancestry".format(endpoint, image), headers=headers, verify=False)
+        res = self.requests.get("https://{0}/v1/images/{1}/ancestry".format(endpoint, image), headers=headers, verify=False)
         ancestors = json.loads(res.text)
         images = parallel_map_reduce(lambda x: self.query_image(x, endpoint, token), reduce_func, ancestors, {})
         result = []
@@ -109,12 +112,15 @@ class DockerHub(CommonRegistry):
 
 
 class DockerPrivate(CommonRegistry):
+    def __init__(self, url, username, password, requests):
+        super(DockerPrivate, self).__init__(url, username, password)
+        self.requests = requests
 
     def request(self, url):
         if self.username:
-            res = requests.get(url, verify=False, auth=HTTPBasicAuth(self.username, self.password))
+            res = self.requests.get(url, verify=False, auth=HTTPBasicAuth(self.username, self.password))
         else:
-            res = requests.get(url, verify=False)
+            res = self.requests.get(url, verify=False)
         return res
 
     def query_tags(self, reponame):
