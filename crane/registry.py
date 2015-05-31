@@ -5,6 +5,7 @@ from flask import jsonify, request
 import json
 from utils import parallel_map_reduce
 
+
 class Registry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))
@@ -26,11 +27,13 @@ class Registry(db.Model):
         elif self.provider == 'private':
             return DockerPrivate(self.url, self.username, self.password, requests)
 
+
 class CommonRegistry(object):
     def __init__(self, url, username, password):
         self.url = url
         self.username = username
         self.password = password
+
 
 class DockerHub(CommonRegistry):
     def __init__(self, url, username, password, requests):
