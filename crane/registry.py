@@ -52,9 +52,8 @@ class DockerHub(CommonRegistry):
             result = json.loads(res.text)
             return result['results']
 
-        actual_page = 1
         results = []
-        response = self.requests.get("{2}/v1/search?q={0}&page={1}".format(query, actual_page, self.url), verify=False)
+        response = self.requests.get("{2}/v1/search?q={0}&page={1}".format(query, 1, self.url), verify=False)
         result = json.loads(response.text)
         results = results + result['results']
         num_pages = result['num_pages']
