@@ -54,8 +54,8 @@ class DockerHub(CommonRegistry):
         result = json.loads(res.text)
         results = results + result['results']
         num_pages = result['num_pages']
-        results = parallel_map_reduce(lambda x: query_page(query, x, self.url), lambda x,y: x+y, range(2,num_pages + 1), results)
-        results.sort(key=lambda x:x['star_count'], reverse=True)
+        results = parallel_map_reduce(lambda x: query_page(query, x, self.url), lambda x, y: x+y, range(2, num_pages + 1), results)
+        results.sort(key=lambda x: x['star_count'], reverse=True)
         return results
 
     def tags(self, reponame):
@@ -75,12 +75,12 @@ class DockerHub(CommonRegistry):
             if image_map.has_key(tag['layer']):
                 result = add_tag(images, image_map[tag['layer']], tag['name'])
         result = []
-        for k,v in images.iteritems():
-            result.append({'name':k,'tags':v})
+        for k, v in images.iteritems():
+            result.append({'name': k, 'tags': v})
         return result
 
     def query_images(self, reponame):
-        headers = {'X-Docker-Token':'true'}
+        headers = {'X-Docker-Token': 'true'}
         res = requests.get("{1}/v1/repositories/{0}/images".format(reponame, self.url), headers=headers, verify=False)
         token = res.headers['x-docker-token']
         endpoint = res.headers['x-docker-endpoints']
@@ -88,7 +88,7 @@ class DockerHub(CommonRegistry):
         return (token, endpoint, image_list)
 
     def query_image(self, image_id, endpoint, token):
-        headers = {'Authorization':'Token {0}'.format(token)}
+        headers = {'Authorization': 'Token {0}'.format(token)}
         res = requests.get("https://{0}/v1/images/{1}/json".format(endpoint, image_id), headers=headers, verify=False)
         image_detail = json.loads(res.text)
         return image_detail
@@ -98,7 +98,7 @@ class DockerHub(CommonRegistry):
             images[image['id']] = image
             return images
         (token, endpoint, image_list) = self.query_images(reponame)
-        headers = {'Authorization':'Token {0}'.format(token)}
+        headers = {'Authorization': 'Token {0}'.format(token)}
         res = requests.get("https://{0}/v1/images/{1}/ancestry".format(endpoint, image), headers=headers, verify=False)
         ancestors = json.loads(res.text)
         images = parallel_map_reduce(lambda x: self.query_image(x, endpoint, token), reduce_func, ancestors, {})
@@ -153,17 +153,20 @@ class DockerPrivate(CommonRegistry):
             result.append(json.loads(res.text))
         return result
 
+
 def expand_results_with_registry_name(results, registry):
     for result in results:
         result['registry'] = registry.name
         result['registry_id'] = registry.id
     return results
 
+
 @app.route("/registry", methods=[ "GET" ])
 def get_registries():
     registries = db.session.execute(Registry.__table__ .select())
     transformed_registries = map(lambda x:dict(x), registries)
     return jsonify(result=transformed_registries)
+
 
 @app.route("/registry", methods=[ "POST" ])
 def add_registry():
@@ -178,16 +181,18 @@ def add_registry():
     db.session.commit()
     return ""
 
+
 @app.route("/registry/<registry_id>", methods=["DELETE"])
 def delete_registry(registry_id):
     registry = Registry.query.filter_by(id=registry_id).first()
     if registry:
-      db.session.delete(registry)
-      db.session.commit()
+        db.session.delete(registry)
+        db.session.commit()
     return ""
 
+
 @app.route("/registry/<registry_id>/repository/<namespace>/<repo_name>/tags")
-@app.route("/registry/<registry_id>/repository/<repo_name>/tags", defaults={'namespace':''})
+@app.route("/registry/<registry_id>/repository/<repo_name>/tags", defaults={'namespace': ''})
 def get_tags(registry_id, namespace, repo_name):
     if namespace != "":
         repo_name = "{0}/{1}".format(namespace, repo_name)
@@ -196,8 +201,9 @@ def get_tags(registry_id, namespace, repo_name):
     result = provider.tags(repo_name)
     return jsonify(result=result)
 
+
 @app.route("/registry/<registry_id>/repository/<namespace>/<repo_name>/image/<image_id>")
-@app.route("/registry/<registry_id>/repository/<repo_name>/image/<image_id>", defaults={'namespace':''})
+@app.route("/registry/<registry_id>/repository/<repo_name>/image/<image_id>", defaults={'namespace': ''})
 def get_image(registry_id, namespace, repo_name, image_id):
     if namespace != "":
         repo_name = "{0}/{1}".format(namespace, repo_name)
@@ -205,6 +211,7 @@ def get_image(registry_id, namespace, repo_name, image_id):
     provider = registry.get_provider()
     result = provider.image(repo_name, image_id)
     return jsonify(result=result)
+
 
 @app.route("/search", methods=[ "GET"])
 def search_registry():
