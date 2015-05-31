@@ -3,7 +3,6 @@ import requests
 from requests.auth import HTTPBasicAuth
 from flask import jsonify, request
 import json
-import concurrent.futures
 from utils import parallel_map_reduce
 
 class Registry(db.Model):
@@ -50,7 +49,6 @@ class DockerHub(CommonRegistry):
             result = json.loads(res.text)
             return result['results']
 
-        num_page = 1000;
         actual_page = 1
         results = []
         response = self.requests.get("{2}/v1/search?q={0}&page={1}".format(query, actual_page, self.url), verify=False)
