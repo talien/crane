@@ -1,7 +1,7 @@
 clean:
 	find . -name "*.pyc" -type f -delete
-	rm crane/.coverage
-	rm crane/htmlcov
+	rm -f crane/.coverage
+	rm -f crane/htmlcov
 check:
 	PYTHONPATH="." py.test
 coverage:
