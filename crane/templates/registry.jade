@@ -19,7 +19,7 @@
         .btn.btn-large.btn-danger(ng-click="remove_registry(registry)") Delete
 
   .btn.btn-large.btn-primary(ng-click="start_add_registry()") Add registry
-  form.form-horizontal(ng-show="add_registry.active",role="form")
+  form.form-horizontal.round-corner(ng-show="add_registry.active",role="form")
     .form-group
       label.control-label.col-sm-2(for="name") Name:
       .col-sm-2
@@ -42,7 +42,7 @@
         select#restart.form-control(ng-options="provider for provider in providers" ng-model="add_registry.registry.provider")
     .btn.btn-large.btn-primary(ng-click="do_add_registry()") Save
     .btn.btn-large.btn-warning(ng-click="cancel_add_registry()") Cancel
-  .jumbotron(style="padding-top:30px")
+  .round-corner
     .h3 Search registry
     .input-group.col-sm-3
       input.form-control(type="text",placeholder="Search image...",ng-model="query")
