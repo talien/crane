@@ -40,7 +40,7 @@ class DockerHub(CommonRegistry):
         super(DockerHub, self).__init__(url, username, password)
         self.requests = requests
 
-    def query_tags(self, reponame):
+    def __query_tags(self, reponame):
         res = self.requests.get("{1}/v1/repositories/{0}/tags".format(reponame, self.url), verify=False)
         tags = json.loads(res.text)
         return tags
@@ -68,8 +68,8 @@ class DockerHub(CommonRegistry):
             images[image].append(tag)
             return images
 
-        tags = self.query_tags(reponame)
-        (_, _, images) = self.query_images(reponame)
+        tags = self.__query_tags(reponame)
+        (_, _, images) = self.__query_images(reponame)
         image_map = {}
         for image in images:
             image_map[image['id'][0:8]] = image['id']
@@ -82,7 +82,7 @@ class DockerHub(CommonRegistry):
             result.append({'name': k, 'tags': v})
         return result
 
-    def query_images(self, reponame):
+    def __query_images(self, reponame):
         headers = {'X-Docker-Token': 'true'}
         res = self.requests.get("{1}/v1/repositories/{0}/images".format(reponame, self.url), headers=headers, verify=False)
         token = res.headers['x-docker-token']
@@ -90,7 +90,7 @@ class DockerHub(CommonRegistry):
         image_list = json.loads(res.text)
         return (token, endpoint, image_list)
 
-    def query_image(self, image_id, endpoint, token):
+    def __query_image(self, image_id, endpoint, token):
         headers = {'Authorization': 'Token {0}'.format(token)}
         res = self.requests.get("https://{0}/v1/images/{1}/json".format(endpoint, image_id), headers=headers, verify=False)
         image_detail = json.loads(res.text)
@@ -100,11 +100,11 @@ class DockerHub(CommonRegistry):
         def reduce_func(images, image):
             images[image['id']] = image
             return images
-        (token, endpoint, image_list) = self.query_images(reponame)
+        (token, endpoint, image_list) = self.__query_images(reponame)
         headers = {'Authorization': 'Token {0}'.format(token)}
         res = self.requests.get("https://{0}/v1/images/{1}/ancestry".format(endpoint, image), headers=headers, verify=False)
         ancestors = json.loads(res.text)
-        images = parallel_map_reduce(lambda x: self.query_image(x, endpoint, token), reduce_func, ancestors, {})
+        images = parallel_map_reduce(lambda x: self.__query_image(x, endpoint, token), reduce_func, ancestors, {})
         result = []
         for i in ancestors:
             result.append(images[i])
@@ -116,20 +116,20 @@ class DockerPrivate(CommonRegistry):
         super(DockerPrivate, self).__init__(url, username, password)
         self.requests = requests
 
-    def request(self, url):
+    def __request(self, url):
         if self.username:
             res = self.requests.get(url, verify=False, auth=HTTPBasicAuth(self.username, self.password))
         else:
             res = self.requests.get(url, verify=False)
         return res
 
-    def query_tags(self, reponame):
-        res = self.request("{1}/v1/repositories/{0}/tags".format(reponame, self.url))
+    def __query_tags(self, reponame):
+        res = self.__request("{1}/v1/repositories/{0}/tags".format(reponame, self.url))
         tags = json.loads(res.text)
         return tags
 
     def search(self, query):
-        res = self.request("{1}/v1/search?q={0}".format(query, self.url))
+        res = self.__request("{1}/v1/search?q={0}".format(query, self.url))
         result = json.loads(res.text)
         results = result['results']
         return results
@@ -141,7 +141,7 @@ class DockerPrivate(CommonRegistry):
             images[image].append(tag)
             return images
 
-        tags = self.query_tags(reponame)
+        tags = self.__query_tags(reponame)
         images = {}
         for k,v in tags.iteritems():
             images = add_tag(images, v, k)
@@ -151,11 +151,11 @@ class DockerPrivate(CommonRegistry):
         return result
 
     def image(self, reponame, image):
-        res = self.request("{0}/v1/images/{1}/ancestry".format(self.url, image))
+        res = self.__request("{0}/v1/images/{1}/ancestry".format(self.url, image))
         ancestors = json.loads(res.text)
         result = []
         for i in ancestors:
-            res = self.request("{0}/v1/images/{1}/json".format(self.url, i))
+            res = self.__request("{0}/v1/images/{1}/json".format(self.url, i))
             result.append(json.loads(res.text))
         return result
 
