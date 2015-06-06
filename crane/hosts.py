@@ -2,40 +2,13 @@ import paramiko
 from flask import jsonify, request
 from webserver import app, db
 import StringIO
+from Backend.Models.HostModel import HostModel
 
-class Host(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(256))
-    host = db.Column(db.String(1024))
-    username = db.Column(db.String(256))
-    password = db.Column(db.String(1024))
-    sshkey = db.Column(db.Text())
-
-    def __init__(self, name, host, username, password, sshkey):
-        self.name = name
-        self.host = host
-        self.username = username
-        self.password = password
-        self.sshkey = sshkey
-
-    def __repr__(self):
-        return '<User %r>' % self.username
-
-    def get_connection(self):
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        if not self.username and self.sshkey:
-            keybuffer = StringIO.StringIO(self.sshkey)
-            pkey = paramiko.PKey.from_private_key(keybuffer)
-            ssh.connect(self.host, username=self.username, pkey=pkey)
-        else:
-            ssh.connect(self.host, username=self.username, password=self.password)
-        return ssh
 
 @app.route('/host', methods=['POST'])
 def add_host():
     json = request.get_json()
-    host = Host(json['name'],
+    host = HostModel(json['name'],
                 json['host'],
                 json['username'],
                 json['password'] if json.has_key('password') else "",
@@ -49,7 +22,7 @@ def add_host():
 @app.route('/host/<id>', methods=['POST'])
 def update_host(id):
     json = request.get_json()
-    host = Host.query.filter_by(id=id).first()
+    host = HostModel.query.filter_by(id=id).first()
     host.name = json['name']
     host.host = json['host']
     host.username = json['username']
@@ -69,13 +42,13 @@ def use_fingerprint_for_key(host):
 
 @app.route('/host', methods=['GET'])
 def query_hosts():
-    hosts = db.session.execute(Host.__table__ .select())
+    hosts = db.session.execute(HostModel.__table__ .select())
     transformed_hosts = map(lambda x:dict(x), hosts)
     return jsonify(result=map(lambda x:use_fingerprint_for_key(x), transformed_hosts))
 
 @app.route('/host/<id>', methods=['GET'])
 def get_host(id):
-    host = Host.query.filter_by(id=id).first()
+    host = HostModel.query.filter_by(id=id).first()
     ssh = host.get_connection()
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker info; docker version")
     info = ssh_stdout.read()
@@ -83,8 +56,20 @@ def get_host(id):
 
 @app.route('/host/<id>', methods=['DELETE'])
 def delete_host(id):
-    host = Host.query.filter_by(id=id).first()
+    host = HostModel.query.filter_by(id=id).first()
     if host:
       db.session.delete(host)
       db.session.commit()
     return ""
+
+
+def get_connection(host):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    if not host.username and host.sshkey:
+        keybuffer = StringIO.StringIO(host.sshkey)
+        pkey = paramiko.PKey.from_private_key(keybuffer)
+        ssh.connect(host.host, username=host.username, pkey=pkey)
+    else:
+        ssh.connect(host.host, username=host.username, password=host.password)
+    return ssh

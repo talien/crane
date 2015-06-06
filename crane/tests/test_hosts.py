@@ -1,6 +1,6 @@
-from crane.hosts import Host
+from crane.hosts import HostModel
 
 class TestHost:
     def test_repr(self):
-        host = Host(1, 'a', 'talien', 'b', 'c')
+        host = HostModel(1, 'a', 'talien', 'b', 'c')
         assert host.__repr__() == "<User 'talien'>"
