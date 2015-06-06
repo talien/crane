@@ -1,10 +1,14 @@
 from webserver import app
-from hosts import Host
 from flask import jsonify, Response, request
 import json
 import concurrent.futures
 import paramiko
 from utils import parallel_map_reduce
+from Backend.Host import Host
+from Backend.Models.HostModel import HostModel
+
+host_instance = Host()
+
 
 def get_info_from_container(container, host):
     result = {}
@@ -23,8 +27,9 @@ def get_info_from_container(container, host):
     result['hostname'] = host.name
     return result
 
+
 def get_container_from_host(host):
-    ssh = host.get_connection()
+    ssh = host_instance.get_connection(host)
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker ps -a -q")
     result = ssh_stdout.read()
     if result == "":
@@ -39,43 +44,43 @@ def get_container_from_host(host):
 @app.route('/container', methods=['GET'])
 def get_containers():
     result = []
-    hosts = Host.query.all()
+    hosts = HostModel.query.all()
     result = parallel_map_reduce(lambda x: get_container_from_host(x), lambda x,y: x+y, hosts, [])
     result.sort(key=lambda x:x['name'])
     return jsonify(result=result)
 
 @app.route('/host/<host_id>/container/<container_id>', methods=['DELETE'])
 def remove_container(host_id, container_id):
-    host = Host.query.filter_by(id=host_id).first()
-    ssh = host.get_connection()
+    host = HostModel.query.filter_by(id=host_id).first()
+    ssh = host_instance.get_connection(host)
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker rm {0}".format(container_id))
     return ""
 
 @app.route('/host/<host_id>/container/<container_id>', methods=['GET'])
 def inspect_container(host_id, container_id):
-    host = Host.query.filter_by(id=host_id).first()
-    ssh = host.get_connection()
+    host = HostModel.query.filter_by(id=host_id).first()
+    ssh = host_instance.get_connection(host)
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker inspect {0}".format(container_id))
     data = ssh_stdout.read()
     return jsonify(result=json.loads(data)[0])
 
 @app.route('/host/<host_id>/container/<container_id>/start', methods=['POST'])
 def start_container(host_id, container_id):
-    host = Host.query.filter_by(id=host_id).first()
-    ssh = host.get_connection()
+    host = HostModel.query.filter_by(id=host_id).first()
+    ssh = host_instance.get_connection(host)
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker start {0}".format(container_id))
     return ""
 
 @app.route('/host/<host_id>/container/<container_id>/stop', methods=['POST'])
 def stop_container(host_id, container_id):
-    host = Host.query.filter_by(id=host_id).first()
-    ssh = host.get_connection()
+    host = HostModel.query.filter_by(id=host_id).first()
+    ssh = host_instance.get_connection(host)
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker stop {0}".format(container_id))
     return ""
 
 def get_container_logs(host_id, container_id, tail):
-    host = Host.query.filter_by(id=host_id).first()
-    ssh = host.get_connection()
+    host = HostModel.query.filter_by(id=host_id).first()
+    ssh = host_instance.get_connection(host)
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker logs --tail={1} {0}".format(container_id, tail))
     data = ssh_stdout.read()
     return data
@@ -176,8 +181,8 @@ def run_deploy_hook(ssh, container, hook):
 @app.route('/host/<host_id>/container', methods=['POST'])
 def deploy_container(host_id):
     json = request.get_json()
-    host = Host.query.filter_by(id=host_id).first()
-    ssh = host.get_connection()
+    host = HostModel.query.filter_by(id=host_id).first()
+    ssh = host_instance.get_connection(host)
     container = {};
     if json['deploy'] == 'raw':
        container = interpolate_variables(json['container'], {})
