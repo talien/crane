@@ -50,4 +50,4 @@ def get_container_fulllog(host_id, container_id):
 
 @app.route('/host/<host_id>/container', methods=['POST'])
 def deploy_container(host_id):
-    return container_instance.deploy_container(host_id, request.get_json())
+    return jsonify(**container_instance.deploy_container(host_id, request.get_json()).result)

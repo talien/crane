@@ -1,5 +1,6 @@
 from crane.Backend.Host import HostProvider
 from crane.utils import parallel_map_reduce
+from crane.Backend.Deployer import DeploySuccess, DeployError
 import paramiko
 import json
 
@@ -62,7 +63,7 @@ class Container:
                 data['template']['deploy'], data['parameters'])
         predeploy = self.__run_deploy_hook(ssh, container, "predeploy")
         if predeploy['exit_code'] != 0:
-            return jsonify(predeploy=predeploy, status="error", message="Predeploy script failed!")
+            return DeployError(message="Predeploy script failed!", predeploy=predeploy)
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker run -d -name {0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
             container['name'],
             container['volumes'],
@@ -77,11 +78,11 @@ class Container:
                   'stderr': ssh_stderr.read(),
                   'exit_code': ssh_stdout.channel.recv_exit_status()}
         if deploy['exit_code'] != 0:
-            return jsonify(predeploy=predeploy, deploy=deploy, status="error", message="Starting container failed!")
+            return DeployError(message="Starting container failed!", predeploy=predeploy, deploy=deploy)
         postdeploy = self.__run_deploy_hook(ssh, container, "postdeploy")
         if postdeploy['exit_code'] != 0:
-            return jsonify(predeploy=predeploy, deploy=deploy, postdeploy=postdeploy, status="error", message="Postdeploy script failed!")
-        return jsonify(status="success", container=deploy['stdout'].strip())
+            return DeployError(message="Postdeploy script failed!", predeploy=predeploy, deploy=deploy, postdeploy=postdeploy)
+        return DeploySuccess(container=deploy['stdout'].strip())
 
     def _generate_parameters(self, parameters, parameter_name):
         return "".join(["{0} {1} ".format(parameter_name, param) for param in parameters.split()])
