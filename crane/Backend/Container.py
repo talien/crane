@@ -79,33 +79,8 @@ class Container:
             return jsonify(predeploy=predeploy, deploy=deploy, postdeploy=postdeploy, status="error", message="Postdeploy script failed!")
         return jsonify(status="success", container=deploy['stdout'].strip())
 
-    def __generate_environment_params(self, envs):
-        envs = envs.split()
-        result = ""
-        for env in envs:
-            result = result + "-e {0} ".format(env)
-        return result
-
-    def __generate_portmapping_params(self, ports):
-        ports = ports.split()
-        result = ""
-        for port in ports:
-            result = result + "-p {0} ".format(port)
-        return result
-
-    def __generate_volume_params(self, volumes):
-        volumes = volumes.split()
-        result = ""
-        for volume in volumes:
-            result = result + "-v {0} ".format(volume)
-        return result
-
-    def __generate_capabilities_params(self, caps):
-        caps = caps.split()
-        result = ""
-        for cap in caps:
-            result = result + "--cap-add {0} ".format(cap)
-        return result
+    def _generate_parameters(self, parameters, parameter_name):
+        return "".join(["{0} {1} ".format(parameter_name, param) for param in parameters.split()])
 
     def __interpolate_string(self, string, params):
         has_work = True
@@ -136,10 +111,10 @@ class Container:
 
     def __interpolate_variables(self, deploy, parameters):
         container = {}
-        container['environment'] = self.__generate_environment_params(self.__interpolate_string(deploy['environment'], parameters)) if deploy.has_key('environment') else ""
-        container['portmapping'] = self.__generate_portmapping_params(self.__interpolate_string(deploy['portmapping'], parameters)) if deploy.has_key('portmapping') else ""
-        container['volumes'] = self.__generate_volume_params(self.__interpolate_string(deploy['volumes'], parameters)) if deploy.has_key('volumes') else ""
-        container['capabilities'] = self.__generate_capabilities_params(self.__interpolate_string(deploy['capabilities'], parameters)) if deploy.has_key('capabilities') else ""
+        container['environment'] = self._generate_parameters(self.__interpolate_string(deploy['environment'], parameters), "-e") if 'environment' in deploy else ""
+        container['portmapping'] = self._generate_parameters(self.__interpolate_string(deploy['portmapping'], parameters), "-p") if 'portmapping' in deploy else ""
+        container['volumes'] = self._generate_parameters(self.__interpolate_string(deploy['volumes'], parameters), "-v") if 'volumes' in deploy else ""
+        container['capabilities'] = self._generate_parameters(self.__interpolate_string(deploy['capabilities'], parameters), "--cap-add") if 'capabilities' in deploy else ""
         container['restart'] = "--restart={0}".format(deploy['restart']) if deploy.has_key('restart') else ""
         container['command'] = self.__interpolate_string(deploy['command'], parameters) if deploy.has_key('command') else ""
         container['name'] = self.__interpolate_string(deploy['name'], parameters)
