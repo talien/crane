@@ -1,6 +1,7 @@
 from webserver import app
 from flask import jsonify, Response, request
 from Backend.Host import HostProvider
+from Backend.Deployer import Deployer
 from Backend.Container import Container
 import json
 
@@ -50,4 +51,5 @@ def get_container_fulllog(host_id, container_id):
 
 @app.route('/host/<host_id>/container', methods=['POST'])
 def deploy_container(host_id):
-    return jsonify(**container_instance.deploy_container(host_id, request.get_json()).result)
+    deployer = Deployer()
+    return jsonify(**deployer.deploy(host_id, request.get_json()).result)
