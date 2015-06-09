@@ -37,8 +37,6 @@ class Container:
         ssh = host_provider.get_connection(host)
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(
             "docker start {0}".format(container_id))
-        print ssh_stdout.read()
-        print ssh_stderr.read()
 
     def stop_container(self, host_id, container_id):
         host = host_provider.get_host_by_id(host_id)
@@ -110,10 +108,7 @@ class Container:
         return result
 
     def __interpolate_array(self, array, params):
-        result = []
-        for item in array:
-            result.append(self.__interpolate_string(item, params))
-        return result
+        return [self.__interpolate_string(item, params) for item in array]
 
     def __interpolate_variables(self, deploy, parameters):
         container = {}
