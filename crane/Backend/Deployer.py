@@ -108,15 +108,15 @@ class Deployer:
             deploy['image'], parameters)
         container['hostname'] = "--hostname={0}".format(self.__interpolate_string(
             deploy['hostname'], parameters)) if 'hostname' in deploy else ""
-        container['predeploy'] = self.__interpolate_string(
-            deploy['predeploy'], parameters) if 'predeploy' in deploy else ""
-        container['postdeploy'] = self.__interpolate_string(
-            deploy['postdeploy'], parameters) if 'postdeploy' in deploy else ""
+        if 'predeploy' in deploy:
+            container['predeploy'] = self.__interpolate_string(deploy['predeploy'], parameters)
+        if 'postdeploy' in deploy:
+            container['postdeploy'] = self.__interpolate_string(deploy['postdeploy'], parameters)
         return container
 
     def __run_deploy_hook(self, ssh, container, hook):
-        if 'predeploy' not in container:
-            return ""
+        if not (hook in container):
+            return {'stdout': "", 'stderr': "",'exit_code': 0}
         transport = ssh.get_transport()
         sftp = paramiko.sftp_client.SFTPClient.from_transport(transport)
         script = sftp.file("/tmp/script", "w")
