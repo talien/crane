@@ -137,7 +137,7 @@ class Container:
         exit_code = ssh_stdout.channel.recv_exit_status()
         return {'stdout': stdout, 'stderr': stderr, 'exit_code': exit_code}
 
-    def __get_info_from_container(self, container, host):
+    def _get_info_from_container(self, container, host):
         result = {}
         result['id'] = container['Id']
         result['name'] = container['Name']

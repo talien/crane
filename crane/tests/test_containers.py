@@ -1,4 +1,9 @@
-from crane.containers import get_info_from_container
+from crane.Backend.Container import Container
+import pytest
+
+@pytest.fixture
+def container():
+    return Container()
 
 class Host:
     id = 42
@@ -6,32 +11,32 @@ class Host:
 
 class TestContainers:
     def test_get_info_from_container(self):
-        container = {
-            'Id' : 'almafa',
-            'Name' : 'kortefa',
-            'Config' : {
-                'Image' : 'mogyorofa',
-                'Cmd' : ['diofa']
+        container_map = {
+            'Id': 'almafa',
+            'Name': 'kortefa',
+            'Config': {
+                'Image': 'mogyorofa',
+                'Cmd': ['diofa']
                 },
-            'State' : {
-                'Running' : True
+            'State': {
+                'Running': True
                 }
         }
         host = Host()
 
         result = {
-            'id' : 'almafa',
-            'name' : 'kortefa',
-            'image' : 'mogyorofa',
-            'cmd' : 'diofa',
-            'state' : 'Running',
-            'hostid' : 42,
-            'hostname' : 'csillamponi'
+            'id': 'almafa',
+            'name': 'kortefa',
+            'image': 'mogyorofa',
+            'cmd': 'diofa',
+            'state': 'Running',
+            'hostid': 42,
+            'hostname': 'csillamponi'
         }
 
-        assert get_info_from_container(container, host) == result
+        assert container()._get_info_from_container(container_map, host) == result
 
-        container['State']['Running'] = False
+        container_map['State']['Running'] = False
         result['state'] = 'Stopped'
 
-        assert get_info_from_container(container, host) == result
+        assert container()._get_info_from_container(container_map, host) == result
