@@ -1,6 +1,3 @@
-import paramiko
-
-
 class DeployResult(object):
 
     def __init__(self, status):
@@ -41,7 +38,7 @@ class Deployer:
         predeploy = self.__run_deploy_hook(ssh, container, "predeploy")
         if predeploy['exit_code'] != 0:
             return DeployError(message="Predeploy script failed!", predeploy=predeploy)
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker run -d -name {0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
+        deploy = ssh.execute("docker run -d -name {0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
             container['name'],
             container['volumes'],
             container['capabilities'],
@@ -51,9 +48,6 @@ class Deployer:
             container['restart'],
             container['image'],
             container['command']))
-        deploy = {'stdout': ssh_stdout.read(),
-                  'stderr': ssh_stderr.read(),
-                  'exit_code': ssh_stdout.channel.recv_exit_status()}
         if deploy['exit_code'] != 0:
             return DeployError(message="Starting container failed!", predeploy=predeploy, deploy=deploy)
         postdeploy = self.__run_deploy_hook(ssh, container, "postdeploy")
@@ -117,13 +111,6 @@ class Deployer:
     def __run_deploy_hook(self, ssh, container, hook):
         if not (hook in container):
             return {'stdout': "", 'stderr': "",'exit_code': 0}
-        transport = ssh.get_transport()
-        sftp = paramiko.sftp_client.SFTPClient.from_transport(transport)
-        script = sftp.file("/tmp/script", "w")
-        script.write(container['predeploy'])
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(
-            "/bin/bash /tmp/script")
-        stdout = ssh_stdout.read()
-        stderr = ssh_stderr.read()
-        exit_code = ssh_stdout.channel.recv_exit_status()
-        return {'stdout': stdout, 'stderr': stderr, 'exit_code': exit_code}
+        ssh.put_file("/tmp/script", container['predeploy'])
+        result = ssh.execute("/bin/bash /tmp/script")
+        return result
