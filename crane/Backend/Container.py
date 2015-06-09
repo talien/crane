@@ -34,8 +34,7 @@ class Container:
         host = HostModel.query.filter_by(id=host_id).first()
         ssh = host_instance.get_connection(host)
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker start {0}".format(container_id))
-        print ssh_stdout.read()
-        print ssh_stderr.read()
+
 
     def stop_container(self, host_id, container_id):
         host = HostModel.query.filter_by(id=host_id).first()
