@@ -104,10 +104,7 @@ class Container:
         return result
 
     def __interpolate_array(self, array, params):
-        result = []
-        for item in array:
-            result.append(self.__interpolate_string(item, params))
-        return result
+        return [self.__interpolate_string(item, params) for item in array]
 
     def __interpolate_variables(self, deploy, parameters):
         container = {}
