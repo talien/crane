@@ -29,7 +29,6 @@ class Container:
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker inspect {0}".format(container_id))
         data = ssh_stdout.read()
         return data
-        return jsonify(result=json.loads(data)[0])
 
     def start_container(self, host_id, container_id):
         host = HostModel.query.filter_by(id=host_id).first()
