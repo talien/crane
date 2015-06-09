@@ -1,8 +1,9 @@
 from flask import request
 from webserver import app
-from Backend.Host import Host
+from Backend.Host import HostProvider
+from flask import jsonify
 
-host = Host()
+host = HostProvider()
 
 
 @app.route('/host', methods=['POST'])
@@ -19,12 +20,12 @@ def update_host(id):
 
 @app.route('/host', methods=['GET'])
 def query_hosts():
-    return host.query_hosts()
+    return jsonify(result=host.query_hosts_with_masked_credentials())
 
 
 @app.route('/host/<id>', methods=['GET'])
 def get_host(id):
-    return host.get_host(id)
+    return jsonify(result=host.get_host_info(id))
 
 
 @app.route('/host/<id>', methods=['DELETE'])
