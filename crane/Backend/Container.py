@@ -115,17 +115,17 @@ class Container:
         container['portmapping'] = self._generate_parameters(self.__interpolate_string(deploy['portmapping'], parameters), "-p") if 'portmapping' in deploy else ""
         container['volumes'] = self._generate_parameters(self.__interpolate_string(deploy['volumes'], parameters), "-v") if 'volumes' in deploy else ""
         container['capabilities'] = self._generate_parameters(self.__interpolate_string(deploy['capabilities'], parameters), "--cap-add") if 'capabilities' in deploy else ""
-        container['restart'] = "--restart={0}".format(deploy['restart']) if deploy.has_key('restart') else ""
-        container['command'] = self.__interpolate_string(deploy['command'], parameters) if deploy.has_key('command') else ""
+        container['restart'] = "--restart={0}".format(deploy['restart']) if 'restart' in deploy else ""
+        container['command'] = self.__interpolate_string(deploy['command'], parameters) if 'command' in deploy else ""
         container['name'] = self.__interpolate_string(deploy['name'], parameters)
         container['image'] = self.__interpolate_string(deploy['image'], parameters)
-        container['hostname'] = "--hostname={0}".format(self.__interpolate_string(deploy['hostname'], parameters)) if deploy.has_key('hostname') else ""
-        container['predeploy'] = self.__interpolate_string(deploy['predeploy'], parameters) if deploy.has_key('predeploy') else ""
-        container['postdeploy'] = self.__interpolate_string(deploy['postdeploy'], parameters) if deploy.has_key('postdeploy') else ""
+        container['hostname'] = "--hostname={0}".format(self.__interpolate_string(deploy['hostname'], parameters)) if 'hostname' in deploy else ""
+        container['predeploy'] = self.__interpolate_string(deploy['predeploy'], parameters) if 'predeploy' in deploy else ""
+        container['postdeploy'] = self.__interpolate_string(deploy['postdeploy'], parameters) if 'postdeploy' in deploy else ""
         return container
 
     def __run_deploy_hook(self, ssh, container, hook):
-        if not container.has_key('predeploy'):
+        if 'predeploy' not in container:
             return ""
         transport = ssh.get_transport()
         sftp = paramiko.sftp_client.SFTPClient.from_transport(transport)
