@@ -1,7 +1,5 @@
 from crane.Backend.Host import HostProvider
 from crane.utils import parallel_map_reduce
-#from crane.Backend.Deployer import DeploySuccess, DeployError
-#import paramiko
 import json
 
 host_provider = HostProvider()
