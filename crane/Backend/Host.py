@@ -1,11 +1,10 @@
 from crane.webserver import db
 from Models.HostModel import HostModel
-from flask import jsonify
 import paramiko
 import StringIO
 
 
-class Host:
+class HostProvider:
     def __init__(self):
         pass
 
@@ -29,16 +28,21 @@ class Host:
         db.session.commit()
 
     def query_hosts(self):
-        hosts = db.session.execute(HostModel.__table__ .select())
-        transformed_hosts = map(lambda x: dict(x), hosts)
-        return jsonify(result=map(lambda x: self.__use_fingerprint_for_key(x), transformed_hosts))
+        return HostModel.query.all()
 
-    def get_host(self, id):
+    def query_hosts_with_masked_credentials(self):
+        return map(lambda x: self.__use_fingerprint_for_key(x), self.query_hosts())
+
+    def get_host_by_id(self, id):
+        host = HostModel.query.filter_by(id=id).first()
+        return host
+
+    def get_host_info(self, id):
         host = HostModel.query.filter_by(id=id).first()
         ssh = self.get_connection(host)
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker info; docker version")
         info = ssh_stdout.read()
-        return jsonify(result=info)
+        return info
 
     def delete_host(self, id):
         host = HostModel.query.filter_by(id=id).first()
@@ -47,12 +51,12 @@ class Host:
             db.session.commit()
 
     def __use_fingerprint_for_key(self, host):
-        if host['sshkey']:
-            keybuffer = StringIO.StringIO(host['sshkey'])
+        if host.sshkey:
+            keybuffer = StringIO.StringIO(host.sshkey)
             pkey = paramiko.RSAKey.from_private_key(keybuffer)
             fingerprint = pkey.get_fingerprint().encode('hex')
-            host['sshkey'] = "FP:" + fingerprint
-        return host
+            host.sshkey = "FP:" + fingerprint
+        return host.to_dict()
 
     def get_connection(self, host):
         ssh = paramiko.SSHClient()

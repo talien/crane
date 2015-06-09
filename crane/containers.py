@@ -1,10 +1,10 @@
 from webserver import app
 from flask import jsonify, Response, request
-import json
-from Backend.Host import Host
+from Backend.Host import HostProvider
 from Backend.Container import Container
+import json
 
-host_instance = Host()
+#host_provider = HostProvider()
 container_instance = Container()
 
 
@@ -21,7 +21,7 @@ def remove_container(host_id, container_id):
 
 @app.route('/host/<host_id>/container/<container_id>', methods=['GET'])
 def inspect_container(host_id, container_id):
-    return jsonify(result=json.loads(container_instance.inspect_container(host_id, container_id))[0])
+    return jsonify(result=container_instance.inspect_container(host_id, container_id))
 
 
 @app.route('/host/<host_id>/container/<container_id>/start', methods=['POST'])
