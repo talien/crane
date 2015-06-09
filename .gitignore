@@ -2,4 +2,4 @@
 *.pyc
 /.idea
 .coverage
-/.htmlcov
+htmlcov
