@@ -5,7 +5,7 @@ from Backend.Deployer import Deployer
 from Backend.Container import Container
 import json
 
-#host_provider = HostProvider()
+host_provider = HostProvider()
 container_instance = Container()
 
 
@@ -51,5 +51,5 @@ def get_container_fulllog(host_id, container_id):
 
 @app.route('/host/<host_id>/container', methods=['POST'])
 def deploy_container(host_id):
-    deployer = Deployer()
+    deployer = Deployer(host_provider)
     return jsonify(**deployer.deploy(host_id, request.get_json()).result)

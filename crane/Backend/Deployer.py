@@ -1,7 +1,4 @@
 import paramiko
-from crane.Backend.Host import HostProvider
-
-host_provider = HostProvider()
 
 
 class DeployResult(object):
@@ -30,9 +27,12 @@ class DeploySuccess(DeployResult):
 
 class Deployer:
 
+    def __init__(self, host_provider):
+        self.host_provider = host_provider
+
     def deploy(self, host_id, data):
-        host = host_provider.get_host_by_id(host_id)
-        ssh = host_provider.get_connection(host)
+        host = self.host_provider.get_host_by_id(host_id)
+        ssh = self.host_provider.get_connection(host)
         if data['deploy'] == 'raw':
             container = self.__interpolate_variables(data['container'], {})
         else:
