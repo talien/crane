@@ -9,7 +9,7 @@ container_instance = Container()
 
 @app.route('/container', methods=['GET'])
 def get_containers():
-    return container_instance.get_containers()
+    return jsonify(result=container_instance.get_containers())
 
 
 @app.route('/host/<host_id>/container/<container_id>', methods=['DELETE'])
@@ -20,7 +20,7 @@ def remove_container(host_id, container_id):
 
 @app.route('/host/<host_id>/container/<container_id>', methods=['GET'])
 def inspect_container(host_id, container_id):
-    return container_instance.inspect_container(host_id, container_id)
+    return jsonify(result=json.loads(container_instance.inspect_container(host_id, container_id))[0])
 
 
 @app.route('/host/<host_id>/container/<container_id>/start', methods=['POST'])

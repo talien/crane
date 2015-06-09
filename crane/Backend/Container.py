@@ -16,7 +16,7 @@ class Container:
         hosts = HostModel.query.all()
         result = parallel_map_reduce(lambda x: self.__get_container_from_host(x), lambda x, y: x+y, hosts, [])
         result.sort(key=lambda x: x['name'])
-        return jsonify(result=result)
+        return result
 
     def remove_container(self, host_id, container_id):
         host = HostModel.query.filter_by(id=host_id).first()
@@ -28,6 +28,7 @@ class Container:
         ssh = host_instance.get_connection(host)
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker inspect {0}".format(container_id))
         data = ssh_stdout.read()
+        return data
         return jsonify(result=json.loads(data)[0])
 
     def start_container(self, host_id, container_id):
