@@ -111,6 +111,6 @@ class Deployer:
     def __run_deploy_hook(self, ssh, container, hook):
         if not (hook in container):
             return {'stdout': "", 'stderr': "",'exit_code': 0}
-        ssh.put_file("/tmp/script", container['predeploy'])
+        ssh.put_file("/tmp/script", container[hook])
         result = ssh.execute("/bin/bash /tmp/script")
         return result
