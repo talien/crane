@@ -1,4 +1,4 @@
-from crane.hosts import HostModel
+from crane.Backend.Models.HostModel import HostModel
 
 class TestHost:
     def test_repr(self):
