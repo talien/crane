@@ -40,3 +40,9 @@ class TestContainers:
         result['state'] = 'Stopped'
 
         assert container()._get_info_from_container(container_map, host) == result
+
+    def test_generate_parameters(self):
+        expected = "-v a -v b -v c "
+        assert container()._generate_parameters("a b c", "-v") == expected
+        expected = ""
+        assert container()._generate_parameters("", "-v") == expected
