@@ -36,7 +36,7 @@ class DockerHub(CommonRegistry):
             images[image].append(tag)
             return images
 
-        tags = self.__query_tags(reponame)
+        tags = self._query_tags(reponame)
         (_, _, images) = self.__query_images(reponame)
         image_map = {}
         for image in images:
