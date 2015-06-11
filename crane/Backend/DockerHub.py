@@ -2,12 +2,13 @@ from crane.Backend.CommonRegistry import CommonRegistry
 import json
 from crane.utils import parallel_map_reduce
 
+
 class DockerHub(CommonRegistry):
     def __init__(self, url, username, password, requests):
         super(DockerHub, self).__init__(url, username, password)
         self.requests = requests
 
-    def __query_tags(self, reponame):
+    def _query_tags(self, reponame):
         res = self.requests.get("{1}/v1/repositories/{0}/tags".format(reponame, self.url), verify=False)
         tags = json.loads(res.text)
         return tags

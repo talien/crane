@@ -1,5 +1,5 @@
-from crane.registry import CommonRegistry
-from crane.registry import DockerHub
+from crane.Backend.CommonRegistry import CommonRegistry
+from crane.Backend.DockerHub import DockerHub
 
 import pytest
 import json
@@ -43,5 +43,4 @@ class TestCommonRegistry:
 
 class TestDockerHub:
     def test_query_tags(self):
-        #assert(dockerhub().__query_tags("a") == json.loads(a_json))
-        pass
+        assert(dockerhub()._query_tags("a") == json.loads(a_json))
