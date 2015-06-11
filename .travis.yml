@@ -1,0 +1,6 @@
+language: python
+install:
+  - sudo apt-get install python-pip python-openssl python-dev
+  - sudo pip install -r requirements.txt
+script:
+  - make check
