@@ -63,8 +63,7 @@ class HostProvider:
     def get_host_info(self, id):
         host = HostModel.query.filter_by(id=id).first()
         ssh = self.get_connection(host)
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("docker info; docker version")
-        info = ssh_stdout.read()
+        info = ssh.execute("docker info; docker version")['stdout']
         return info
 
     def delete_host(self, id):
