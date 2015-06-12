@@ -40,3 +40,8 @@ class TestContainers:
         result['state'] = 'Stopped'
 
         assert container()._get_info_from_container(container_map, host) == result
+
+        container_map['Config']['Cmd'] = ""
+        result['cmd'] = "None"
+
+        assert container()._get_info_from_container(container_map, host) == result
