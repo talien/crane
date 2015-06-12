@@ -1,8 +1,8 @@
 paramiko
-Flask
-Flask-SQLAlchemy
-pyjade
+Flask==0.10.0
+Flask-SQLAlchemy==2.0
+pyjade==3.0
 futures
-pytest
-pytest-cov
-requests
+pytest==2.7.1
+pytest-cov==1.8.1
+requests==2.7.0
