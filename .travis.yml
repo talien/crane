@@ -4,6 +4,6 @@ install:
   - pip install coveralls
 script:
   - make check
-  - PYTHONPATH="." py.test --cov coveralls .
+  - PYTHONPATH="." py.test --cov .
 after_success:
   - coveralls
