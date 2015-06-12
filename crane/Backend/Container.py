@@ -43,22 +43,28 @@ class Container:
         data = ssh.execute("docker logs --tail={1} {0}".format(container_id, tail))['stdout']
         return data
 
-    def _get_info_from_container(self, container, host):
-        result = {}
-        result['id'] = container['Id']
-        result['name'] = container['Name']
-        result['image'] = container['Config']['Image']
+    def _get_container_command(self, container):
         if container['Config']['Cmd']:
-            result['cmd'] = " ".join(container['Config']['Cmd'])
+            result = " ".join(container['Config']['Cmd'])
         else:
-            result['cmd'] = "None"
-        if container['State']['Running']:
-            result['state'] = 'Running'
-        else:
-            result['state'] = 'Stopped'
-        result['hostid'] = host.id
-        result['hostname'] = host.name
+            result = "None"
         return result
+
+    def _get_container_state(self, container):
+        if container['State']['Running']:
+            result = 'Running'
+        else:
+            result = 'Stopped'
+        return result
+
+    def _get_info_from_container(self, container, host):
+        return {'id': container['Id'],
+                'name': container['Name'],
+                'image': container['Config']['Image'],
+                'cmd': self._get_container_command(container),
+                'state': self._get_container_state(container),
+                'hostid': host.id,
+                'hostname': host.name}
 
     def __get_container_from_host(self, host):
         ssh = host_provider.get_connection(host)
