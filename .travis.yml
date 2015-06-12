@@ -1,5 +1,9 @@
 language: python
 install:
   - pip install -r requirements.txt
+  - pip install coveralls
 script:
   - make check
+  - PYTHONPATH="." py.test --cov coveralls .
+after_success:
+  - coveralls
