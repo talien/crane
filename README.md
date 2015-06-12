@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/talien/crane/badge.svg)](https://coveralls.io/r/talien/crane)
+[![Coverage Status](https://coveralls.io/repos/talien/crane/badge.svg)](https://coveralls.io/r/talien/crane) [![Build Status](https://travis-ci.org/talien/crane.svg?branch=master)](https://travis-ci.org/talien/crane)
 
 Setup
 =====
