@@ -79,9 +79,6 @@ class Deployer:
                     string = string[end + 2:]
         return result
 
-    def __interpolate_array(self, array, params):
-        return [self.__interpolate_string(item, params) for item in array]
-
     def __interpolate_variables(self, deploy, parameters):
         container = {}
         container['environment'] = self._generate_parameters(self.__interpolate_string(
