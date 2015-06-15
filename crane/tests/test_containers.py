@@ -1,9 +1,10 @@
 from crane.Backend.Container import Container
+from mocks import MockProvider, MockSSH
 import pytest
 
 @pytest.fixture
 def container():
-    return Container()
+    return Container(MockProvider())
 
 class Host:
     id = 42
@@ -45,3 +46,6 @@ class TestContainers:
         result['cmd'] = "None"
 
         assert container()._get_info_from_container(container_map, host) == result
+
+    def test_get_containers_from_host(self):
+        pass
