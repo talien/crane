@@ -31,3 +31,8 @@ class MockProvider:
 
     def get_connection(self, host):
         return self.ssh
+
+class MockHost:
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name
