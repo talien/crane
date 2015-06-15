@@ -1,6 +1,7 @@
 from crane.Backend.Models.TemplateModel import TemplateModel
 from crane.webserver import db
 import json
+from sqlalchemy import desc
 
 
 class Template:
@@ -8,7 +9,7 @@ class Template:
         pass
 
     def new_template(self, data):
-        last_template_id = TemplateModel.get_latest_template_id()
+        last_template_id = self._get_latest_template_id()
         if last_template_id is None:
             last_template_id = 0
         template = TemplateModel(data['name'], json.dumps(data['template']), last_template_id + 1, 0)
@@ -39,3 +40,6 @@ class Template:
         for template in templates:
             db.session.delete(template)
         db.session.commit()
+
+    def _get_latest_template_id(self):
+        templates = TemplateModel.query.order_by(desc("template_id"))

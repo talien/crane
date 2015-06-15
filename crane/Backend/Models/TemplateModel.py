@@ -1,5 +1,4 @@
 from crane.webserver import db
-from sqlalchemy import desc
 
 
 class TemplateModel(db.Model):
@@ -16,7 +15,3 @@ class TemplateModel(db.Model):
         self.template_id = template_id
         self.template_version = version
         self.latest = True
-
-    @staticmethod
-    def get_latest_template_id():
-        templates = TemplateModel.query.order_by(desc("template_id"))
