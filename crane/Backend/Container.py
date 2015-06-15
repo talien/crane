@@ -4,6 +4,7 @@ import json
 
 host_provider = HostProvider()
 
+
 class Container:
 
     def __init__(self):
@@ -17,31 +18,26 @@ class Container:
         return result
 
     def remove_container(self, host_id, container_id):
-        host = host_provider.get_host_by_id(host_id)
-        ssh = host_provider.get_connection(host)
-        ssh.execute("docker rm {0}".format(container_id))
+        self._run_command_on_host(host_id, "docker rm {0}".format(container_id))
 
     def inspect_container(self, host_id, container_id):
-        host = host_provider.get_host_by_id(host_id)
-        ssh = host_provider.get_connection(host)
-        data = ssh.execute("docker inspect {0}".format(container_id))['stdout']
+        data = self._run_command_on_host(host_id, "docker inspect {0}".format(container_id))['stdout']
         return json.loads(data)[0]
 
     def start_container(self, host_id, container_id):
-        host = host_provider.get_host_by_id(host_id)
-        ssh = host_provider.get_connection(host)
-        ssh.execute("docker start {0}".format(container_id))
+        self._run_command_on_host(host_id, "docker start {0}".format(container_id))
 
     def stop_container(self, host_id, container_id):
-        host = host_provider.get_host_by_id(host_id)
-        ssh = host_provider.get_connection(host)
-        ssh.execute("docker stop {0}".format(container_id))
+        self._run_command_on_host(host_id, "docker stop {0}".format(container_id))
 
     def get_container_logs(self, host_id, container_id, tail):
+        data = self._run_command_on_host(host_id, "docker logs --tail={1} {0}".format(container_id, tail))['stdout']
+        return data
+
+    def _run_command_on_host(self, host_id, command):
         host = host_provider.get_host_by_id(host_id)
         ssh = host_provider.get_connection(host)
-        data = ssh.execute("docker logs --tail={1} {0}".format(container_id, tail))['stdout']
-        return data
+        return ssh.execute(command)
 
     def _get_container_command(self, container):
         if container['Config']['Cmd']:
