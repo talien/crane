@@ -4,7 +4,7 @@ angular.module('crane')
 
 .controller('HostController', HostController);
 
-HostController.$inject = ['$scope', '$http'];
+HostController.$inject = ['$scope', '$http', '$modal'];
 
 function Host(name, host, username, sshkey, password) {
   this.name = name;
@@ -14,8 +14,8 @@ function Host(name, host, username, sshkey, password) {
   this.password = password;
 }
 
-function HostController($scope, $http) {
-  $scope.add_host = { 'active':false, 'host': new Host() };
+function HostController($scope, $http, $modal) {
+  $scope.add_host = { 'host': new Host() };
 
   $scope.load_hosts = load_hosts;
   $scope.remove_host = remove_host;
@@ -35,26 +35,50 @@ function HostController($scope, $http) {
     $scope.load_hosts();
   }
 
-  function edit_host(host) {
-    $scope.add_host.active = true;
-    $scope.add_host.host = host;
+  function edit_host(hostItem) {
+
+    var modalInstance = $modal.open({
+      templateUrl: '/frontend/host_edit_modal.jade',
+      controller: function($scope, $modalInstance, host) {
+        $scope.host = host;
+        $scope.confirmText = host.id ? 'Edit' : 'Add';
+
+        $scope.ok = function () {
+          $modalInstance.close($scope.host);
+        };
+
+        $scope.cancel = function () {
+          $modalInstance.dismiss('cancel');
+        };
+      },
+      resolve: {
+        host: function () {
+          return hostItem;
+        }
+      }
+    });
+
+    modalInstance.result.then(function (hostRet) {
+      $scope.add_host.host = hostRet;
+      save_new_host();
+    });
   }
 
   function host_details(host) {
     if (host.details && host.details.active) {
-      host.details.active = false;
     } else {
       $http.get("/host/" + String(host.id)).success(function(data) {
          host.details = {};
          host.details.info = data.result;
-         host.details.active = true;
       });
     }
   }
 
-  function add_new_host($event) {
-    $scope.add_host.active = true;
-  }
+  function add_new_host(hostItem) {
+    $scope.edit_host(new Host());
+  };
+
+  
 
   function save_new_host($event) {
     if ($scope.add_host.host.id) {
@@ -63,7 +87,6 @@ function HostController($scope, $http) {
       $http.post("/host", $scope.add_host.host);
     }
     $scope.load_hosts();
-    $scope.add_host.active = false;
   }
 
   $scope.load_hosts();
