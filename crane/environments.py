@@ -1,8 +1,11 @@
 from crane.webserver import app
 from flask import jsonify, request
 from Backend.Environments import EnvironmentProvider
+from Backend.Deployer import Deployer
+from Backend.Host import HostProvider
 
-environment_provider = EnvironmentProvider()
+host_provider = HostProvider()
+environment_provider = EnvironmentProvider(host_provider)
 
 @app.route("/environment", methods=['GET'])
 def get_environments():
@@ -28,4 +31,18 @@ def delete_host_from_environment(id, hostid):
 @app.route("/environment/<id>", methods=['DELETE'])
 def delete_environment(id):
     environment_provider.delete_environment(id)
+    return ""
+
+@app.route("/environment/<id>/deploy", methods=['POST'])
+def deploy_in_environment(id):
+    data = request.get_json()
+    count = data['count']
+    hosts = environment_provider.get_hosts_for_deployment(id, count)
+    deployer = Deployer(host_provider)
+    name = data['container']['name']
+    count = 1
+    for host in hosts:
+        data['container']['name'] = "{0}-{1}".format(name, count)
+        result = deployer.deploy(host, data)
+        count = count + 1
     return ""

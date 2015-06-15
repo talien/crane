@@ -1,8 +1,13 @@
 from Models.EnvironmentModel import EnvironmentModel, hosts_env
+from Container import Container
+from Host import HostProvider
 from sqlalchemy.sql import and_
 from crane.webserver import db
 
 class EnvironmentProvider():
+    def __init__(self, host_provider):
+        self.host_provider = host_provider
+
     def get_environments(self):
         environments = EnvironmentModel.query.all()
         result = []
@@ -32,3 +37,15 @@ class EnvironmentProvider():
             return
         db.session.delete(environment)
         db.session.commit()
+
+    def get_hosts_for_deployment(self, env_id, host_count):
+        environment = EnvironmentModel.query.filter_by(id=env_id).first();
+        container = Container(self.host_provider)
+        hosts = [{'id':host.id,'count':container.get_number_of_containers(host)} for host in environment.hosts]
+        result = []
+        hosts = sorted(hosts, key=lambda x:x['count'])
+        for i in xrange(0,host_count):
+            result = result + [hosts[0]['id']]
+            hosts[0]['count'] += 1
+            hosts = sorted(hosts, key=lambda x:x['count'])
+        return result
