@@ -68,6 +68,10 @@ class TestContainers:
         res = container().get_containers()
         assert res == []
 
+    def test_get_number_of_containers(self):
+        mock_provider.ssh = MockSSH([{'type':'execute','command':'docker ps -a -q','result':{'stdout':'alma\nkorte\nbarack\n','stderr':'','exit_code':0}}])
+        assert container().get_number_of_containers(1) == 3
+
     def test_remove_container(self):
         mock_provider.ssh = MockSSH([{'type':'execute','command':'docker rm alma','result':{'stdout':'','stderr':'','exit_code':0}}])
         res = container().remove_container(1, 'alma')
