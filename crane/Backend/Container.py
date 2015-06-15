@@ -64,12 +64,11 @@ class Container:
 
     def __get_container_from_host(self, host):
         ssh = host_provider.get_connection(host)
-        result = ssh.execute("docker ps -a -q")['stdout']
-        if result == "":
-            return []
-        containers = result.split("\n")
-        container_params = " ".join(containers)
-        result = ssh.execute("docker inspect {0}".format(container_params))['stdout']
-        container_list = map(
-            lambda x: self._get_info_from_container(x, host), json.loads(result))
+        container_ids = ssh.execute("docker ps -a -q")['stdout']
+        if container_ids == "":
+            container_list = []
+        else:
+            container_params = " ".join(container_ids.split("\n"))
+            inspections = ssh.execute("docker inspect {0}".format(container_params))['stdout']
+            container_list = map(lambda x: self._get_info_from_container(x, host), json.loads(inspections))
         return container_list
