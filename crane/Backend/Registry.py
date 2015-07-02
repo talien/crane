@@ -24,6 +24,16 @@ class Registry:
         db.session.add(registry)
         db.session.commit()
 
+    def update_registry(self, registry_id, data):
+        registry = RegistryModel.query.filter_by(id=registry_id).first()
+        registry.name = data['name']
+        registry.url = data['url']
+        registry.username = data['username']
+        registry.password = data['password'] if 'password' in data else ""
+        registry.provider = data['provider']
+        db.session.add(registry)
+        db.session.commit()
+
     def delete_registry(self, registry_id):
         registry = RegistryModel.query.filter_by(id=registry_id).first()
         if registry:
