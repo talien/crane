@@ -15,6 +15,10 @@ def add_registry():
     registries.add_registry(request.get_json())
     return ""
 
+@app.route("/registry/<id>", methods=["POST"])
+def update_registry(id):
+    registries.update_registry(id, request.get_json())
+    return ""
 
 @app.route("/registry/<registry_id>", methods=["DELETE"])
 def delete_registry(registry_id):
