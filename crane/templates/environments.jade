@@ -1,0 +1,25 @@
+.container
+  .container.round-corner(ng-repeat="environment in environments")
+    h2 [[environment.name]]
+    .row
+      .col-sm-1.round-corner(ng-repeat="host in environment.hosts")
+        [[host.name]]
+        .btn.btn-xs.btn-danger.glyphicon.glyphicon-remove(ng-click="remove_host(environment,host)")
+    .row
+      .btn.btn-large.btn-primary(ng-click="start_add_host(environment)") Add host
+      .btn.btn-large.btn-danger(ng-click="remove_environment(environment)",ng-show="environment.hosts.length == 0") Remove
+    form.form-horizontal.round-corner(ng-show="environment.add_active",role="form")
+      .form-group
+        label.control-label.col-sm-2(for="name") Name:
+        .col-sm-2
+          select#restart.form-control(ng-options="host.name for host in hosts" ng-model="environment.add_host") 
+      .btn.btn-large.btn-primary(ng-click="do_add_host(environment)") Add
+      .btn.btn-large.btn-warning(ng-click="cancel_add_host(environment)") Cancel
+  .btn.btn-large.btn-primary(ng-click="start_add_environment()") Add environment
+  form.form-horizontal.round-corner(ng-show="add_environment.active",role="form")
+    .form-group
+      label.control-label.col-sm-2(for="name") Name:
+      .col-sm-2
+        input#name.form-control(ng-model="add_environment.environment.name")
+    .btn.btn-large.btn-primary(ng-click="do_add_environment()") Save
+    .btn.btn-large.btn-warning(ng-click="cancel_add_environment()") Cancel

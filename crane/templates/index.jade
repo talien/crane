@@ -7,6 +7,12 @@
       span.btn.btn-lg.glyphicon.glyphicon-chevron-down(ng-click="host_details = false",ng-show="host_details")
       div(ng-show="host_details")
         div Docker hosts are machines which runs the Docker daemon. Only ssh access is needed to start manage containers on this host.
+    p To start manage Environments, click on 
+      a(href="/#/environments") Environments
+      span.btn.btn-lg.glyphicon.glyphicon-chevron-right(ng-click="env_details = true",ng-show="!env_details")
+      span.btn.btn-lg.glyphicon.glyphicon-chevron-down(ng-click="env_details = false",ng-show="env_details")
+      div(ng-show="env_details")
+        div Environments are groups of Docker hosts.
     p To deploy and manage Docker containers, click on 
       a(href="/#/containers") Containers
       span.btn.btn-lg.glyphicon.glyphicon-chevron-right(ng-click="container_details = true",ng-show="!container_details")
