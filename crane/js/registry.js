@@ -1,9 +1,22 @@
-var crane = angular.module("crane");
+(function(){
 
-crane.controller("RegistryControl", function($scope, $http) {
+angular.module("crane")
+.controller("RegistryControl", RegistryControl);
 
-  $scope.providers = ['dockerhub','private']
+RegistryControl.$inject = ['$scope', '$http', '$modal'];
 
+function Registry(name, url, username, password, provider) {
+  this.name = name;
+  this.url = url;
+  this.username = username;
+  this.password = password;
+  this.provider = provider;
+}
+
+function RegistryControl($scope, $http, $modal) {
+  var providers = ['dockerhub','private']
+
+  $scope.registries = [];
   $scope.results = [];
 
   $scope.load_registries = function() {
@@ -14,17 +27,80 @@ crane.controller("RegistryControl", function($scope, $http) {
 
   $scope.load_registries();
 
-  $scope.add_registry = { 'active':false, 'registry' : {} }
+  $scope.add_registry = new Registry();
 
-  $scope.start_add_registry = function() { $scope.add_registry.active = true; };
+  $scope.start_add_registry = function() {
+    var modalInstance = $modal.open({
+      templateUrl: 'frontend/registry_edit_modal.jade',
+      controller: function($scope, $modalInstance, registry, providers) {
+        $scope.add_registry = registry;
+        $scope.providers = providers;
 
-  $scope.cancel_add_registry = function() { $scope.add_registry.active = false; };
+        $scope.ok = ok;
+        $scope.cancel = cancel;
+
+        function ok() {
+          $modalInstance.close($scope.add_registry);
+        }
+
+        function cancel() {
+          $modalInstance.dismiss('cancel');
+        }
+      },
+      resolve: {
+        registry: function () {
+          return new Registry();
+        },
+        providers: function() {
+          return providers;
+        }
+      }
+    });
+
+    modalInstance.result.then(function (registry) {
+      $scope.add_registry = registry;
+      $scope.do_add_registry();
+    });
+  };
+
+  $scope.start_edit_registry = function(registry) {
+    var modalInstance = $modal.open({
+      templateUrl: 'frontend/registry_edit_modal.jade',
+      controller: function($scope, $modalInstance, registry, providers) {
+        $scope.add_registry = registry;
+        $scope.providers = providers;
+
+        $scope.ok = ok;
+        $scope.cancel = cancel;
+
+        function ok() {
+          $modalInstance.close($scope.add_registry);
+        }
+
+        function cancel() {
+          $modalInstance.dismiss('cancel');
+        }
+      },
+      resolve: {
+        registry: function () {
+          return registry;
+        },
+        providers: function() {
+          return providers;
+        }
+      }
+    });
+
+    modalInstance.result.then(function (registry) {
+      $scope.add_registry = registry;
+      $scope.do_add_registry();
+    });
+  };
 
   $scope.do_add_registry = function() {
      $http.post("/registry", $scope.add_registry.registry).success(function(data) {
         $scope.load_registries();
      });
-     $scope.add_registry.active = false;
   };
 
   $scope.remove_registry = function(registry) {
@@ -45,4 +121,6 @@ crane.controller("RegistryControl", function($scope, $http) {
     return repository.name.replace("/","--")
   }
 
-});
+}
+  
+})();
