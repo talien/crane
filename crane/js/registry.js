@@ -98,7 +98,11 @@ function RegistryControl($scope, $http, $modal) {
   };
 
   $scope.do_add_registry = function() {
-     $http.post("/registry", $scope.add_registry.registry).success(function(data) {
+    var url = '/registry';
+    if ($scope.add_registry.id) {
+      url += '/' + $scope.add_registry.id;
+    }
+     $http.post(url, $scope.add_registry).success(function(data) {
         $scope.load_registries();
      });
   };
