@@ -27,6 +27,11 @@ function router($routeProvider){
       templateUrl: "/frontend/templates.jade",
       controller: "TemplatesControl"
     })
+  .when("/environments",
+    {
+      templateUrl: "/frontend/environments.jade",
+      controller: "EnvironmentsController"
+    })
   .when("/registry",
     {
       templateUrl: "/frontend/registry.jade",

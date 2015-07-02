@@ -28,3 +28,4 @@ def send_css(path):
 @app.route("/")
 def index():
     return render_template("crane.jade", render_template=render_template)
+

@@ -6,7 +6,7 @@ from Backend.Container import Container
 import json
 
 host_provider = HostProvider()
-container_instance = Container()
+container_instance = Container(host_provider)
 
 
 @app.route('/container', methods=['GET'])

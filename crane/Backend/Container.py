@@ -1,17 +1,13 @@
-from crane.Backend.Host import HostProvider
 from crane.utils import parallel_map_reduce
 import json
 
-host_provider = HostProvider()
-
-
 class Container:
 
-    def __init__(self):
-        pass
+    def __init__(self, host_provider):
+        self.host_provider = host_provider
 
     def get_containers(self):
-        hosts = host_provider.query_hosts()
+        hosts = self.host_provider.query_hosts()
         result = parallel_map_reduce(
             lambda x: self.__get_container_from_host(x), lambda x, y: x + y, hosts, [])
         result.sort(key=lambda x: x['name'])
@@ -35,8 +31,8 @@ class Container:
         return data
 
     def _run_command_on_host(self, host_id, command):
-        host = host_provider.get_host_by_id(host_id)
-        ssh = host_provider.get_connection(host)
+        host = self.host_provider.get_host_by_id(host_id)
+        ssh = self.host_provider.get_connection(host)
         return ssh.execute(command)
 
     def _get_container_command(self, container):
@@ -62,13 +58,27 @@ class Container:
                 'hostid': host.id,
                 'hostname': host.name}
 
+    def __get_container_list(self, ssh):
+        result = ssh.execute("docker ps -a -q")['stdout']
+        if result == "":
+            return []
+        res = result.split("\n")
+        if res[len(res) -1 ] == "":
+            return res[:-1]
+        return res
+
+    def get_number_of_containers(self, host):
+        ssh = self.host_provider.get_connection(host)
+        containers = self.__get_container_list(ssh)
+        return len(containers)
+
     def __get_container_from_host(self, host):
-        ssh = host_provider.get_connection(host)
-        container_ids = ssh.execute("docker ps -a -q")['stdout']
-        if container_ids == "":
+        ssh = self.host_provider.get_connection(host)
+        containers = self.__get_container_list(ssh)
+        if containers == []:
             container_list = []
         else:
-            container_params = " ".join(container_ids.split("\n"))
+            container_params = " ".join(containers)
             inspections = ssh.execute("docker inspect {0}".format(container_params))['stdout']
             container_list = map(lambda x: self._get_info_from_container(x, host), json.loads(inspections))
         return container_list

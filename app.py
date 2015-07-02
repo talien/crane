@@ -4,7 +4,7 @@ import crane.templates
 import crane.hosts
 import crane.containers
 import crane.registry
-
+import crane.environments
 
 def main():
     parser = argparse.ArgumentParser()
