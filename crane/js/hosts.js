@@ -14,6 +14,17 @@ function Host(name, host, username, sshkey, password) {
   this.password = password;
 }
 
+function cloneHost(from, to) {
+  to.id = from.id;
+  to.name = from.name;
+  to.host = from.host;
+  to.username = from.username;
+  to.sshkey = from.sshkey;
+  to.password = from.password;
+
+  return to;
+}
+
 function HostController($scope, $http, $modal) {
   $scope.add_host = { 'host': new Host() };
 
@@ -40,11 +51,12 @@ function HostController($scope, $http, $modal) {
     var modalInstance = $modal.open({
       templateUrl: '/frontend/host_edit_modal.jade',
       controller: function($scope, $modalInstance, host) {
-        $scope.host = host;
+        $scope.host = cloneHost(host, {});
+
         $scope.confirmText = host.id ? 'Edit' : 'Add';
 
         $scope.ok = function () {
-          $modalInstance.close($scope.host);
+          $modalInstance.close(cloneHost($scope.host, host));
         };
 
         $scope.cancel = function () {

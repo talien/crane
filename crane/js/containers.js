@@ -9,49 +9,17 @@ ContainerController.$inject = ['$scope', '$http', '$modal'];
 
 function ContainerController($scope, $http, $modal) {
   $scope.add_container = { 'container': {}, 'template':{} };
-  
-  $scope.restart_policies = [
-    'no',
-    'on-failure:5',
-    'always'
-  ];
 
-  $scope.deployment_types = [
-    'Raw',
-    'Template'
-  ]
-
-  $scope.deployment_type = 'Raw';
-
-  $scope.search_dialog = search_dialog;
   $scope.load_containers = load_containers;
   $scope.load_hosts = load_hosts;
   $scope.load_templates = load_templates;
   $scope.remove_container = remove_container;
   $scope.start_deploy = start_deploy;
-  $scope.cancel_deploy = cancel_deploy;
   $scope.start_container = start_container;
   $scope.stop_container = stop_container;
   $scope.deploy_container = deploy_container;
   $scope.container_details = container_details;
   $scope.container_logs = container_logs;
-
-  function search_dialog() {
-    var modalInstance = $modal.open({
-      templateUrl: 'frontend/imagesearch.jade',
-      controller: 'ImageSearchControl',
-      size: 'lg',
-      resolve: {
-        image: function () {
-          return $scope.add_container.container.image;
-        }
-      }
-    });
-
-    modalInstance.result.then(function (selectedItem) {
-      $scope.add_container.container.image = selectedItem;
-    })
-  }
 
   function load_containers() {
     $scope.loading = true;
@@ -81,11 +49,75 @@ function ContainerController($scope, $http, $modal) {
   }
 
   function start_deploy() {
-    $scope.add_container.status = 'active';
-  }
+    var modalInstance = $modal.open({
+      templateUrl: 'frontend/container_edit_modal.jade',
+      controller: function($scope, $modalInstance, container, type, hosts, templates){
+        $scope.add_container = container;
+        $scope.hosts = hosts;
+        $scope.templates = templates;
 
-  function cancel_deploy() {
-    $scope.add_container.status = 'inactive';
+        $scope.restart_policies = [
+          'no',
+          'on-failure:5',
+          'always'
+        ];
+
+        $scope.deployment_types = [
+          'Raw',
+          'Template'
+        ]
+
+        $scope.deployment_type = 'Raw';
+
+        $scope.ok = function() {
+          $modalInstance.close({
+            container: $scope.add_container,
+            type: $scope.deployment_type
+          });
+        };
+
+        $scope.cancel = function() {
+          $modalInstance.dismiss('cancel');
+        };
+
+        $scope.search_dialog = function() {
+          var modalInstance = $modal.open({
+            templateUrl: 'frontend/imagesearch.jade',
+            controller: 'ImageSearchControl',
+            size: 'lg',
+            resolve: {
+              image: function () {
+                return $scope.add_container.container.image;
+              }
+            }
+          });
+
+          modalInstance.result.then(function (selectedItem) {
+            $scope.add_container.container.image = selectedItem;
+          });
+        }
+      },
+      resolve: {
+        container: function () {
+          return $scope.add_container;
+        },
+        type: function () {
+          return $scope.deployment_type;
+        },
+        hosts: function () {
+          return $scope.hosts;
+        },
+        templates: function () {
+          return $scope.templates;
+        }
+      }
+    });
+
+    modalInstance.result.then(function (data) {
+      $scope.add_container = data.container;
+      $scope.deployment_type = data.type;
+      deploy_container();
+    });
   }
 
   function start_container(container) {
