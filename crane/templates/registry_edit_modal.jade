@@ -1,0 +1,20 @@
+div.modal-header Add registry
+div.modal-cont
+  form.form-horizontal(role="form")
+    .form-group
+      label.col-xs-12 Name
+        input#name.form-control(ng-model="add_registry.name")
+    .form-group
+      label.col-xs-12 URL
+        input#url.form-control(ng-model="add_registry.url")
+    .form-group
+      label.col-xs-12 Username
+        input#username.form-control(ng-model="add_registry.username")
+    .form-group
+      label.col-xs-12 Password
+        input#password.form-control(ng-model="add_registry.password",type="password")
+    .form-group
+      label.col-xs-12 Provider
+        select#restart.form-control(ng-options="provider for provider in providers" ng-model="add_registry.provider")
+    .btn.btn-large.btn-primary(ng-click="ok()") Save
+    .btn.btn-large.btn-warning(ng-click="cancel()") Cancel
