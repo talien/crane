@@ -1,35 +1,7 @@
-.crane-header {
-   height: 100px;
-   background-color: #000;
-   color: #FFF;
-   margin-top: 0px;
-}
+@import 'partials/data-table.css';
+@import 'partials/modal-layout.css';
+@import 'partials/error-handling.css';
 
-.glyphicon-refresh-animate {
-    -animation: spin .7s infinite linear;
-    -ms-animation: spin .7s infinite linear;
-    -webkit-animation: spinw .7s infinite linear;
-    -moz-animation: spinm .7s infinite linear;
-}
-
-@keyframes spin {
-    from { transform: scale(1) rotate(0deg);}
-    to { transform: scale(1) rotate(360deg);}
-}
-
-@-webkit-keyframes spinw {
-    from { -webkit-transform: rotate(0deg);}
-    to { -webkit-transform: rotate(360deg);}
-}
-
-@-moz-keyframes spinm {
-    from { -moz-transform: rotate(0deg);}
-    to { -moz-transform: rotate(360deg);}
-}
-
-.round-corner {
-    border-radius: 15px;
-    border: 2px solid #DDDDDD;
-    padding: 20px;
-    margin: 20px;
+* {
+  border-radius: 0 !important;
 }

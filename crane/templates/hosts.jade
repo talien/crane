@@ -1,25 +1,30 @@
 .container
-  table.table.table-striped
-   thead
-    td Name
-    td Host
-    td Username
-    td SSH Key 
-    td Password
-    td  
+  center
+    div
+      table.data-table
+        thead
+          tr
+            th Name
+            th Host
+            th Username
+            th SSH Key
+            th Password
+            th
 
-   tbody(ng-repeat="host in hosts")
-    tr
-      td(ng-click="host_details(host)") [[host.name]]
-      td [[host.host]]
-      td [[host.username]]
-      td [[host.sshkey]]
-      td &lt;sensitive data&gt;
-      td  
-        .btn-group
-          .btn.btn-large.btn-primary(ng-click="edit_host(host)") Edit
-          .btn.btn-large.btn-danger(ng-click="remove_host(host)") Delete
-    tr(ng-show="host.details.active")
-      td(colspan=6)
-        pre [[host.details.info]]
-  .btn.btn-large.btn-primary(ng-click="add_new_host()") Add host
+        tbody
+          tr(ng-repeat-start="host in hosts")
+            td(ng-click="host_details(host)") [[host.name]]
+            td [[host.host]]
+            td [[host.username]]
+            td [[host.sshkey]]
+            td &lt;sensitive data&gt;
+            td
+              .btn-group
+                .btn.btn-primary(ng-click="edit_host(host)") Edit
+                .btn.btn-danger(ng-click="remove_host(host)") Delete
+          tr(ng-repeat-end ng-show="host.details.active")
+            td(colspan=6)
+              pre [[host.details.info]]
+
+      div
+        .btn.btn-primary(ng-click="add_new_host()") Add host

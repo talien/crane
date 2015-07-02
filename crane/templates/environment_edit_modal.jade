@@ -1,0 +1,10 @@
+.modal-header Add Environment
+.modal-cont
+  form.form-horizontal.modal-form-top(role="form" novalidate)
+    .input-group
+      span.input-group-addon Name
+      input.form-control(ng-model="environment.name")
+
+    .btn-modal-container
+      .btn.btn-default(ng-click="cancel()") Cancel
+      .btn.btn-primary(ng-click="ok()") Save

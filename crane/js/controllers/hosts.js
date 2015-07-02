@@ -50,22 +50,41 @@ function HostController($scope, $http, $modal) {
 
     var modalInstance = $modal.open({
       templateUrl: '/frontend/host_edit_modal.jade',
-      controller: function($scope, $modalInstance, host) {
+      controller: function($scope, $modalInstance, host, hosts) {
         $scope.host = cloneHost(host, {});
+        $scope.hosts = hosts;
+        $scope.errorText = '';
 
         $scope.confirmText = host.id ? 'Edit' : 'Add';
 
         $scope.ok = function () {
-          $modalInstance.close(cloneHost($scope.host, host));
+          if (!duplicated()) {
+            $modalInstance.close(cloneHost($scope.host, host));
+          } else {
+            $scope.errorText = 'Duplicated name or host.';
+          }
         };
 
         $scope.cancel = function () {
           $modalInstance.dismiss('cancel');
         };
+
+        function duplicated() {
+          var ret = false;
+          for (var i = $scope.hosts.length - 1; i >= 0 && !ret; i--) {
+            if ($scope.hosts[i].id !== $scope.host.id && ($scope.hosts[i].host == $scope.host.host || $scope.hosts[i].name == $scope.host.name)) {
+              ret = true;
+            }
+          }
+          return ret;
+        }
       },
       resolve: {
         host: function () {
           return hostItem;
+        },
+        hosts: function () {
+          return $scope.hosts || [];
         }
       }
     });
@@ -88,9 +107,7 @@ function HostController($scope, $http, $modal) {
 
   function add_new_host(hostItem) {
     $scope.edit_host(new Host());
-  };
-
-  
+  }
 
   function save_new_host($event) {
     if ($scope.add_host.host.id) {

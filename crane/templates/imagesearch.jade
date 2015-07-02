@@ -1,21 +1,29 @@
 div.modal-header Deploy container
 div.modal-cont
-  .h3 Search registry
-  .div Selected image: [[selected_image.name]]
-  .input-group.col-sm-3
+  .input-group
+    h3 Search registry
+  .input-group
+    div Selected image: [[selected_image.name]]
+  .input-group
+    span.input-group-addon Search
     input.form-control(type="text",placeholder="Search image...",ng-model="query")
-    span.input-group-btn
-      button.btn.btn-default(type="button",ng-click="search()",ng-hide="searching") Go!
-      button.btn.btn-default(ng-show="searching")
+    span.input-group-btn(ng-if="!searching")
+      button.btn.btn-default(type="button",ng-click="search()")
+        .glyphicon.glyphicon-search
+    span.input-group-btn(ng-if="searching")
+      button.btn.btn-default
         .glyphicon.glyphicon-refresh.glyphicon-refresh-animate
-  table.table.table-hover.table-condensed.table-bordered
-   thead
-    td Image
-    td Registry
-    td Description
-   tr(ng-repeat="result in results",ng-click="selected(result)")
-    td [[result.name]]
-    td [[result.registry]]
-    td [[result.description]]
-  button.btn.btn-default(type="button",ng-click="select()") Select
-  button.btn.btn-default(type="button",ng-click="cancel()") Cancel
+
+  center.scrollable.fixed-height
+    table.data-table
+     thead
+      td Image
+      td Registry
+      td Description
+     tr(ng-repeat="result in results",ng-click="selected(result)")
+      td [[result.name]]
+      td [[result.registry]]
+      td [[result.description]]
+  .btn-modal-container
+    button.btn.btn-default(type="button",ng-click="cancel()") Cancel
+    button.btn.btn-primary(type="button",ng-click="select()") Select

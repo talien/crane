@@ -1,0 +1,71 @@
+div.modal-header Add template
+div.modal-cont
+  form.form-horizontal.round-corner(role="form")
+    
+    .input-group
+      span.input-group-addon Name
+      input.form-control(ng-model="add_template.name")
+
+    .input-group
+      .h3 Variables
+
+    .input-group
+      .btn.btn-primary(ng-click="add_parameter()") Add parameter
+
+    .input-group(ng-repeat="parameter in parameters")
+      span.input-group-addon var
+      input.form-control(ng-model="parameter.name")
+
+    .input-group
+      .h3 Template
+
+    .input-group
+      span.input-group-addon Container Name
+      input.form-control(ng-model="add_template.deploy.name",crane-auto-complete,ui-items="parameters")
+
+    .input-group
+      span.input-group-addon Image
+      input.form-control(type='text', placeholder='Docker image', ng-model="add_container.container.image", required)
+      span.input-group-btn
+        button.btn.btn-default(ng-click="search_dialog()")
+          span.glyphicon.glyphicon-search
+
+    .input-group
+      span.input-group-addon Hostname
+      input.form-control(ng-model="add_template.deploy.hostname",crane-auto-complete,ui-items="parameters")
+
+    .input-group
+      span.input-group-addon Env variables
+      textarea.form-control(ng-model="add_template.deploy.environment",crane-auto-complete,ui-items="parameters")
+
+    .input-group
+      span.input-group-addon Portmapping
+      textarea.form-control(ng-model="add_template.deploy.portmapping",crane-auto-complete,ui-items="parameters")
+    
+    .input-group
+      span.input-group-addon Volumes
+      textarea.form-control(ng-model="add_template.deploy.volumes",crane-auto-complete,ui-items="parameters")
+    
+    .input-group
+      span.input-group-addon Capabilities
+      textarea.form-control(ng-model="add_template.deploy.capabilities",crane-auto-complete,ui-items="parameters")
+    
+    .input-group
+      span.input-group-addon Pre-deploy
+      textarea.form-control(ng-model="add_template.deploy.predeploy",crane-auto-complete,ui-items="parameters")
+    
+    .input-group
+      span.input-group-addon Post-deploy
+      textarea.form-control(ng-model="add_template.deploy.postdeploy",crane-auto-complete,ui-items="parameters")
+    
+    .input-group
+      span.input-group-addon Post-deploy
+      select.form-control(ng-options="restart_policy for restart_policy in restart_policies" ng-model="add_template.deploy.restart") 
+
+    .input-group
+      span.input-group-addon Command
+      input.form-control(ng-model="add_template.deploy.command",crane-auto-complete,ui-items="parameters")
+
+    .btn-modal-container
+      .btn.btn-large.btn-default(ng-click="cancel()") Cancel
+      .btn.btn-large.btn-primary(ng-click="ok()") [[confirmText]] template

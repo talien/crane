@@ -1,52 +1,61 @@
 .container
-  div(ng-show="loading")
-    .glyphicon.glyphicon-refresh.glyphicon-refresh-animate
-    span &nbsp; Loading
-  table.table.table-striped
-    thead
-      td Name
-      td Image
-      td Command
-      td State
-      td Host
-    tbody(ng-repeat="container in containers")
-     tr
-      td [[container.name]]
-        br
-        .btn-group.btn-group.xs
-          .btn.btn-xs.btn-default.glyphicon.glyphicon-stats(ng-click="container_details(container)")
-          .btn.btn-xs.btn-default.glyphicon.glyphicon-th-list(ng-click="container_logs(container)")
-      td [[container.image]]
-      td [[container.cmd]]
-      td [[container.state]]
-      td [[container.hostname]]
-      td(ng-show="container.state == 'Running'")
-        .btn.btn-large.btn-warning(ng-show="container.stopping") 
-          .glyphicon.glyphicon-refresh.glyphicon-refresh-animate 
-          span Stopping
-        .btn.btn-large.btn-warning(ng-click="stop_container(container)",ng-show="!container.stopping") Stop
-      td(ng-show="container.state != 'Running'")
-        .btn-group
-          .btn.btn-large.btn-success(ng-click="start_container(container)",ng-show="!container.starting" ) Start
-          .btn.btn-large.btn-success(ng-show="container.starting") 
-            .glyphicon.glyphicon-refresh.glyphicon-refresh-animate 
-            span Starting
-          .btn.btn-large.btn-danger(ng-click="remove_container(container)") Delete
-     tr
-      td(colspan=6,ng-show="container.details.active")
-        pre [[container.details.data | json]]
-     tr
-      td(colspan=6,ng-show="container.logs.active")
-        p 
-        | Showing only the last 200 log lines. Click 
-        a(href="/host/[[container.hostid]]/container/[[container.id]]/fulllog") here
-        |  to view full log
-        pre [[container.logs.data]]
+  center
+    div
+      div(ng-show="loading")
+        .glyphicon.glyphicon-refresh.glyphicon-refresh-animate
+        span &nbsp; Loading
 
-   
-  .btn.btn-large.btn-primary(ng-click="start_deploy()") Deploy container
-  .btn.btn-large.btn-primary(ng-click="load_containers()") Refresh
-  div(ng-show="(add_container.status == 'deploying')") Deploying...
-  div(ng-show="(add_container.status == 'finished')") Finished
-    div(ng-show="add_container.finish_error") 
-      pre.alert.alert-danger [[add_container.output | json ]]
+      table.data-table
+        thead
+          tr
+            th
+            th Name
+            th Image
+            th Command
+            th State
+            th Host
+            th
+
+        tbody
+          tr(ng-repeat-start="container in containers")
+            td
+              .btn-group.btn-group.xs
+                .btn.btn-xs.btn-default.glyphicon.glyphicon-stats(ng-click="container_details(container)")
+                .btn.btn-xs.btn-default.glyphicon.glyphicon-th-list(ng-click="container_logs(container)")
+            td(ng-click="host_details(host)") [[container.name]]
+            td [[container.image]]
+            td [[container.cmd]]
+            td [[container.state]]
+            td [[container.hostname]]
+            
+            td(ng-show="container.state == 'Running'")
+              .btn.btn-warning(ng-show="container.stopping") 
+                .glyphicon.glyphicon-refresh.glyphicon-refresh-animate 
+                  span Stopping
+              .btn.btn-warning(ng-click="stop_container(container)",ng-show="!container.stopping") Stop
+            td(ng-show="container.state != 'Running'")
+              .btn-group
+                .btn.btn-success(ng-click="start_container(container)",ng-show="!container.starting" ) Start
+                .btn.btn-success(ng-show="container.starting") 
+                  .glyphicon.glyphicon-refresh.glyphicon-refresh-animate 
+                    span Starting
+                .btn.btn-danger(ng-click="remove_container(container)") Delete
+
+          tr
+            td.roundpadding(colspan=7,ng-show="container.details.active")
+              div(hljs='', source='container.details.data | json')
+          tr(ng-repeat-end)
+            td.roundpadding(ng-show="container.logs.active")
+              p 
+              | Showing only the last 200 log lines. Click 
+              a(href="/host/[[container.hostid]]/container/[[container.id]]/fulllog") here
+              |  to view full log
+              div(hljs='', source='container.logs.data | json')
+
+      div
+        .btn.btn-primary(ng-click="start_deploy()") Deploy container
+        .btn.btn-primary(ng-click="load_containers()") Refresh
+        div(ng-show="(add_container.status == 'deploying')") Deploying...
+        div(ng-show="(add_container.status == 'finished')") Finished
+        div(ng-show="add_container.finish_error") 
+          div.alert.alert-danger(hljs='', source='add_container.output | json')

@@ -1,47 +1,52 @@
-.container.container-fluid
-  table.table.table-striped
-   thead
-    td Name
-    td URL
-    td Username
-    td Password
-    td Provider
-    td
+.container
+  center
+    div
+      table.data-table
+        thead
+          tr
+            th Name
+            th URL
+            th Username
+            th Password
+            th Provider
+            th
 
-   tbody(ng-repeat="registry in registries")
-    tr
-      td [[registry.name]]
-      td [[registry.url]]
-      td [[registry.username]]
-      td &lt;sensitive data&gt;
-      td [[registry.provider]]
-      td 
-        .btn.btn-large.btn-danger(ng-click="start_edit_registry(registry)") Edit
-      td 
-        .btn.btn-large.btn-danger(ng-click="remove_registry(registry)") Delete
+        tbody
+          tr(ng-repeat="registry in registries")
+            td [[registry.name]]
+            td [[registry.url]]
+            td [[registry.username]]
+            td &lt;sensitive data&gt;
+            td [[registry.provider]]
+            td
+              .btn-group
+                .btn.btn-primary(ng-click="start_edit_registry(registry)") Edit
+                .btn.btn-danger(ng-click="remove_registry(registry)") Delete
 
-  .btn.btn-large.btn-primary(ng-click="start_add_registry()") Add registry
+      div
+        .btn.btn-primary(ng-click="start_add_registry()") Add registry
+  .well.well-lg
+    center.col-sm-6.col-sm-offset-3
+      .h3 Search registry
 
-  .round-corner
-    .h3 Search registry
-    .input-group.col-sm-3
-      input.form-control(type="text",placeholder="Search image...",ng-model="query")
-      span.input-group-btn
-        button.btn.btn-default(type="button",ng-click="search()",ng-show="!searching") Go!
-        .btn-group.btn-group(ng-show="searching")
-          .btn.btn-default
-            .glyphicon.glyphicon-refresh.glyphicon-refresh-animate
-    table.table(ng-show="results.length != 0")
-     thead
-      td
-      td Image
-      td Registry
-      td Description
-     tr(ng-repeat="result in results")
-      td
-        .btn-group.btn-group
-          a.btn.btn.btn-default.glyphicon.glyphicon-stats(href="#/repository/[[result.registry_id]]/[[safe_repository_name(result)]]")
-      td [[result.name]]
-      td [[result.registry]]
-      td [[result.description]]
+      form(ng-submit="search()")
+        .input-group
+          input.form-control(type='text', placeholder='Search image...', ng-model="query")
+          span.input-group-btn
+            button.btn.btn-primary(type='submit') Go!
+    .clearfix
     
+    center
+      table.data-table(ng-show="results.length != 0")
+       thead
+        td
+        td Image
+        td Registry
+        td Description
+       tr(ng-repeat="result in results")
+        td
+          .btn-group.btn-group
+            a.btn.btn.btn-default.glyphicon.glyphicon-stats(href="#/repository/[[result.registry_id]]/[[safe_repository_name(result)]]")
+        td [[result.name]]
+        td [[result.registry]]
+        td [[result.description]]

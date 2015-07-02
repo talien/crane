@@ -1,83 +1,38 @@
 .container
-  table.table
-    thead
-      td Name
-      td Variables
-      td Actions
-    tbody(ng-repeat="template in templates")
-      tr
-        td 
-          .btn.btn-default.glyphicon.glyphicon-stats(ng-click="template_details(template)")
-          span &nbsp; [[template.name]]
-        td
-          ul
-           li(ng-repeat="parameter in template.parameters") [[ parameter.name ]]
-        td 
-          .btn-group
-            .btn.btn-primary(ng-click="edit_template(template)") Edit
-            .btn.btn-danger(ng-click="delete_template(template)") Delete
-      tr
-        td(colspan=3,ng-show="template.details")
-          pre [[template.deploy | json]]
+  center
+    div
+      div(ng-show="loading")
+        .glyphicon.glyphicon-refresh.glyphicon-refresh-animate
+        span &nbsp; Loading
 
-  .btn.btn-large.btn-primary(ng-click="start_add_template()") Add template
-  form.form-horizontal.round-corner(ng-show="(add_template.active)",role="form")
-    .form-group
-      label.control-label.col-sm-2(for="template_name") Template Name:
-      .col-sm-3
-        input#template_name.form-control(ng-model="add_template.name")
-    .h3 Variables
-    .btn.btn-primary(ng-click="add_parameter()") Add parameter
-    .form-group(ng-repeat="parameter in parameters")
-      label.control-label.col-sm-2(for="variable") Variable:
-      .col-sm-3
-        input#variable.form-control(ng-model="parameter.name")
-    .h3 Template
-    .form-group
-      label.control-label.col-sm-2(for="name") Container Name:
-      .col-sm-3
-        input#name.form-control(ng-model="add_template.deploy.name",crane-auto-complete,ui-items="parameters")
-    .form-group
-      label.control-label.col-sm-2(for="image") Image:
-      .col-sm-3.input-group
-        input#image.form-control(ng-model="add_template.deploy.image",crane-auto-complete,ui-items="parameters")
-        span.input-group-btn
-          button.btn.btn-default.glyphicon.glyphicon-search(ng-click="search_dialog()")
-    .form-group
-      label.control-label.col-sm-2(for="hostname") Hostname of container:
-      .col-sm-3
-        input#hostname.form-control(ng-model="add_template.deploy.hostname",crane-auto-complete,ui-items="parameters")
-    .form-group
-      label.control-label.col-sm-2(for="environment") Environment variables (eg: name1=value1 name2=value2):
-      .col-sm-3
-        textarea#environment.form-control(ng-model="add_template.deploy.environment",crane-auto-complete,ui-items="parameters")
-    .form-group
-      label.control-label.col-sm-2(for="portmapping") Portmapping (eg: port1:port2 port3:port4):
-      .col-sm-3
-        textarea#portmapping.form-control(ng-model="add_template.deploy.portmapping",crane-auto-complete,ui-items="parameters")
-    .form-group
-      label.control-label.col-sm-2(for="volumes") Volumes (eg: hostdir1:containerdir1 hostdir2:containerdir2):
-      .col-sm-3
-        textarea#volumes.form-control(ng-model="add_template.deploy.volumes",crane-auto-complete,ui-items="parameters")
-    .form-group
-      label.control-label.col-sm-2(for="capabilities") Capabilities (eg: capability1 capability2):
-      .col-sm-3
-        textarea#capabilities.form-control(ng-model="add_template.deploy.capabilities",crane-auto-complete,ui-items="parameters")
-    .form-group
-      label.control-label.col-sm-2(for="predeploy") Pre-deploy script
-      .col-sm-4
-        textarea#predeploy.form-control(ng-model="add_template.deploy.predeploy",crane-auto-complete,ui-items="parameters")
-    .form-group
-      label.control-label.col-sm-2(for="postdeploy") Pre-deploy script
-      .col-sm-4
-        textarea#postdeploy.form-control(ng-model="add_template.deploy.postdeploy",crane-auto-complete,ui-items="parameters")
-    .form-group
-      label.control-label.col-sm-2(for="restart") Restart policy:
-      .col-sm-3
-        select#restart.form-control(ng-options="restart_policy for restart_policy in restart_policies" ng-model="add_template.deploy.restart") 
-    .form-group
-      label.control-label.col-sm-2(for="command") Command:
-      .col-sm-3
-        input#command.form-control(ng-model="add_template.deploy.command",crane-auto-complete,ui-items="parameters")
-    .btn.btn-large.btn-primary(ng-click="save_template()") Save template
-    .btn.btn-large.btn-warning(ng-click="cancel_add_template()") Cancel
+      table.data-table
+        thead
+          tr
+            th Name
+            th Variables
+            th Actions
+
+        tbody
+          tr(ng-repeat-start="template in templates")
+            td(ng-click="host_details(host)") [[container.name]]
+              button.glyphicon.glyphicon-stats(ng-click="container_details(container)")
+              button.glyphicon.glyphicon-th-list(ng-click="container_logs(container)")
+            td [[container.image]]
+            td [[container.cmd]]
+            td [[container.state]]
+            td [[container.hostname]]
+          tr
+            td
+              button(ng-click="template_details(template)") [[template.name]]
+            td
+              ul
+                li(ng-repeat="parameter in template.parameters") [[ parameter.name ]]
+            td 
+              .btn.btn-primary(ng-click="start_edit_template(template)") Edit
+              .btn.btn-danger(ng-click="delete_template(template)") Delete
+          tr(ng-repeat-end)
+            td(colspan=3,ng-show="template.details")
+              pre [[template.deploy | json]]
+                   
+      div
+        .btn.btn-primary(ng-click="start_add_template()") Add template

@@ -1,56 +1,70 @@
-div.modal-header Deploy container
-div.modal-cont
-  form.form-horizontal(role="form")
-    .form-group
-      label.col-xs-12 Deployment type
-        .btn-group
-          label.btn.btn-primary(ng-repeat="deploy_type in deployment_types",ng-model="$parent.deployment_type",btn-radio="deploy_type") [[deploy_type]]
+.modal-header Deploy container
+.modal-cont
+  form.form-horizontal(role="form", novalidate)
+
+    center
+      .btn-group.btn-group-lg.switcher-group(role='group')
+        .btn.btn-default(type='button', ng-class="{'btn-primary' : deploy_type == $parent.deployment_type}", ng-repeat="deploy_type in deployment_types",ng-model="$parent.deployment_type", btn-radio="deploy_type") [[deploy_type]]
+
     div(ng-switch="deployment_type")
       div(ng-switch-when="Raw")
-        .form-group
-          label.col-xs-12 Name
-            input#name.form-control(ng-model="add_container.container.name")
-        .form-group
-          label.col-xs-12 Image
-            .input-group
-              input#image.form-control(ng-model="add_container.container.image")
-              span.input-group-btn
-                button.btn.btn-default(ng-click="search_dialog()")
-                  span.glyphicon.glyphicon-search
-        .form-group
-          label.col-xs-12(for="host") Host
-            select#host.form-control(ng-options="host.id as host.name for host in hosts" ng-model="add_container.container.host")
-        .form-group
-          label.col-xs-12 Hostname for container
-            input#hostname.form-control(ng-model="add_container.container.hostname")
-        .form-group
-          label.col-xs-12 Environment variables (eg: name1=value1 name2=value2)
-            textarea#environment.form-control(ng-model="add_container.container.environment")
-        .form-group
-          label.col-xs-12 Portmapping (eg: port1:port2 port3:port4)
-            textarea#portmapping.form-control(ng-model="add_container.container.portmapping")
-        .form-group
-          label.col-xs-12 Volumes (eg: hostdir1:containerdir1 hostdir2:containerdir2)
-            textarea#volumes.form-control(ng-model="add_container.container.volumes")
-        .form-group
-          label.col-xs-12 Capabilities (eg: capability1 capability2)
-            textarea#capabilities.form-control(ng-model="add_container.container.capabilities")
-        .form-group
-          label.col-xs-12 Restart policy
-            select#restart.form-control(ng-options="restart_policy for restart_policy in restart_policies" ng-model="add_container.container.restart") 
-        .form-group
-          label.col-xs-12 Command
-            input#command.form-control(ng-model="add_container.container.command")
+        .input-group
+          span.input-group-addon Name
+          input.form-control(type='text', placeholder='Name', ng-model="add_container.container.name", required)
+
+        .input-group
+          span.input-group-addon Image
+          input.form-control(type='text', placeholder='Docker image', ng-model="add_container.container.image", required)
+          span.input-group-btn
+            button.btn.btn-default(ng-click="search_dialog()")
+              span.glyphicon.glyphicon-search
+        
+        .input-group
+          span.input-group-addon Host
+          select#host.form-control(ng-options="host.id as host.name for host in hosts" ng-model="add_container.container.host", required)
+
+        .input-group
+          span.input-group-addon Hostname
+          input.form-control(type='text', placeholder='Hostname for container', ng-model="add_container.container.hostname")
+
+        .input-group
+          span.input-group-addon Container name
+          input.form-control(type='text', placeholder='Container name', ng-model="add_container.container.name", required)
+
+        .input-group
+          span.input-group-addon Variables
+          textarea.form-control(type='text', placeholder='Environment variables (eg: name1=value1 name2=value2)', ng-model="add_container.container.environment")
+
+        .input-group
+          span.input-group-addon Portmapping
+          input.form-control(type='text', placeholder='Portmapping (eg: port1:port2 port3:port4)', ng-model="add_container.container.portmapping")
+
+        .input-group
+          span.input-group-addon Volumes
+          input.form-control(type='text', placeholder='Volumes (eg: hostdir1:containerdir1 hostdir2:containerdir2)', ng-model="add_container.container.volumes)
+
+        .input-group
+          span.input-group-addon Capabilities
+          textarea.form-control(type='text', placeholder='Capabilities (eg: capability1 capability2)', ng-model="add_container.container.capabilities")
+
+        .input-group
+          span.input-group-addon Restart policy
+          select.form-control(ng-options="restart_policy for restart_policy in restart_policies" ng-model="add_container.container.restart") 
+        .input-group
+          span.input-group-addon Command
+          input.form-control(type='text', placeholder='Command', ng-model="add_container.container.command)
+
       div(ng-switch-when="Template")
-        .form-group
-           label.col-xs-12 Template
-            select#ctemplate(ng-model="add_container.selected_template",ng-options="template as template.name for template in templates" )
-        .form-group
-          label.col-xs-12 Host
-            select#host.form-control(ng-options="host.id as host.name for host in hosts" ng-model="add_container.container.host")
-        .form-group(ng-repeat="parameter in add_container.selected_template.parameters") 
-           label.col-xs-12 [[parameter.name]]
-              input.form-control(ng-model="add_container.template[parameter.name]")
-          
-    .btn.btn-large.btn-success(ng-click="ok()") Deploy
-    .btn.btn-large.btn-info(ng-click="cancel()") Cancel
+        .input-group
+          span.input-group-addon Template
+          select.form-control(ng-model="add_container.selected_template",ng-options="template as template.name for template in templates" )
+        .input-group
+          span.input-group-addon Host
+          select.form-control(ng-options="host.id as host.name for host in hosts" ng-model="add_container.container.host")
+        .input-group(ng-repeat="parameter in add_container.selected_template.parameters")
+          span.input-group-addon [[parameter.name]]
+          input.form-control(ng-model="add_container.template[parameter.name]")
+
+    .btn-modal-container
+      .btn.btn-large.btn-default(ng-click="cancel()") Cancel
+      .btn.btn-large.btn-primary(ng-click="ok()") Deploy

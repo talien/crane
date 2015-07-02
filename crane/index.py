@@ -18,6 +18,11 @@ def send_css(path):
     return send_from_directory(os.path.dirname(__file__)+'/css', path)
 
 
+@app.route('/fonts/<path:path>')
+def send_font(path):
+    return send_from_directory(os.path.dirname(__file__)+'/css/fonts', path)
+
+
 @app.route("/")
 def index():
     return render_template("crane.jade", render_template=render_template)

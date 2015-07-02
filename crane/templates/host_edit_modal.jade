@@ -1,27 +1,29 @@
-div.modal-header Add Host
-div.modal-cont
-  form.form-horizontal(role="form")
-    .form-group
-      label.control-label.col-sm-2(for="name") Name:
-      .col-sm-10
-        input#name.form-control(ng-model="host.name")
-    .form-group
-      label.control-label.col-sm-2(for="host") Host:
-      .col-sm-10
-        input#host.form-control(ng-model="host.host")
-    .form-group
-      label.control-label.col-sm-2(for="username") Username:
-      .col-sm-10
-        input#username.form-control(ng-model="host.username")
-    .form-group
-      label.control-label.col-sm-2(for="password") Password:
-      .col-sm-10
-        input#password.form-control(ng-model="host.password",type="password")
-    .form-group
-      label.control-label.col-sm-2(for="sshkey") SSH key:
-      .col-sm-10
-        textarea#sshkey.form-control(ng-model="host.sshkey")
-    div.float-right
+.modal-header Add Host
+.modal-cont
+  form.form-horizontal.modal-form-top(role="form" novalidate)
+    .input-group
+      span.input-group-addon Name
+      input.form-control(type='text', placeholder='Hostname for container', ng-model="host.name", required)
+
+    .input-group
+      span.input-group-addon Host
+      input.form-control(type='text', placeholder='Hostname for container', ng-model="host.host", required)
+
+    .input-group
+      span.input-group-addon Username
+      input.form-control(type='text', placeholder='Container name', ng-model="host.username", required)
+
+    .input-group
+      span.input-group-addon Password
+      input.form-control(type='password', placeholder='Container name', ng-model="host.password")
+
+    .input-group
+      span.input-group-addon SSH Key
+      textarea.form-control(type='text', placeholder='Environment variables (eg: name1=value1 name2=value2)', ng-model="host.sshkey")
+
+    center
+      .error-message [[errorText]]
+
+    .btn-modal-container
+      .btn.btn-large.btn-default(ng-click="cancel()") Cancel
       .btn.btn-large.btn-primary(ng-click="ok()") [[confirmText]]
-      .btn.btn-large.btn-warning(ng-click="cancel()") Cancel
-    div.clearfix

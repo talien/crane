@@ -1,20 +1,28 @@
 div.modal-header Add registry
 div.modal-cont
   form.form-horizontal(role="form")
-    .form-group
-      label.col-xs-12 Name
-        input#name.form-control(ng-model="add_registry.name")
-    .form-group
-      label.col-xs-12 URL
-        input#url.form-control(ng-model="add_registry.url")
-    .form-group
-      label.col-xs-12 Username
-        input#username.form-control(ng-model="add_registry.username")
-    .form-group
-      label.col-xs-12 Password
-        input#password.form-control(ng-model="add_registry.password",type="password")
-    .form-group
-      label.col-xs-12 Provider
-        select#restart.form-control(ng-options="provider for provider in providers" ng-model="add_registry.provider")
-    .btn.btn-large.btn-primary(ng-click="ok()") Save
-    .btn.btn-large.btn-warning(ng-click="cancel()") Cancel
+    .input-group
+      span.input-group-addon Name
+      input.form-control(ng-model="add_registry.name")
+
+    .input-group
+      .input-group-btn.addon
+        button.btn.btn-default.splitted(type='button', ng-click="url_prefix='http://'", ng-class="{'btn-primary' : url_prefix == 'http://'}") HTTP
+        button.btn.btn-default.splitted(type='button', ng-click="url_prefix='https://'", ng-class="{'btn-primary' : url_prefix == 'https://'}") HTTPS
+      input.form-control(ng-model="url")
+
+    .input-group
+      span.input-group-addon Username
+      input.form-control(ng-model="add_registry.username")
+
+    .input-group
+      span.input-group-addon Password
+      input.form-control(ng-model="add_registry.password",type="password")
+
+    .input-group
+      span.input-group-addon Provider
+      select.form-control(ng-options="provider for provider in providers" ng-model="add_registry.provider")
+
+    .btn-modal-container
+      .btn.btn-large.btn-default(ng-click="cancel()") Cancel
+      .btn.btn-large.btn-primary(ng-click="ok()") Save

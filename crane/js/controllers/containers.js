@@ -65,7 +65,7 @@ function ContainerController($scope, $http, $modal) {
         $scope.deployment_types = [
           'Raw',
           'Template'
-        ]
+        ];
 
         $scope.deployment_type = 'Raw';
 
@@ -95,7 +95,7 @@ function ContainerController($scope, $http, $modal) {
           modalInstance.result.then(function (selectedItem) {
             $scope.add_container.container.image = selectedItem;
           });
-        }
+        };
       },
       resolve: {
         container: function () {
@@ -161,9 +161,13 @@ function ContainerController($scope, $http, $modal) {
   }
 
   function container_details(container) {
-    if (container.logs) {
-      container.logs.active = false;
-    }
+    angular.forEach($scope.containers, function(c) {
+      if (c !== container) {
+        if (c.details) c.details.active = false;
+      }
+      if (c.logs) c.logs.active = false;
+    });
+
     if (container.details && container.details.active) {
       container.details.active = false;
     } else {
@@ -176,9 +180,13 @@ function ContainerController($scope, $http, $modal) {
   }
 
   function container_logs(container) {
-    if (container.details) {
-      container.details.active = false;
-    }
+    angular.forEach($scope.containers, function(c) {
+      if (c !== container) {
+        if (c.logs) c.logs.active = false;
+      }
+      if (c.details) c.details.active = false;
+    });
+
     if (container.logs && container.logs.active) {
       container.logs.active = false;
     } else {

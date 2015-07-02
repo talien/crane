@@ -1,35 +1,65 @@
-.container
-  .jumbotron
-    p.center Welcome to Crane!
-    p To add and manage Docker hosts, click on 
-      a(href="/#/hosts") Hosts
-      span.btn.btn-lg.glyphicon.glyphicon-chevron-right(ng-click="host_details = true",ng-show="!host_details")
-      span.btn.btn-lg.glyphicon.glyphicon-chevron-down(ng-click="host_details = false",ng-show="host_details")
-      div(ng-show="host_details")
-        div Docker hosts are machines which runs the Docker daemon. Only ssh access is needed to start manage containers on this host.
-    p To start manage Environments, click on 
-      a(href="/#/environments") Environments
-      span.btn.btn-lg.glyphicon.glyphicon-chevron-right(ng-click="env_details = true",ng-show="!env_details")
-      span.btn.btn-lg.glyphicon.glyphicon-chevron-down(ng-click="env_details = false",ng-show="env_details")
-      div(ng-show="env_details")
-        div Environments are groups of Docker hosts.
-    p To deploy and manage Docker containers, click on 
-      a(href="/#/containers") Containers
-      span.btn.btn-lg.glyphicon.glyphicon-chevron-right(ng-click="container_details = true",ng-show="!container_details")
-      span.btn.btn-lg.glyphicon.glyphicon-chevron-down(ng-click="container_details = false",ng-show="container_details")
-      div(ng-show="container_details")
-        div Get information and logs from your running containers, start and stop them, or deploy new ones
-    p To create deployment templates, click on 
-      a(href="/#/containers") Templates
-      span.btn.btn-lg.glyphicon.glyphicon-chevron-right(ng-click="template_details = true",ng-show="!template_details")
-      span.btn.btn-lg.glyphicon.glyphicon-chevron-down(ng-click="template_details = false",ng-show="template_details")
-      div(ng-show="template_details")
-        div 
-          | Deployment templates makes deployment easier and more flexible. Define variables, reference variables from your deployment template with 
-          | the %(variable)% notation, and fill out only the variables when deploy the container from template
-    p To browse Docker registries, click on 
-      a(href="/#/registry") Registry
-      span.btn.btn-lg.glyphicon.glyphicon-chevron-right(ng-click="registry_details = true",ng-show="!registry_details")
-      span.btn.btn-lg.glyphicon.glyphicon-chevron-down(ng-click="registry_details = false",ng-show="registry_details")
-      div(ng-show="registry_details")
-        div Search for repositories, list their tags, get detailed information about the images.
+div
+  .col-xs-12.col-sm-6.col-md-4
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title Hosts
+      .panel-body(ng-click="host_details = !host_details")
+        h4(ng-hide="host_details").
+          You can add and manage Docker hosts ...
+        div(ng-show="host_details").
+          Docker hosts are machines which runs the Docker daemon. Only ssh access is needed to start manage containers on this host.
+      .panel-footer
+        a(href="/#/hosts") Hosts
+          span.glyphicon.glyphicon-chevron-right
+
+  .col-xs-12.col-sm-6.col-md-4
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title Environments
+      .panel-body(ng-click="env_details = !env_details")
+        h4(ng-hide="env_details").
+          You can manage Environments ...
+        div(ng-show="env_details").
+          Environments are groups of Docker hosts.
+      .panel-footer
+        a(href="/#/environments") Environments
+          span.glyphicon.glyphicon-chevron-right
+
+  .col-xs-12.col-sm-6.col-md-4
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title Containers
+      .panel-body(ng-click="container_details = !container_details")
+        h4(ng-hide="container_details").
+          You can deploy and manage Docker containers ...
+        div(ng-show="container_details").
+          Get information and logs from your running containers, start and stop them, or deploy new ones
+      .panel-footer
+        a(href="/#/containers") Containers
+          span.glyphicon.glyphicon-chevron-right
+
+  .col-xs-12.col-sm-6.col-md-4
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title Templates
+      .panel-body(ng-click="template_details = !template_details")
+        h4(ng-hide="template_details").
+          You can create deployment templates ...
+        div(ng-show="template_details").
+          Deployment templates makes deployment easier and more flexible. Define variables, reference variables from your deployment template with the %(variable)% notation, and fill out only the variables when deploy the container from template
+      .panel-footer
+        a(href="/#/containers") Templates
+          span.glyphicon.glyphicon-chevron-right
+
+  .col-xs-12.col-sm-6.col-md-4
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title Registries
+      .panel-body(ng-click="registry_details = !registry_details")
+        h4(ng-hide="registry_details").
+          You can search in Docker registries and explore images.
+        div(ng-show="registry_details").
+          Search for repositories, list their tags, get detailed information about the images.
+      .panel-footer
+        a(href="/#/registry") Registry
+          span.glyphicon.glyphicon-chevron-right

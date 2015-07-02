@@ -1,0 +1,20 @@
+.modal-header Add host to environment
+.modal-cont
+  form.form-horizontal.modal-form-top(role="form" novalidate)
+    .input-group
+      span.input-group-addon Name
+      select.form-control(ng-options="host.name for host in hosts" ng-model="host") 
+
+    .btn-modal-container
+      .btn.btn-default(ng-click="cancel()") Cancel
+      .btn.btn-primary(ng-click="ok()") Save
+
+
+
+form.form-horizontal.round-corner(ng-show="environment.add_active",role="form")
+        .form-group
+          label.control-label.col-sm-2(for="name") Name:
+          .col-sm-2
+            
+        .btn.btn-primary(ng-click="do_add_host(environment)") Add
+        .btn.btn-danger(ng-click="cancel_add_host(environment)") Cancel
