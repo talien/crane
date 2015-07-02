@@ -51,8 +51,10 @@ function ContainerController($scope, $http, $modal) {
   function start_deploy() {
     var modalInstance = $modal.open({
       templateUrl: 'frontend/container_edit_modal.jade',
-      controller: function($scope, $modalInstance, container, type){
+      controller: function($scope, $modalInstance, container, type, hosts, templates){
         $scope.add_container = container;
+        $scope.hosts = hosts;
+        $scope.templates = templates;
 
         $scope.restart_policies = [
           'no',
@@ -68,7 +70,10 @@ function ContainerController($scope, $http, $modal) {
         $scope.deployment_type = 'Raw';
 
         $scope.ok = function() {
-          $modalInstance.close($scope.add_container);
+          $modalInstance.close({
+            container: $scope.add_container,
+            type: $scope.deployment_type
+          });
         };
 
         $scope.cancel = function() {
@@ -98,12 +103,19 @@ function ContainerController($scope, $http, $modal) {
         },
         type: function () {
           return $scope.deployment_type;
+        },
+        hosts: function () {
+          return $scope.hosts;
+        },
+        templates: function () {
+          return $scope.templates;
         }
       }
     });
 
-    modalInstance.result.then(function (selectedItem) {
-      $scope.add_container = selectedItem;
+    modalInstance.result.then(function (data) {
+      $scope.add_container = data.container;
+      $scope.deployment_type = data.type;
       deploy_container();
     });
   }
