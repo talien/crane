@@ -28,6 +28,12 @@ class Deployer:
         self.host_provider = host_provider
 
     def deploy(self, host_id, data):
+        return self.run_container(host_id, data, False)
+
+    def task(self, host_id, data):
+        return self.run_container(host_id, data, True)
+
+    def run_container(self, host_id, data, foreground):
         if data['deploy'] == 'raw':
             container = self.__interpolate_variables(data['container'], {})
         else:
@@ -36,7 +42,7 @@ class Deployer:
         predeploy = self.__run_deploy_hook(host_id, container, "predeploy")
         if predeploy['exit_code'] != 0:
             return DeployError(message="Predeploy script failed!", predeploy=predeploy)
-        deploy = self.host_provider.run_command_on_host_id(host_id, "docker run -d --name {0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
+        deploy = self.host_provider.run_command_on_host_id(host_id, "docker run {9} -name {0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
             container['name'],
             container['volumes'],
             container['capabilities'],
@@ -45,7 +51,8 @@ class Deployer:
             container['portmapping'],
             container['restart'],
             container['image'],
-            container['command']))
+            container['command'],
+            "-d" if not foreground else ""))
         if deploy['exit_code'] != 0:
             return DeployError(message="Starting container failed!", predeploy=predeploy, deploy=deploy)
         postdeploy = self.__run_deploy_hook(host_id, container, "postdeploy")
