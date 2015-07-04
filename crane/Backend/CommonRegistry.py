@@ -4,11 +4,11 @@ class CommonRegistry(object):
         self.username = username
         self.password = password
 
-    def search(self):
+    def search(self, query):
         raise NotImplementedError()
 
-    def image(self):
+    def image(self, reponame, image):
         raise NotImplementedError()
 
-    def tags(self):
+    def tags(self, reponame):
         raise NotImplementedError()

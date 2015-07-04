@@ -26,19 +26,11 @@ class DockerPrivate(CommonRegistry):
         return results
 
     def tags(self, reponame):
-        def add_tag(images, image, tag):
-            if not images.has_key(image):
-                images[image] = []
-            images[image].append(tag)
-            return images
-
         tags = self.__query_tags(reponame)
         images = {}
-        for k,v in tags.iteritems():
-            images = add_tag(images, v, k)
-        result = []
-        for k,v in images.iteritems():
-            result.append({'name':k,'tags':v})
+        for k, v in tags.iteritems():
+            images.setdefault(v, []).append(k)
+        result = [{'name': k, 'tags': v} for k, v in images.iteritems()]
         return result
 
     def image(self, reponame, image):

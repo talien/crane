@@ -30,24 +30,17 @@ class DockerHub(CommonRegistry):
         return results
 
     def tags(self, reponame):
-        def add_tag(images, image, tag):
-            if not images.has_key(image):
-                images[image] = []
-            images[image].append(tag)
-            return images
-
         tags = self._query_tags(reponame)
         (_, _, images) = self.__query_images(reponame)
-        image_map = {}
-        for image in images:
-            image_map[image['id'][0:8]] = image['id']
+
+        image_map = {image['id'][0:8]: image['id'] for image in images}
+
         images = {}
         for tag in tags:
-            if image_map.has_key(tag['layer']):
-                result = add_tag(images, image_map[tag['layer']], tag['name'])
-        result = []
-        for k, v in images.iteritems():
-            result.append({'name': k, 'tags': v})
+            if tag['layer'] in image_map:
+                images.setdefault(image_map[tag['layer']], []).append(tag['name'])
+
+        result = [{'name': k, 'tags': v} for k, v in images.iteritems()]
         return result
 
     def __query_images(self, reponame):
