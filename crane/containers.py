@@ -1,6 +1,6 @@
 from webserver import app
 from flask import jsonify, Response, request
-from Backend.Host import HostProvider
+from Backend.HostProvider import HostProvider
 from Backend.Deployer import Deployer
 from Backend.Container import Container
 import json

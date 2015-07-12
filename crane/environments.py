@@ -2,7 +2,7 @@ from crane.webserver import app
 from flask import jsonify, request
 from Backend.Environments import EnvironmentProvider
 from Backend.Deployer import Deployer
-from Backend.Host import HostProvider
+from Backend.HostProvider import HostProvider
 
 host_provider = HostProvider()
 environment_provider = EnvironmentProvider(host_provider)

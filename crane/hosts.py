@@ -1,6 +1,6 @@
 from flask import request
 from webserver import app
-from Backend.Host import HostProvider
+from Backend.HostProvider import HostProvider
 from flask import jsonify
 
 host = HostProvider()

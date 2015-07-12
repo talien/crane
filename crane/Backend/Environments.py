@@ -1,6 +1,6 @@
 from Models.EnvironmentModel import EnvironmentModel, hosts_env
 from Container import Container
-from Host import HostProvider
+from HostProvider import HostProvider
 from sqlalchemy.sql import and_
 from crane.webserver import db
 

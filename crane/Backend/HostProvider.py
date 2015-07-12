@@ -42,7 +42,7 @@ class HostProvider:
 
     def get_host_info(self, id):
         host = HostModel.query.filter_by(id=id).first()
-        ssh = self.get_connection(host)
+        ssh = self.__get_connection(host)
         info = ssh.execute("docker info; docker version")['stdout']
         return info
 
@@ -60,5 +60,17 @@ class HostProvider:
             host.sshkey = "FP:" + fingerprint
         return host.to_dict()
 
-    def get_connection(self, host):
-        return SSHConnection(host)
+    def __get_connection(self, host):
+        return SSHConnection(host).get_connection()
+
+    def run_command_on_host_id(self, host_id, command):
+        connection = self.__get_connection(self.get_host_by_id(host_id))
+        return connection.execute(command)
+
+    def run_command_on_host(self, host, command):
+        connection = self.__get_connection(host)
+        return connection.execute(command)
+
+    def put_file_on_host_id(self, host_id, filename, content):
+        connection = self.__get_connection(self.get_host_by_id(host_id))
+        return connection.put_file(filename, content)
