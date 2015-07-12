@@ -6,12 +6,16 @@ class SSHConnection:
     def __init__(self, host):
         self.ssh = paramiko.SSHClient()
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        if not host.username and host.sshkey:
-            keybuffer = StringIO.StringIO(host.sshkey)
+        self.host = host
+
+    def get_connection(self):
+        if not self.host.username and self.host.sshkey:
+            keybuffer = StringIO.StringIO(self.host.sshkey)
             pkey = paramiko.PKey.from_private_key(keybuffer)
-            self.ssh.connect(host.host, username=host.username, pkey=pkey)
+            self.ssh.connect(self.host.host, username=self.host.username, pkey=pkey)
         else:
-            self.ssh.connect(host.host, username=host.username, password=host.password)
+            self.ssh.connect(self.host.host, username=self.host.username, password=self.host.password)
+        return self
 
     def execute(self, command):
         ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command(command)

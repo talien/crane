@@ -31,9 +31,7 @@ class Container:
         return data
 
     def _run_command_on_host(self, host_id, command):
-        host = self.host_provider.get_host_by_id(host_id)
-        ssh = self.host_provider.get_connection(host)
-        return ssh.execute(command)
+        return self.host_provider.run_command_on_host_id(host_id, command)
 
     def _get_container_command(self, container):
         if container['Config']['Cmd']:
@@ -58,27 +56,25 @@ class Container:
                 'hostid': host.id,
                 'hostname': host.name}
 
-    def __get_container_list(self, ssh):
-        result = ssh.execute("docker ps -a -q")['stdout']
+    def __get_container_list(self, host):
+        result = self.host_provider.run_command_on_host(host, "docker ps -a -q")['stdout']
         if result == "":
             return []
         res = result.split("\n")
-        if res[len(res) -1 ] == "":
+        if res[len(res) -1] == "":
             return res[:-1]
         return res
 
     def get_number_of_containers(self, host):
-        ssh = self.host_provider.get_connection(host)
-        containers = self.__get_container_list(ssh)
+        containers = self.__get_container_list(host)
         return len(containers)
 
     def __get_container_from_host(self, host):
-        ssh = self.host_provider.get_connection(host)
-        containers = self.__get_container_list(ssh)
+        containers = self.__get_container_list(host)
         if containers == []:
             container_list = []
         else:
             container_params = " ".join(containers)
-            inspections = ssh.execute("docker inspect {0}".format(container_params))['stdout']
+            inspections = self.host_provider.run_command_on_host(host, "docker inspect {0}".format(container_params))['stdout']
             container_list = map(lambda x: self._get_info_from_container(x, host), json.loads(inspections))
         return container_list

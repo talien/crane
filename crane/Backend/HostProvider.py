@@ -1,5 +1,4 @@
 import StringIO
-
 import paramiko
 
 from crane.Backend.Utils.SSHConnection import SSHConnection
