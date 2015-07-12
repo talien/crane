@@ -56,7 +56,7 @@ class Container:
                 'hostid': host.id,
                 'hostname': host.name}
 
-    def __get_container_list(self, host):
+    def _get_container_list(self, host):
         result = self.host_provider.run_command_on_host(host, "docker ps -a -q")['stdout']
         if result == "":
             return []
@@ -66,12 +66,12 @@ class Container:
         return res
 
     def get_number_of_containers(self, host):
-        containers = self.__get_container_list(host)
+        containers = self._get_container_list(host)
         return len(containers)
 
     def __get_container_from_host(self, host):
         container_list = []
-        containers = self.__get_container_list(host)
+        containers = self._get_container_list(host)
         if containers:
             container_params = " ".join(containers)
             inspections = self.host_provider.run_command_on_host(host, "docker inspect {0}".format(container_params))['stdout']
