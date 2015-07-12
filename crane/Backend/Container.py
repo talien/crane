@@ -57,13 +57,11 @@ class Container:
                 'hostname': host.name}
 
     def _get_container_list(self, host):
-        result = self.host_provider.run_command_on_host(host, "docker ps -a -q")['stdout']
-        if result == "":
-            return []
-        res = result.split("\n")
-        if res[len(res) -1] == "":
-            return res[:-1]
-        return res
+        containers = []
+        command_result = self.host_provider.run_command_on_host(host, "docker ps -a -q")['stdout']
+        if command_result:
+            containers = command_result.rstrip().split("\n")
+        return containers
 
     def get_number_of_containers(self, host):
         containers = self._get_container_list(host)
