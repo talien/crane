@@ -4,8 +4,9 @@ from Backend.HostProvider import HostProvider
 from Backend.Deployer import Deployer
 from Backend.Container import Container
 import json
+from crane.Backend.Utils.SSHConnection import SSHConnection
 
-host_provider = HostProvider()
+host_provider = HostProvider(SSHConnection())
 container_instance = Container(host_provider)
 
 

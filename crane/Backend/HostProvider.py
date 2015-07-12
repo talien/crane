@@ -1,14 +1,13 @@
 import StringIO
 import paramiko
 
-from crane.Backend.Utils.SSHConnection import SSHConnection
 from crane.webserver import db
 from Models.HostModel import HostModel
 
 
 class HostProvider:
-    def __init__(self):
-        pass
+    def __init__(self, ssh_connection):
+        self.ssh_connection = ssh_connection
 
     def add_host(self, data):
         host = HostModel(data['name'],
@@ -59,7 +58,7 @@ class HostProvider:
         return host.to_dict()
 
     def __get_connection(self, host):
-        return SSHConnection(host).get_connection()
+        return self.ssh_connection.get_connection(host)
 
     def run_command_on_host_id(self, host_id, command):
         connection = self.__get_connection(self.__get_host_by_id(host_id))

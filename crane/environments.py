@@ -3,8 +3,9 @@ from flask import jsonify, request
 from Backend.Environments import EnvironmentProvider
 from Backend.Deployer import Deployer
 from Backend.HostProvider import HostProvider
+from crane.Backend.Utils.SSHConnection import SSHConnection
 
-host_provider = HostProvider()
+host_provider = HostProvider(SSHConnection())
 environment_provider = EnvironmentProvider(host_provider)
 
 @app.route("/environment", methods=['GET'])
