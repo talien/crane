@@ -70,10 +70,9 @@ class Container:
         return len(containers)
 
     def __get_container_from_host(self, host):
+        container_list = []
         containers = self.__get_container_list(host)
-        if containers == []:
-            container_list = []
-        else:
+        if containers:
             container_params = " ".join(containers)
             inspections = self.host_provider.run_command_on_host(host, "docker inspect {0}".format(container_params))['stdout']
             container_list = map(lambda x: self._get_info_from_container(x, host), json.loads(inspections))
