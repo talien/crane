@@ -1,31 +1,11 @@
-from crane.webserver import db
-from Models.HostModel import HostModel
-import paramiko
 import StringIO
 
-class SSHConnection:
-    def __init__(self, host):
-        self.ssh = paramiko.SSHClient()
-        self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        if not host.username and host.sshkey:
-            keybuffer = StringIO.StringIO(host.sshkey)
-            pkey = paramiko.PKey.from_private_key(keybuffer)
-            self.ssh.connect(host.host, username=host.username, pkey=pkey)
-        else:
-            self.ssh.connect(host.host, username=host.username, password=host.password)
+import paramiko
 
-    def execute(self, command):
-        ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command(command)
-        stdout = ssh_stdout.read()
-        stderr = ssh_stderr.read()
-        exit_code = ssh_stdout.channel.recv_exit_status()
-        return {'stdout': stdout, 'stderr': stderr, 'exit_code': exit_code}
+from crane.Backend.Utils.SSHConnection import SSHConnection
+from crane.webserver import db
+from Models.HostModel import HostModel
 
-    def put_file(self, filename, content):
-        transport = self.ssh.get_transport()
-        sftp = paramiko.sftp_client.SFTPClient.from_transport(transport)
-        script = sftp.file(filename, "w")
-        script.write(content)
 
 class HostProvider:
     def __init__(self):
