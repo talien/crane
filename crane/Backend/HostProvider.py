@@ -40,9 +40,8 @@ class HostProvider:
         return host
 
     def get_host_info(self, id):
-        ssh = self.__get_connection(host)
-        info = ssh.execute("docker info; docker version")['stdout']
         host = self.__get_host_by_id(id)
+        info = self.run_command_on_host(host, "docker info; docker version")['stdout']
         return info
 
     def delete_host(self, id):
