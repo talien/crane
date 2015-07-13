@@ -93,24 +93,3 @@ class TestContainers:
         mock_provider.ssh = MockSSH([{'type':'execute','command':'docker inspect alma','result':{'stdout':'[{"alma":"korte"}]','stderr':'','exit_code':0}}])
         res = container().inspect_container(1, 'alma')
         assert res == {'alma':'korte'}
-
-    def test_get_container_list_returning_zero_item(self):
-        mock_provider.ssh = MockSSH([{'type': 'execute',
-                                      'command': 'docker ps -a -q',
-                                      'result': {'stdout': '', 'stderr': '', 'exit_code': 0}}])
-        result = container()._get_container_list("a")
-        assert result == []
-
-    def test_get_container_list_returning_one_item(self):
-        mock_provider.ssh = MockSSH([{'type': 'execute',
-                                      'command': 'docker ps -a -q',
-                                      'result': {'stdout': '765012f0bf96', 'stderr': '', 'exit_code': 0}}])
-        result = container()._get_container_list("a")
-        assert result == ['765012f0bf96']
-
-    def test_get_container_list_returning_multiple_items(self):
-        mock_provider.ssh = MockSSH([{'type': 'execute',
-                                      'command': 'docker ps -a -q',
-                                      'result': {'stdout': '765012f0bf96\n774e0ba26014\n', 'stderr': '', 'exit_code': 0}}])
-        result = container()._get_container_list("a")
-        assert result == ['765012f0bf96', '774e0ba26014']
