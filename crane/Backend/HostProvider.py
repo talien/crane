@@ -34,17 +34,17 @@ class HostProvider:
     def query_hosts_with_masked_credentials(self):
         return map(lambda x: self.__use_fingerprint_for_key(x), self.query_hosts())
 
-    def __get_host_by_id(self, id):
+    def get_host_by_id(self, id):
         host = HostModel.query.filter_by(id=id).first()
         return host
 
     def get_host_info(self, id):
-        host = self.__get_host_by_id(id)
+        host = self.get_host_by_id(id)
         info = self.run_command_on_host(host, "docker info; docker version")['stdout']
         return info
 
     def delete_host(self, id):
-        host = self.__get_host_by_id(id)
+        host = self.get_host_by_id(id)
         if host:
             db.session.delete(host)
             db.session.commit()
@@ -61,7 +61,7 @@ class HostProvider:
         return self.ssh_connection.get_connection(host)
 
     def run_command_on_host_id(self, host_id, command):
-        connection = self.__get_connection(self.__get_host_by_id(host_id))
+        connection = self.__get_connection(self.get_host_by_id(host_id))
         return connection.execute(command)
 
     def run_command_on_host(self, host, command):
@@ -69,5 +69,5 @@ class HostProvider:
         return connection.execute(command)
 
     def put_file_on_host_id(self, host_id, filename, content):
-        connection = self.__get_connection(self.__get_host_by_id(host_id))
+        connection = self.__get_connection(self.get_host_by_id(host_id))
         return connection.put_file(filename, content)
