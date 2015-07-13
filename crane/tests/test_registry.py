@@ -6,7 +6,7 @@ from crane.Backend.DockerPrivate import DockerPrivate
 import pytest
 import json
 
-url = "a_url"
+a_url = "a_url"
 username = "a_username"
 password = "a_password"
 a_json = json.dumps({
@@ -17,12 +17,12 @@ a_json = json.dumps({
 
 @pytest.fixture
 def common_registry():
-    return CommonRegistry(url, username, password)
+    return CommonRegistry(a_url, username, password)
 
 
 @pytest.fixture
-def dockerhub():
-    return DockerHub(url, username, password, requests)
+def dockerhub(url, requests_module):
+    return DockerHub(url, username, password, requests_module)
 
 
 @pytest.fixture
@@ -35,15 +35,17 @@ class Response:
         self.text = text
 
 
-class requests:
-    @staticmethod
-    def get(url, **kwargs):
-        return Response(a_json)
+class requestsMock:
+    def __init__(self, expectations):
+        self.expectations = expectations
+
+    def get(self, url, **kwargs):
+        return Response(self.expectations[url])
 
 
 class TestCommonRegistry:
     def test_initialization(self):
-        assert(common_registry().url == url)
+        assert(common_registry().url == a_url)
         assert(common_registry().username == username)
         assert(common_registry().password == password)
 
@@ -61,7 +63,14 @@ class TestCommonRegistry:
 
 class TestDockerHub:
     def test_query_tags(self):
-        assert(dockerhub()._query_tags("a") == json.loads(a_json))
+        requests = requestsMock({"a_url/v1/repositories/a/tags": a_json})
+        assert(dockerhub("a_url", requests)._query_tags("a") == json.loads(a_json))
+
+    def test_search_one_page(self):
+        result = '{"num_pages": 1, "num_results": 1, "results": [{"is_automated": true, "name": "talien/crane", "is_trusted": true, "is_official": false, "star_count": 0, "description": ""}], "page_size": 25, "query": "talien/crane", "page": "1"}'
+        requests = requestsMock({"a_url/v1/search?q=talien/crane&page=1": result})
+        expected_output = [{u'is_automated': True, u'name': u'talien/crane', u'star_count': 0, u'is_trusted': True, u'is_official': False, u'description': u''}]
+        assert dockerhub("a_url", requests).search("talien/crane") == expected_output
 
 
 class TestRegistry:
