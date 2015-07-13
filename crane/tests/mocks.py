@@ -4,6 +4,9 @@ class MockSSH:
         self.expectations = expectations
         self.command_index = 0
 
+    def get_connection(self, host):
+        return self
+
     def execute(self, command):
         assert self.expectations[self.command_index]['type'] == 'execute'
         assert self.expectations[self.command_index]['command'] == command
