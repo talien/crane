@@ -1,35 +1,13 @@
+import StringIO
+import paramiko
+
 from crane.webserver import db
 from Models.HostModel import HostModel
-import paramiko
-import StringIO
 
-class SSHConnection:
-    def __init__(self, host):
-        self.ssh = paramiko.SSHClient()
-        self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        if not host.username and host.sshkey:
-            keybuffer = StringIO.StringIO(host.sshkey)
-            pkey = paramiko.PKey.from_private_key(keybuffer)
-            self.ssh.connect(host.host, username=host.username, pkey=pkey)
-        else:
-            self.ssh.connect(host.host, username=host.username, password=host.password)
-
-    def execute(self, command):
-        ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command(command)
-        stdout = ssh_stdout.read()
-        stderr = ssh_stderr.read()
-        exit_code = ssh_stdout.channel.recv_exit_status()
-        return {'stdout': stdout, 'stderr': stderr, 'exit_code': exit_code}
-
-    def put_file(self, filename, content):
-        transport = self.ssh.get_transport()
-        sftp = paramiko.sftp_client.SFTPClient.from_transport(transport)
-        script = sftp.file(filename, "w")
-        script.write(content)
 
 class HostProvider:
-    def __init__(self):
-        pass
+    def __init__(self, ssh_connection):
+        self.ssh_connection = ssh_connection
 
     def add_host(self, data):
         host = HostModel(data['name'],
@@ -61,13 +39,12 @@ class HostProvider:
         return host
 
     def get_host_info(self, id):
-        host = HostModel.query.filter_by(id=id).first()
-        ssh = self.get_connection(host)
-        info = ssh.execute("docker info; docker version")['stdout']
+        host = self.get_host_by_id(id)
+        info = self.run_command_on_host(host, "docker info; docker version")['stdout']
         return info
 
     def delete_host(self, id):
-        host = HostModel.query.filter_by(id=id).first()
+        host = self.get_host_by_id(id)
         if host:
             db.session.delete(host)
             db.session.commit()
@@ -80,5 +57,17 @@ class HostProvider:
             host.sshkey = "FP:" + fingerprint
         return host.to_dict()
 
-    def get_connection(self, host):
-        return SSHConnection(host)
+    def __get_connection(self, host):
+        return self.ssh_connection.get_connection(host)
+
+    def run_command_on_host_id(self, host_id, command):
+        connection = self.__get_connection(self.get_host_by_id(host_id))
+        return connection.execute(command)
+
+    def run_command_on_host(self, host, command):
+        connection = self.__get_connection(host)
+        return connection.execute(command)
+
+    def put_file_on_host_id(self, host_id, filename, content):
+        connection = self.__get_connection(self.get_host_by_id(host_id))
+        return connection.put_file(filename, content)

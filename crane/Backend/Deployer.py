@@ -28,17 +28,15 @@ class Deployer:
         self.host_provider = host_provider
 
     def deploy(self, host_id, data):
-        host = self.host_provider.get_host_by_id(host_id)
-        ssh = self.host_provider.get_connection(host)
         if data['deploy'] == 'raw':
             container = self.__interpolate_variables(data['container'], {})
         else:
             container = self.__interpolate_variables(
                 data['template']['deploy'], data['parameters'])
-        predeploy = self.__run_deploy_hook(ssh, container, "predeploy")
+        predeploy = self.__run_deploy_hook(host_id, container, "predeploy")
         if predeploy['exit_code'] != 0:
             return DeployError(message="Predeploy script failed!", predeploy=predeploy)
-        deploy = ssh.execute("docker run -d -name {0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
+        deploy = self.host_provider.run_command_on_host_id(host_id, "docker run -d -name {0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
             container['name'],
             container['volumes'],
             container['capabilities'],
@@ -50,7 +48,7 @@ class Deployer:
             container['command']))
         if deploy['exit_code'] != 0:
             return DeployError(message="Starting container failed!", predeploy=predeploy, deploy=deploy)
-        postdeploy = self.__run_deploy_hook(ssh, container, "postdeploy")
+        postdeploy = self.__run_deploy_hook(host_id, container, "postdeploy")
         if postdeploy['exit_code'] != 0:
             return DeployError(message="Postdeploy script failed!", predeploy=predeploy, deploy=deploy, postdeploy=postdeploy)
         return DeploySuccess(container=deploy['stdout'].strip())
@@ -105,9 +103,9 @@ class Deployer:
             container['postdeploy'] = self.__interpolate_string(deploy['postdeploy'], parameters)
         return container
 
-    def __run_deploy_hook(self, ssh, container, hook):
+    def __run_deploy_hook(self, host_id, container, hook):
         if not (hook in container):
-            return {'stdout': "", 'stderr': "",'exit_code': 0}
-        ssh.put_file("/tmp/script", container[hook])
-        result = ssh.execute("/bin/bash /tmp/script")
+            return {'stdout': "", 'stderr': "", 'exit_code': 0}
+        self.host_provider.put_file_on_host_id(host_id, "/tmp/script", container[hook])
+        result = self.host_provider.run_command_on_host_id(host_id, "/bin/bash /tmp/script")
         return result

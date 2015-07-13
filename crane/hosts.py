@@ -1,9 +1,10 @@
 from flask import request
 from webserver import app
-from Backend.Host import HostProvider
+from Backend.HostProvider import HostProvider
 from flask import jsonify
+from crane.Backend.Utils.SSHConnection import SSHConnection
 
-host = HostProvider()
+host = HostProvider(SSHConnection())
 
 
 @app.route('/host', methods=['POST'])

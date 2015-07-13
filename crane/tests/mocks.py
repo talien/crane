@@ -4,6 +4,9 @@ class MockSSH:
         self.expectations = expectations
         self.command_index = 0
 
+    def get_connection(self, host):
+        return self
+
     def execute(self, command):
         assert self.expectations[self.command_index]['type'] == 'execute'
         assert self.expectations[self.command_index]['command'] == command
@@ -29,8 +32,15 @@ class MockProvider:
     def get_host_by_id(self, hostid):
         return None
 
-    def get_connection(self, host):
-        return self.ssh
+    def run_command_on_host_id(self, host_id, command):
+        return self.ssh.execute(command)
+
+    def run_command_on_host(self, host, command):
+        return self.ssh.execute(command)
+
+    def put_file_on_host_id(self, host_id, file, contents):
+        return self.ssh.put_file(file, contents)
+
 
 class MockHost:
     def __init__(self, id, name):
