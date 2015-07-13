@@ -83,6 +83,31 @@ class TestDockerHub:
         expected_result = [{'name': u'8bdc8703a0096252bdf97dfc151667062b9e7c2098884247e8fce97ea1824d67', 'tags': [u'build']}]
         assert dockerhub("a_url", requests).tags("balabit/syslog-ng") == expected_result
 
+    def test_images(self):
+        images = '[{"checksum": "", "id": "123"}]'
+        ancestry = '["123", "456", "789"]'
+        detail1 = '{"comment": "csillam", "created": "today", "id": "123"}'
+        detail2 = '{"comment": "csillam2", "created": "today2", "id": "456"}'
+        detail3 = '{"comment": "csillam3", "created": "today3", "id": "789"}'
+        requests = requestsMock({"a_url/v1/repositories/balabit/syslog-ng/images": {'response': images,
+                                                                                    'headers': {'x-docker-token': "dtoken",
+                                                                                                'x-docker-endpoints': "dendpoint"}},
+                                 "https://dendpoint/v1/images/123/ancestry": {'response': ancestry,
+                                                                              'headers': {'x-docker-token': "dtoken",
+                                                                                          'x-docker-endpoints': "dendpoint"}},
+                                 "https://dendpoint/v1/images/123/json": {'response': detail1,
+                                                                          'headers': {'x-docker-token': "dtoken",
+                                                                                          'x-docker-endpoints': "dendpoint"}},
+                                 "https://dendpoint/v1/images/456/json": {'response': detail2,
+                                                                          'headers': {'x-docker-token': "dtoken",
+                                                                                          'x-docker-endpoints': "dendpoint"}},
+                                 "https://dendpoint/v1/images/789/json": {'response': detail3,
+                                                                          'headers': {'x-docker-token': "dtoken",
+                                                                                          'x-docker-endpoints': "dendpoint"}}})
+
+        expected_result = [{'comment': 'csillam', 'created': 'today', 'id': '123'}, {'comment': 'csillam2', 'created': 'today2', 'id': '456'}, {'comment': 'csillam3', 'created': 'today3', 'id': '789'}]
+        assert dockerhub("a_url", requests).image("balabit/syslog-ng", "123") == expected_result
+
 class TestRegistry:
     def test_expand_results_with_registry_name(self):
         results_parameter = [{'a': "a"}, {'b': "b"}]
