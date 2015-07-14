@@ -13,19 +13,20 @@ class DockerHub(CommonRegistry):
         tags = json.loads(res.text)
         return tags
 
+    def _query_page(self, query, page_number, url):
+        res = self.requests.get("{2}/v1/search?q={0}&page={1}".format(query, page_number, url), verify=False)
+        result = json.loads(res.text)
+        return result
+
+    def __query_page_results(self, query, page_number, url):
+        return self._query_page(query, page_number, url)['results']
+
     def search(self, query):
-
-        def query_page(query, page, url):
-            res = self.requests.get("{2}/v1/search?q={0}&page={1}".format(query, page, url), verify=False)
-            result = json.loads(res.text)
-            return result['results']
-
         results = []
-        response = self.requests.get("{2}/v1/search?q={0}&page={1}".format(query, 1, self.url), verify=False)
-        result = json.loads(response.text)
+        result = self._query_page(query, 1, self.url)
         results = results + result['results']
         num_pages = result['num_pages']
-        results = parallel_map_reduce(lambda x: query_page(query, x, self.url), lambda x, y: x+y, range(2, num_pages + 1), results)
+        results = parallel_map_reduce(lambda x: self.__query_page_results(query, x, self.url), lambda x, y: x+y, range(2, num_pages + 1), results)
         results.sort(key=lambda x: x['star_count'], reverse=True)
         return results
 
