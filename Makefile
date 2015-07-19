@@ -8,3 +8,5 @@ coverage:
 	PYTHONPATH="." py.test --cov .
 coverage-html:
 	PYTHONPATH="." py.test --cov . --cov-report=html
+lint:
+	pylint crane || exit 0
