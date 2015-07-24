@@ -1,0 +1,9 @@
+general:
+    debug: False
+
+database:
+    db_path: /tmp/test.db
+
+network:
+    listen_ip: 0.0.0.0
+    port: 5000
