@@ -8,5 +8,5 @@ EXPOSE 5000
 
 WORKDIR /app
 
-CMD python app.py --listen-ip 0.0.0.0
+CMD python app.py
 

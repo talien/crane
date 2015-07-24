@@ -1,5 +1,5 @@
 from crane.webserver import app, db
-import argparse
+from crane.config import config
 import crane.index
 import crane.templates
 import crane.hosts
@@ -7,11 +7,9 @@ import crane.containers
 import crane.registry
 import crane.environments
 
+
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--listen-ip", dest="ip", default="127.0.0.1")
-    args = parser.parse_args()
     db.create_all()
-    app.run(debug=True, host=args.ip)
+    app.run(debug=config['general']['debug'], host=config['network']['listen_ip'], port=config['network']['port'])
 
 main() 
