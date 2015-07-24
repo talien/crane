@@ -1,5 +1,6 @@
 from crane.webserver import app, db
 import argparse
+import crane.index
 import crane.templates
 import crane.hosts
 import crane.containers
