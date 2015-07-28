@@ -36,7 +36,7 @@ class Deployer:
         predeploy = self.__run_deploy_hook(host_id, container, "predeploy")
         if predeploy['exit_code'] != 0:
             return DeployError(message="Predeploy script failed!", predeploy=predeploy)
-        deploy = self.host_provider.run_command_on_host_id(host_id, "docker run -d -name {0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
+        deploy = self.host_provider.run_command_on_host_id(host_id, "docker run -d --name {0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
             container['name'],
             container['volumes'],
             container['capabilities'],
