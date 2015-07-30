@@ -19,6 +19,10 @@
   line-height: 48px;
 }
 
+.data-table td.long-text {
+  height: auto;
+}
+
 .data-table th, .data-table td.roundpadding {
   padding: 12px;
 }

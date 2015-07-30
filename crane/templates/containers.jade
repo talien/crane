@@ -43,10 +43,10 @@
                 .btn.btn-danger(ng-click="remove_container(container)") Delete
 
           tr
-            td.roundpadding(colspan=7,ng-show="container.details.active")
+            td.roundpadding.long-text(colspan=7,ng-show="container.details.active")
               div(hljs='', source='container.details.data | json')
           tr(ng-repeat-end)
-            td.roundpadding(ng-show="container.logs.active")
+            td.roundpadding.long-text(ng-show="container.logs.active")
               p 
               | Showing only the last 200 log lines. Click 
               a(href="/host/[[container.hostid]]/container/[[container.id]]/fulllog") here
