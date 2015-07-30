@@ -16,6 +16,7 @@
 .data-table th, .data-table td {
   padding: 0 12px;
   height: 48px;
+  line-height: 48px;
 }
 
 .data-table th, .data-table td.roundpadding {
@@ -29,3 +30,73 @@
 .fixed-height {
   max-height: 500px;
 }
+
+.table-button-container-right{
+  text-align: right;
+}
+
+.table-button-td-fixed-width {
+    width: 125px;
+}
+
+
+@media only screen and (max-width: 760px), (max-device-width: 1024px) and (min-device-width: 768px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  .data-table td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+  }
+
+  .data-table thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  .data-table tr {
+    border: 1px solid #ccc;
+  }
+
+  .data-table tr.even {
+    background-color: rgba(211, 211, 211, 0.30);
+  }
+
+  .data-table tr.even > td{
+    border-bottom: 1px solid #BFBEBE;
+  }
+
+  .data-table td:before {
+    position: absolute;
+    top: 0px;
+    left: 15px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+  }
+
+  .host-table td:nth-of-type(1):before { content: "Name"; }
+  .host-table td:nth-of-type(2):before { content: "Host"; }
+  .host-table td:nth-of-type(3):before { content: "Username"; }
+  .host-table td:nth-of-type(4):before { content: "SSH Key"; }
+  .host-table td:nth-of-type(5):before { content: "Password"; }
+
+  .container-table td:nth-of-type(2):before { content: "Name"; }
+  .container-table td:nth-of-type(3):before { content: "Image"; }
+  .container-table td:nth-of-type(4):before { content: "Command"; }
+  .container-table td:nth-of-type(5):before { content: "State"; }
+  .container-table td:nth-of-type(6):before { content: "Host"; }
+
+  .registry-table td:nth-of-type(1):before { content: "Name"; }
+  .registry-table td:nth-of-type(2):before { content: "URL"; }
+  .registry-table td:nth-of-type(3):before { content: "Username"; }
+  .registry-table td:nth-of-type(4):before { content: "Password"; }
+  .registry-table td:nth-of-type(5):before { content: "Provider"; }
+  
+}
+
+

@@ -11,15 +11,15 @@
             th Password
             th
 
-        tbody
-          tr(ng-repeat-start="host in hosts")
+        tbody.host-table
+          tr(ng-repeat-start="host in hosts", ng-class="{'even' : $index % 2 === 0}")
             td(ng-click="host_details(host)") [[host.name]]
             td [[host.host]]
             td [[host.username]]
             td [[host.sshkey]]
             td &lt;sensitive data&gt;
-            td
-              .btn-group
+            td.table-button-container-right
+              .btn-group.table-button-td-fixed-width
                 .btn.btn-primary(ng-click="edit_host(host)") Edit
                 .btn.btn-danger(ng-click="remove_host(host)") Delete
           tr(ng-repeat-end ng-show="host.details.active")

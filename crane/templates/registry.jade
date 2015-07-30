@@ -11,15 +11,15 @@
             th Provider
             th
 
-        tbody
-          tr(ng-repeat="registry in registries")
+        tbody.registry-table
+          tr(ng-repeat="registry in registries", ng-class="{'even' : $index % 2 === 0}")
             td [[registry.name]]
             td [[registry.url]]
             td [[registry.username]]
             td &lt;sensitive data&gt;
             td [[registry.provider]]
-            td
-              .btn-group
+            td.table-button-container-right
+              .btn-group.table-button-td-fixed-width
                 .btn.btn-primary(ng-click="start_edit_registry(registry)") Edit
                 .btn.btn-danger(ng-click="remove_registry(registry)") Delete
 
