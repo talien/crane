@@ -28,10 +28,10 @@ class Deployer:
         self.host_provider = host_provider
 
     def deploy(self, host_id, data):
-        return self.run_container(host_id, data, False)
+        return self.run_container(host_id, data, foreground=False)
 
     def task(self, host_id, data):
-        return self.run_container(host_id, data, True)
+        return self.run_container(host_id, data, foreground=True)
 
     def run_container(self, host_id, data, foreground):
         if data['deploy'] == 'raw':
@@ -42,7 +42,7 @@ class Deployer:
         predeploy = self.__run_deploy_hook(host_id, container, "predeploy")
         if predeploy['exit_code'] != 0:
             return DeployError(message="Predeploy script failed!", predeploy=predeploy)
-        deploy = self.host_provider.run_command_on_host_id(host_id, "docker run {9} -name {0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
+        deploy = self.host_provider.run_command_on_host_id(host_id, "docker run {9} --name {0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
             container['name'],
             container['volumes'],
             container['capabilities'],

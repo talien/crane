@@ -46,9 +46,16 @@ class Tasks:
 
     def query(self):
         tasks = TaskModel.query.all()
-        result = []
-        for task in tasks:
-            result.append({'name':task.name, 'container_id':task.container_name, 'state':task.state, 'host': task.host_id, 'started':task.started, 'finished':task.finished})
+        result = [ 
+                  {
+                   'name':task.name, 
+                   'container_id':task.container_name, 
+                   'state':task.state, 
+                   'host': task.host_id, 
+                   'started':task.started, 
+                   'finished':task.finished
+                  } 
+                  for task in tasks ]
         return result
 
     def stop(self, id):
