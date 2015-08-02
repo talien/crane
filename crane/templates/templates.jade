@@ -13,7 +13,7 @@
             th Actions
 
         tbody
-          tr(ng-repeat-start="template in templates")
+          tr(ng-repeat-start="template in templates", ng-class="{'even' : $index % 2 === 0}")
             td(ng-click="host_details(host)") [[container.name]]
               button.glyphicon.glyphicon-stats(ng-click="container_details(container)")
               button.glyphicon.glyphicon-th-list(ng-click="container_logs(container)")
@@ -27,7 +27,7 @@
             td
               ul
                 li(ng-repeat="parameter in template.parameters") [[ parameter.name ]]
-            td 
+            td
               .btn.btn-primary(ng-click="start_edit_template(template)") Edit
               .btn.btn-danger(ng-click="delete_template(template)") Delete
           tr(ng-repeat-end)

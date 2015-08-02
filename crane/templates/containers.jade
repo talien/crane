@@ -16,8 +16,8 @@
             th Host
             th
 
-        tbody
-          tr(ng-repeat-start="container in containers")
+        tbody.container-table
+          tr(ng-repeat-start="container in containers", ng-class="{'even' : $index % 2 === 0}")
             td
               .btn-group.btn-group.xs
                 .btn.btn-xs.btn-default.glyphicon.glyphicon-stats(ng-click="container_details(container)")
@@ -28,13 +28,14 @@
             td [[container.state]]
             td [[container.hostname]]
             
-            td(ng-show="container.state == 'Running'")
-              .btn.btn-warning(ng-show="container.stopping") 
-                .glyphicon.glyphicon-refresh.glyphicon-refresh-animate 
-                  span Stopping
-              .btn.btn-warning(ng-click="stop_container(container)",ng-show="!container.stopping") Stop
-            td(ng-show="container.state != 'Running'")
-              .btn-group
+            td.table-button-container-right(ng-show="container.state == 'Running'")
+              .table-button-td-fixed-width
+                .btn.btn-warning(ng-show="container.stopping") 
+                  .glyphicon.glyphicon-refresh.glyphicon-refresh-animate 
+                    span Stopping
+                .btn.btn-warning(ng-click="stop_container(container)",ng-show="!container.stopping") Stop
+            td.table-button-container-right(ng-show="container.state != 'Running'")
+              .btn-group.table-button-td-fixed-width
                 .btn.btn-success(ng-click="start_container(container)",ng-show="!container.starting" ) Start
                 .btn.btn-success(ng-show="container.starting") 
                   .glyphicon.glyphicon-refresh.glyphicon-refresh-animate 
@@ -42,10 +43,10 @@
                 .btn.btn-danger(ng-click="remove_container(container)") Delete
 
           tr
-            td.roundpadding(colspan=7,ng-show="container.details.active")
+            td.roundpadding.long-text(colspan=7,ng-show="container.details.active")
               div(hljs='', source='container.details.data | json')
           tr(ng-repeat-end)
-            td.roundpadding(ng-show="container.logs.active")
+            td.roundpadding.long-text(ng-show="container.logs.active")
               p 
               | Showing only the last 200 log lines. Click 
               a(href="/host/[[container.hostid]]/container/[[container.id]]/fulllog") here
