@@ -42,9 +42,6 @@ class MockProvider:
     def __init__(self, ssh=None):
         self.ssh = ssh
 
-    def get_host_by_id(self, hostid):
-        return None
-
     def run_command_on_host_id(self, host_id, command):
         return self.ssh.execute(command)
 
