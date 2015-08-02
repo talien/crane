@@ -23,6 +23,7 @@ class Registry:
             data['provider'])
         db.session.add(registry)
         db.session.commit()
+        return registry.id
 
     def update_registry(self, registry_id, data):
         registry = RegistryModel.query.filter_by(id=registry_id).first()
