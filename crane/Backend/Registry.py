@@ -14,6 +14,9 @@ class Registry:
         transformed_registries = map(lambda x: dict(x), registries)
         return transformed_registries
 
+    def get_registry_by_id(self, registry_id):
+        return RegistryModel.query.filter_by(id=registry_id).first()
+
     def add_registry(self, data):
         registry = RegistryModel(
             data['name'],

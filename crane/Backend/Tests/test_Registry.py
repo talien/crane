@@ -1,8 +1,6 @@
-from crane.Backend.Models.RegistryModel import RegistryModel
 from crane.Backend.Registry import Registry
 from crane.Backend.DockerHub import DockerHub
 from crane.Backend.DockerPrivate import DockerPrivate
-from crane.webserver import db
 import pytest
 
 @pytest.fixture
@@ -61,14 +59,13 @@ class TestRegistry:
             'provider': 'dockerhub'
         }
         the_id = registry().add_registry(data)
-        inserted_registry = RegistryModel.query.filter_by(id=the_id).first()
+        inserted_registry = registry().get_registry_by_id(the_id)
         assert inserted_registry.name == 'csillamponi'
         assert inserted_registry.url == 'crane.gov'
         assert inserted_registry.username == ''
         assert inserted_registry.password == ''
         assert inserted_registry.provider == 'dockerhub'
-        db.session.delete(inserted_registry)
-        db.session.commit()
+        registry().delete_registry(the_id)
 
     def test_update_registry(self):
         data_before_update = {
@@ -87,14 +84,13 @@ class TestRegistry:
         }
         the_id = registry().add_registry(data_before_update)
         registry().update_registry(the_id, data_after_update)
-        updated_record = RegistryModel.query.filter_by(id=the_id).first()
+        updated_record = registry().get_registry_by_id(the_id)
         assert updated_record.name == 'csillamponi2'
         assert updated_record.url == 'crane.gov2'
         assert updated_record.username == '2'
         assert updated_record.password == '2'
         assert updated_record.provider == 'dockerhub2'
-        db.session.delete(updated_record)
-        db.session.commit()
+        registry().delete_registry(the_id)
 
     def test_delete_registry(self):
         data = {
@@ -105,6 +101,6 @@ class TestRegistry:
             'provider': 'dockerhub'
         }
         the_id = registry().add_registry(data)
-        assert RegistryModel.query.filter_by(id=the_id).first() is not None
+        assert registry().get_registry_by_id(the_id) is not None
         registry().delete_registry(the_id)
-        assert RegistryModel.query.filter_by(id=the_id).first() is None
+        assert registry().get_registry_by_id(the_id) is None
