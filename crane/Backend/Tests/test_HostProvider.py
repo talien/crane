@@ -1,6 +1,6 @@
 import pytest
 from crane.Backend.HostProvider import HostProvider
-from mocks import MockSSH
+from crane.Backend.Tests.Mocks import MockSSH
 
 
 @pytest.fixture

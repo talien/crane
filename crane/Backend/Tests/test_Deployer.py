@@ -1,5 +1,5 @@
 from crane.Backend.Deployer import Deployer
-from mocks import MockProvider, MockSSH
+from crane.Backend.Tests.Mocks import MockProvider, MockSSH
 import pytest
 
 mock_provider = MockProvider()
@@ -11,7 +11,6 @@ def deployer():
 
 
 class TestDeployer:
-
     def test_generate_parameters(self):
         expected = "-v a -v b -v c "
         assert deployer()._generate_parameters("a b c", "-v") == expected

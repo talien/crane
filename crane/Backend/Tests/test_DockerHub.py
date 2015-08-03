@@ -1,69 +1,18 @@
-from crane.Backend.CommonRegistry import CommonRegistry
+from crane.Backend.Tests.Mocks import requestsMock
 from crane.Backend.DockerHub import DockerHub
-from crane.Backend.Registry import Registry
-from crane.Backend.DockerPrivate import DockerPrivate
 
 import pytest
 import json
 
-a_url = "a_url"
-username = "a_username"
-password = "a_password"
 a_json = json.dumps({
     "text": "a",
     "b": "b"
 })
 
-
-@pytest.fixture
-def common_registry():
-    return CommonRegistry(a_url, username, password)
-
-
 @pytest.fixture
 def dockerhub(url, requests_module):
-    return DockerHub(url, username, password, requests_module)
+    return DockerHub(url, "csillam", "poni", requests_module)
 
-@pytest.fixture
-def dockerprivate(url, the_username, requests_module):
-    return DockerPrivate(url, the_username, password, requests_module)
-
-@pytest.fixture
-def registry():
-    return Registry()
-
-
-class Response:
-    def __init__(self, text, headers):
-        self.text = text
-        self.headers = headers
-
-
-class requestsMock:
-    def __init__(self, expectations):
-        self.expectations = expectations
-
-    def get(self, url, **kwargs):
-        return Response(self.expectations[url]['response'], self.expectations[url]['headers'])
-
-
-class TestCommonRegistry:
-    def test_initialization(self):
-        assert(common_registry().url == a_url)
-        assert(common_registry().username == username)
-        assert(common_registry().password == password)
-
-    def test_search(self):
-        with pytest.raises(NotImplementedError):
-            common_registry().search("a")
-
-    def test_image(self):
-        with pytest.raises(NotImplementedError):
-            common_registry().image("a", "b")
-
-    def test_tags(self):
-        with pytest.raises(NotImplementedError):
-            common_registry().tags("a")
 
 class TestDockerHub:
     def test_query_tags(self):
@@ -118,79 +67,3 @@ class TestDockerHub:
 
         expected_result = [{'comment': 'csillam', 'created': 'today', 'id': '123'}, {'comment': 'csillam2', 'created': 'today2', 'id': '456'}, {'comment': 'csillam3', 'created': 'today3', 'id': '789'}]
         assert dockerhub("a_url", requests).image("balabit/syslog-ng", "123") == expected_result
-
-
-class TestDockerPrivate:
-    def test_search_with_username(self):
-        requests = requestsMock({"a_url/v1/search?q=talien/crane": {'response': '{"results": "the_results", "b": "a"}',
-                                                                    'headers': 'a'}})
-        expected_results = "the_results"
-        assert dockerprivate("a_url", username, requests).search("talien/crane") == expected_results
-
-    def test_search_without_username(self):
-        requests = requestsMock({"a_url/v1/search?q=talien/crane": {'response': '{"results": "the_results", "b": "a"}',
-                                                                    'headers': 'a'}})
-        expected_results = "the_results"
-        assert dockerprivate("a_url", "", requests).search("talien/crane") == expected_results
-
-    def test_tags(self):
-        tags = '{"k1": "v1", "k2": "v2", "k3": "v1"}'
-        requests = requestsMock({"a_url/v1/repositories/talien/crane/tags": {'response': tags,
-                                                                             'headers': 'a'}})
-        expected_results = [{'name': 'v1', 'tags': ['k3', 'k1']}, {'name': 'v2', 'tags': ['k2']}]
-        assert dockerprivate("a_url", username, requests).tags("talien/crane") == expected_results
-
-    def test_images(self):
-        ancestors = '["a123", "2"]'
-        requests = requestsMock({"a_url/v1/images/a123/ancestry": {'response': ancestors,
-                                                                   'headers': 'a'},
-                                 "a_url/v1/images/a123/json": {'response': '{"res1": "1"}',
-                                                               'headers': 'a'},
-                                 "a_url/v1/images/2/json": {'response': '{"res2": "2"}',
-                                                            'headers': 'a'}})
-
-        expected_results = [{'res1': '1'}, {'res2': '2'}]
-        assert dockerprivate("a_url", username, requests).image("talien/crane", "a123") == expected_results
-
-
-class TestRegistry:
-    def test_expand_results_with_registry_name(self):
-        results_parameter = [{'a': "a"}, {'b': "b"}]
-        class registry_parameter:
-            name = "Almafa"
-            id = "42"
-
-        expected = [
-            {
-                'a': "a",
-                'registry': "Almafa",
-                'registry_id': "42"},
-            {
-                'b': "b",
-                'registry': "Almafa",
-                'registry_id': "42"}]
-
-        assert registry()._expand_results_with_registry_name(results_parameter, registry_parameter) == expected
-
-    def test_get_provider(self):
-        class registry_parameter_dockerhub:
-            provider = "dockerhub"
-            url = "a"
-            username = "b"
-            password = "c"
-            requests = None
-        class registry_parameter_dockerprivate:
-            provider = "private"
-            url = "csill"
-            username = "am"
-            password = "poni"
-            requests = None
-
-        assert isinstance(registry()._get_provider(registry_parameter_dockerhub), DockerHub)
-        assert registry()._get_provider(registry_parameter_dockerhub).url == "a"
-        assert registry()._get_provider(registry_parameter_dockerhub).username == "b"
-        assert registry()._get_provider(registry_parameter_dockerhub).password == "c"
-        assert isinstance(registry()._get_provider(registry_parameter_dockerprivate), DockerPrivate)
-        assert registry()._get_provider(registry_parameter_dockerprivate).url == "csill"
-        assert registry()._get_provider(registry_parameter_dockerprivate).username == "am"
-        assert registry()._get_provider(registry_parameter_dockerprivate).password == "poni"

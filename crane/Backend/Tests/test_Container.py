@@ -1,5 +1,6 @@
 from crane.Backend.Container import Container
-from mocks import MockProvider, MockSSH, MockHost
+from crane.Backend.Tests.Mocks import MockProvider, MockSSH, MockHost
+
 import json
 import pytest
 
@@ -12,6 +13,7 @@ mock_provider.query_hosts = query_hosts
 @pytest.fixture
 def container():
     return Container(mock_provider)
+
 
 def create_container_map():
     return {
@@ -26,6 +28,7 @@ def create_container_map():
             }
     }
 
+
 def create_result():
     return {
         'id': 'almafa',
@@ -36,6 +39,7 @@ def create_result():
         'hostid': 42,
         'hostname': 'csillamponi'
     }
+
 
 class TestContainers:
     def test_get_info_from_container(self):

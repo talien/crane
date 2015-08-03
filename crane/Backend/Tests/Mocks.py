@@ -1,5 +1,18 @@
-class MockSSH:
+class Response:
+    def __init__(self, text, headers):
+        self.text = text
+        self.headers = headers
 
+
+class requestsMock:
+    def __init__(self, expectations):
+        self.expectations = expectations
+
+    def get(self, url, **kwargs):
+        return Response(self.expectations[url]['response'], self.expectations[url]['headers'])
+
+
+class MockSSH:
     def __init__(self, expectations):
         self.expectations = expectations
         self.command_index = 0
@@ -28,9 +41,6 @@ class MockProvider:
 
     def __init__(self, ssh=None):
         self.ssh = ssh
-
-    def get_host_by_id(self, hostid):
-        return None
 
     def run_command_on_host_id(self, host_id, command):
         return self.ssh.execute(command)
