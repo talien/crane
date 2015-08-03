@@ -1,7 +1,11 @@
 from crane.Backend.Registry import Registry
 from crane.Backend.DockerHub import DockerHub
 from crane.Backend.DockerPrivate import DockerPrivate
+from crane.webserver import db
 import pytest
+
+db.create_all()
+
 
 @pytest.fixture
 def registry():
