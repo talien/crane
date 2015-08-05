@@ -104,8 +104,8 @@ class Deployer:
         return container
 
     def __run_deploy_hook(self, host_id, container, hook):
-        if not (hook in container):
-            return {'stdout': "", 'stderr': "", 'exit_code': 0}
-        self.host_provider.put_file_on_host_id(host_id, "/tmp/script", container[hook])
-        result = self.host_provider.run_command_on_host_id(host_id, "/bin/bash /tmp/script")
+        result = {'stdout': "", 'stderr': "", 'exit_code': 0}
+        if hook in container:
+            self.host_provider.put_file_on_host_id(host_id, "/tmp/script", container[hook])
+            result = self.host_provider.run_command_on_host_id(host_id, "/bin/bash /tmp/script")
         return result
