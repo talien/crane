@@ -17,6 +17,7 @@ class HostProvider:
                          data['sshkey'] if 'sshkey' in data else "", )
         db.session.add(host)
         db.session.commit()
+        return host.id
 
     def update_host(self, id, data):
         host = HostModel.query.filter_by(id=id).first()
@@ -32,7 +33,7 @@ class HostProvider:
         return HostModel.query.all()
 
     def query_hosts_with_masked_credentials(self):
-        return map(lambda x: self.__use_fingerprint_for_key(x), self.query_hosts())
+        return [self.__use_fingerprint_for_key(host) for host in self.query_hosts()]
 
     def get_host_by_id(self, id):
         host = HostModel.query.filter_by(id=id).first()
