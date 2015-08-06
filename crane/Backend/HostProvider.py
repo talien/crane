@@ -39,8 +39,7 @@ class HostProvider:
         return host
 
     def get_host_info(self, id):
-        host = self.get_host_by_id(id)
-        info = self.run_command_on_host(host, "docker info; docker version")['stdout']
+        info = self.run_command_on_host_id(id, "docker info; docker version")['stdout']
         return info
 
     def delete_host(self, id):
