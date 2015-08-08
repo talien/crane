@@ -10,7 +10,7 @@ host = HostProvider(SSHConnection())
 @app.route('/host', methods=['POST'])
 def add_host():
     host_id = host.add_host(request.get_json())
-    return jsonify(host_id=host_id)
+    return jsonify(id=host_id)
 
 
 @app.route('/host/<id>', methods=['POST'])
