@@ -8,8 +8,8 @@ templates = Template()
 
 @app.route('/template', methods=['POST'])
 def new_template():
-    templates.new_template(request.get_json())
-    return ""
+    template_id = templates.new_template(request.get_json())
+    return jsonify(id=template_id)
 
 @app.route('/template/<template_id>', methods=['POST'])
 def edit_template(template_id):

@@ -15,8 +15,8 @@ def get_environments():
 @app.route("/environment", methods=['POST'])
 def add_environment():
     json = request.get_json()
-    environment_provider.add_environment(json['name'])
-    return ""
+    env_id = environment_provider.add_environment(json['name'])
+    return jsonify(id=env_id)
 
 @app.route("/environment/<id>/host", methods=['POST'])
 def add_host_to_environment(id):

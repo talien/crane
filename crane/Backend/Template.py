@@ -15,6 +15,7 @@ class Template:
         template = TemplateModel(data['name'], json.dumps(data['template']), last_template_id + 1, 0)
         db.session.add(template)
         db.session.commit()
+        return template.template_id
 
     def edit_template(self, template_id, data):
         last_template = TemplateModel.query.filter_by(template_id=template_id, latest=True).first()

@@ -20,6 +20,7 @@ class EnvironmentProvider():
         environment = EnvironmentModel(name)
         db.session.add(environment)
         db.session.commit()
+        return environment.id
 
     def add_host_to_environment(self, env_id, host_id):
         insert = hosts_env.insert().values(env_id=env_id,hosts_id=host_id)
