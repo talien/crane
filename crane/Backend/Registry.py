@@ -28,7 +28,7 @@ class Registry:
         return registry.id
 
     def update_registry(self, registry_id, data):
-        registry = RegistryModel.query.filter_by(id=registry_id).first()
+        registry = self.get_registry_by_id(registry_id)
         registry.name = data['name']
         registry.url = data['url']
         registry.username = data['username']
@@ -38,7 +38,7 @@ class Registry:
         db.session.commit()
 
     def delete_registry(self, registry_id):
-        registry = RegistryModel.query.filter_by(id=registry_id).first()
+        registry = self.get_registry_by_id(registry_id)
         if registry:
             db.session.delete(registry)
             db.session.commit()
@@ -46,7 +46,7 @@ class Registry:
     def get_tags(self, registry_id, namespace, repo_name):
         if namespace != "":
             repo_name = "{0}/{1}".format(namespace, repo_name)
-        registry = RegistryModel.query.filter_by(id=registry_id).first()
+        registry = self.get_registry_by_id(registry_id)
         provider = self._get_provider(registry)
         result = provider.tags(repo_name)
         return result
@@ -54,7 +54,7 @@ class Registry:
     def get_image(self, registry_id, namespace, repo_name, image_id):
         if namespace != "":
             repo_name = "{0}/{1}".format(namespace, repo_name)
-        registry = RegistryModel.query.filter_by(id=registry_id).first()
+        registry = self.get_registry_by_id(registry_id)
         provider = self._get_provider(registry)
         result = provider.image(repo_name, image_id)
         return result
