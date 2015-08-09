@@ -9,8 +9,8 @@ db.create_all()
 
 
 @pytest.fixture
-def registry():
-    return Registry()
+def registry(dockerhub=DockerHub, dockerprivate=DockerPrivate):
+    return Registry(dockerhub, dockerprivate)
 
 
 class TestRegistry:

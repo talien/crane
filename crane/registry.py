@@ -1,8 +1,11 @@
 from webserver import app
 from flask import jsonify, request
 from crane.Backend.Registry import Registry
+from crane.Backend.DockerHub import DockerHub
+from crane.Backend.DockerPrivate import DockerPrivate
 
-registries = Registry()
+
+registries = Registry(DockerHub, DockerPrivate)
 
 
 @app.route("/registry", methods=["GET"])
