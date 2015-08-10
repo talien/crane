@@ -4,8 +4,11 @@ from crane.Backend.DockerPrivate import DockerPrivate
 from crane.webserver import db
 import pytest
 
-db.drop_all()
-db.create_all()
+
+@pytest.fixture(scope='session', autouse=True)
+def clear_db():
+    db.drop_all()
+    db.create_all()
 
 
 @pytest.fixture

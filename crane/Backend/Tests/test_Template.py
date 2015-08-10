@@ -3,8 +3,11 @@ from crane.webserver import db
 import pytest
 import json
 
-db.drop_all()
-db.create_all()
+
+@pytest.fixture(scope='session', autouse=True)
+def clear_db():
+    db.drop_all()
+    db.create_all()
 
 @pytest.fixture
 def template():

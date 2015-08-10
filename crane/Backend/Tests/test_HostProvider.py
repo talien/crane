@@ -3,8 +3,11 @@ from crane.Backend.HostProvider import HostProvider
 from crane.Backend.Tests.Mocks import MockSSH
 from crane.webserver import db
 
-db.drop_all()
-db.create_all()
+
+@pytest.fixture(scope='session', autouse=True)
+def clear_db():
+    db.drop_all()
+    db.create_all()
 
 
 @pytest.fixture
