@@ -1,7 +1,10 @@
 import pytest
 from crane.Backend.HostProvider import HostProvider
 from crane.Backend.Tests.Mocks import MockSSH
-from crane.webserver import db
+from crane.webserver import app, db
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 
 
 @pytest.fixture(scope='session', autouse=True)

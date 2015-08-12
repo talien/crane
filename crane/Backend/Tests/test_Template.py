@@ -1,7 +1,10 @@
 from crane.Backend.Template import Template
-from crane.webserver import db
+from crane.webserver import app, db
 import pytest
 import json
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 
 
 @pytest.fixture(scope='session', autouse=True)

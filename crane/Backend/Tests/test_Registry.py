@@ -1,8 +1,10 @@
 from crane.Backend.Registry import Registry
 from crane.Backend.DockerHub import DockerHub
 from crane.Backend.DockerPrivate import DockerPrivate
-from crane.webserver import db
+from crane.webserver import app, db
 import pytest
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 
 
 @pytest.fixture(scope='session', autouse=True)
