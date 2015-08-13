@@ -1,12 +1,9 @@
 from crane.webserver import db
 from crane.Backend.Models.RegistryModel import RegistryModel
-import requests
-
 
 class Registry:
-    def __init__(self, dockerhub, dockerprivate):
-        self.DockerHub = dockerhub
-        self.DockerPrivate = dockerprivate
+    def __init__(self, providerfactory):
+        self.providerfactory = providerfactory
 
     def get_registries(self):
         registries = db.session.execute(RegistryModel.__table__ .select())
@@ -74,7 +71,4 @@ class Registry:
         return results
 
     def _get_provider(self, registry):
-        if registry.provider == 'dockerhub':
-            return self.DockerHub(registry.url, registry.username, registry.password, requests)
-        elif registry.provider == 'private':
-            return self.DockerPrivate(registry.url, registry.username, registry.password, requests)
+        return self.providerfactory.create_provider(registry)
