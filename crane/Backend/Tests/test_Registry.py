@@ -1,16 +1,21 @@
 from crane.Backend.Registry import Registry
 from crane.Backend.DockerHub import DockerHub
 from crane.Backend.DockerPrivate import DockerPrivate
-from crane.webserver import db
+from crane.webserver import app, db
 import pytest
 
-db.drop_all()
-db.create_all()
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+
+
+@pytest.fixture(scope='session', autouse=True)
+def clear_db():
+    db.drop_all()
+    db.create_all()
 
 
 @pytest.fixture
-def registry():
-    return Registry()
+def registry(dockerhub=DockerHub, dockerprivate=DockerPrivate):
+    return Registry(dockerhub, dockerprivate)
 
 
 class TestRegistry:
@@ -109,3 +114,104 @@ class TestRegistry:
         assert registry().get_registry_by_id(the_id) is not None
         registry().delete_registry(the_id)
         assert registry().get_registry_by_id(the_id) is None
+
+    def test_get_tags(self):
+        data = {
+            'name': 'csillamponi',
+            'url': 'crane.gov',
+            'username': '',
+            'password': '',
+            'provider': 'dockerhub'
+        }
+        a_registry = registry(DockerHubMock, DockerPrivateMock).add_registry(data)
+        assert registry(DockerHubMock, DockerPrivateMock).get_tags(a_registry, "", "a_reponame") == "a_reponame_hub_tags"
+        assert registry(DockerHubMock, DockerPrivateMock).get_tags(a_registry, "namespace", "a_reponame") == "namespace/a_reponame_hub_tags"
+        registry(DockerHubMock, DockerPrivateMock).delete_registry(a_registry)
+        data['provider'] = 'private'
+        b_registry = registry(DockerHubMock, DockerPrivateMock).add_registry(data)
+        assert registry(DockerHubMock, DockerPrivateMock).get_tags(b_registry, "", "a_reponame") == "a_reponame_private_tags"
+        assert registry(DockerHubMock, DockerPrivateMock).get_tags(b_registry, "namespace", "a_reponame") == "namespace/a_reponame_private_tags"
+        registry(DockerHubMock, DockerPrivateMock).delete_registry(b_registry)
+
+    def test_get_image(self):
+        data = {
+            'name': 'csillamponi',
+            'url': 'crane.gov',
+            'username': '',
+            'password': '',
+            'provider': 'dockerhub'
+        }
+        a_registry = registry(DockerHubMock, DockerPrivateMock).add_registry(data)
+        assert registry(DockerHubMock, DockerPrivateMock).get_image(a_registry, "", "a_reponame", "image_id") == "a_reponame_hub_image"
+        assert registry(DockerHubMock, DockerPrivateMock).get_image(a_registry, "namespace", "a_reponame", "image_id") == "namespace/a_reponame_hub_image"
+        registry(DockerHubMock, DockerPrivateMock).delete_registry(a_registry)
+        data['provider'] = 'private'
+        b_registry = registry(DockerHubMock, DockerPrivateMock).add_registry(data)
+        assert registry(DockerHubMock, DockerPrivateMock).get_image(b_registry, "", "a_reponame", "image_id") == "a_reponame_private_image"
+        assert registry(DockerHubMock, DockerPrivateMock).get_image(b_registry, "namespace", "a_reponame", "image_id") == "namespace/a_reponame_private_image"
+        registry(DockerHubMock, DockerPrivateMock).delete_registry(b_registry)
+
+    def test_get_registries(self):
+        data = {
+            'name': 'csillamponi',
+            'url': 'crane.gov',
+            'username': '',
+            'password': '',
+            'provider': 'dockerhub'
+        }
+        registry_ids = [registry().add_registry(data),
+                        registry().add_registry(data),
+                        registry().add_registry(data)]
+        regs = []
+        for reg_id in registry_ids:
+            data['id'] = reg_id
+            regs.append(data.copy())
+        assert regs == registry().get_registries()
+        for reg_id in registry_ids:
+            registry().delete_registry(reg_id)
+
+    def test_search_registry(self):
+        data = {
+            'name': 'csillamponi',
+            'url': 'crane.gov',
+            'username': '',
+            'password': '',
+            'provider': 'dockerhub'
+        }
+        a_registry = registry(DockerHubMock, DockerPrivateMock).add_registry(data)
+        data['name'] += "2"
+        data['provider'] = 'private'
+        b_registry = registry(DockerHubMock, DockerPrivateMock).add_registry(data)
+        expected = [
+            {'stuff': 'hub_query',
+             'registry': 'csillamponi',
+             'registry_id': 1},
+            {'stuff': 'private_query',
+             'registry': 'csillamponi2',
+             'registry_id': 2},
+        ]
+        assert registry(DockerHubMock, DockerPrivateMock).search_registry("a") == expected
+        registry(DockerHubMock, DockerPrivateMock).delete_registry(a_registry)
+        registry(DockerHubMock, DockerPrivateMock).delete_registry(b_registry)
+
+
+class DockerHubMock:
+    def __init__(self, a, b, c, d):
+        pass
+    def tags(self, a):
+        return a+'_hub_tags'
+    def image(self, a, b):
+        return a+'_hub_image'
+    def search(self, a):
+        return [{'stuff': 'hub_query'}]
+
+
+class DockerPrivateMock:
+    def __init__(self, a, b, c, d):
+        pass
+    def tags(self, a):
+        return a+'_private_tags'
+    def image(self, a, b):
+        return a+'_private_image'
+    def search(self, a):
+        return [{'stuff': 'private_query'}]

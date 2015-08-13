@@ -44,3 +44,6 @@ class Template:
 
     def _get_latest_template_id(self):
         templates = TemplateModel.query.order_by(desc("template_id"))
+
+    def get_template_by_id(self, template_id):
+        return TemplateModel.query.filter_by(template_id=template_id, latest=True).first()
