@@ -1,6 +1,7 @@
+import pytest
+
 from crane.Backend.Deployer import Deployer
 from crane.Backend.Tests.Mocks import MockProvider, MockSSH
-import pytest
 
 mock_provider = MockProvider()
 

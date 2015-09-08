@@ -1,5 +1,7 @@
-from crane.utils import parallel_map_reduce
 import json
+
+from crane.utils import parallel_map_reduce
+
 
 class Container:
 

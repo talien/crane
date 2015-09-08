@@ -1,5 +1,6 @@
-from crane.webserver import db
 import datetime
+
+from crane.webserver import db
 
 
 class HostModel(db.Model):

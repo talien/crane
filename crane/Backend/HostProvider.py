@@ -2,7 +2,7 @@ import StringIO
 import paramiko
 
 from crane.webserver import db
-from Models.HostModel import HostModel
+from crane.Backend.Models.HostModel import HostModel
 
 
 class HostProvider:

@@ -1,8 +1,8 @@
-from crane.Backend.DockerPrivate import DockerPrivate
-from crane.Backend.Tests.Mocks import requestsMock
-
 import pytest
 import json
+
+from crane.Backend.DockerPrivate import DockerPrivate
+from crane.Backend.Tests.Mocks import requestsMock
 
 username = "a_username"
 password = "a_password"

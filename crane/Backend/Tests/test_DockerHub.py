@@ -1,8 +1,8 @@
-from crane.Backend.Tests.Mocks import requestsMock
-from crane.Backend.DockerHub import DockerHub
-
 import pytest
 import json
+
+from crane.Backend.Tests.Mocks import requestsMock
+from crane.Backend.DockerHub import DockerHub
 
 a_json = json.dumps({
     "text": "a",

@@ -1,8 +1,9 @@
+import json
+import pytest
+
 from crane.Backend.Container import Container
 from crane.Backend.Tests.Mocks import MockProvider, MockSSH, MockHost
 
-import json
-import pytest
 
 def query_hosts():
     return [MockHost(id=42, name="csillamponi")]

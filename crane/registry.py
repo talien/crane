@@ -1,5 +1,6 @@
-from webserver import app
 from flask import jsonify, request
+
+from crane.webserver import app
 from crane.Backend.Registry import Registry
 from crane.Backend.RegistryProviderFactory import RegistryProviderFactory
 

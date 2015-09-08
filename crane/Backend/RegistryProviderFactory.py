@@ -1,6 +1,8 @@
+import requests
+
 from crane.Backend.DockerHub import DockerHub
 from crane.Backend.DockerPrivate import DockerPrivate
-import requests
+
 
 class RegistryProviderFactory:
     def create_provider(self, registry):

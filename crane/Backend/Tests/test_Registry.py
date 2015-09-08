@@ -1,10 +1,11 @@
+import requests
+import pytest
+
 from crane.Backend.Registry import Registry
 from crane.Backend.DockerHub import DockerHub
 from crane.Backend.DockerPrivate import DockerPrivate
 from crane.Backend.RegistryProviderFactory import RegistryProviderFactory
 from crane.webserver import app, db
-import requests
-import pytest
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 

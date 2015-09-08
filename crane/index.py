@@ -1,7 +1,8 @@
-from crane.webserver import app
-
 import os
 from flask import render_template, send_from_directory
+
+from crane.webserver import app
+
 
 @app.route('/frontend/<template>')
 def templates(template):

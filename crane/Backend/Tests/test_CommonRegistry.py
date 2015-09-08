@@ -1,5 +1,6 @@
-from crane.Backend.CommonRegistry import CommonRegistry
 import pytest
+
+from crane.Backend.CommonRegistry import CommonRegistry
 
 a_url = "a_url"
 username = "a_username"

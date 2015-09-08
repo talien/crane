@@ -1,7 +1,8 @@
-from crane.Backend.Models.TemplateModel import TemplateModel
-from crane.webserver import db
 import json
 from sqlalchemy import desc
+
+from crane.Backend.Models.TemplateModel import TemplateModel
+from crane.webserver import db
 
 
 class Template:
