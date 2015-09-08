@@ -5,7 +5,7 @@ from crane.webserver import db
 from crane.Backend.Models.HostModel import HostModel
 
 
-class HostProvider:
+class HostProvider(object):
     def __init__(self, ssh_connection):
         self.ssh_connection = ssh_connection
 

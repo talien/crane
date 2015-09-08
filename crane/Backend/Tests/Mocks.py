@@ -4,7 +4,7 @@ class Response:
         self.headers = headers
 
 
-class requestsMock:
+class requestsMock(object):
     def __init__(self, expectations):
         self.expectations = expectations
 
@@ -12,7 +12,7 @@ class requestsMock:
         return Response(self.expectations[url]['response'], self.expectations[url]['headers'])
 
 
-class MockSSH:
+class MockSSH(object):
     def __init__(self, expectations):
         self.expectations = expectations
         self.command_index = 0
@@ -37,7 +37,7 @@ class MockSSH:
         self.command_index = self.command_index + 1
 
 
-class MockProvider:
+class MockProvider(object):
 
     def __init__(self, ssh=None):
         self.ssh = ssh
@@ -52,7 +52,7 @@ class MockProvider:
         return self.ssh.put_file(file, contents)
 
 
-class MockHost:
+class MockHost(object):
     def __init__(self, id, name):
         self.id = id
         self.name = name

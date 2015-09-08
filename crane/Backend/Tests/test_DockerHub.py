@@ -14,7 +14,7 @@ def dockerhub(url, requests_module):
     return DockerHub(url, "csillam", "poni", requests_module)
 
 
-class TestDockerHub:
+class TestDockerHub(object):
     def test_query_tags(self):
         requests = requestsMock({"a_url/v1/repositories/a/tags": {'response': a_json, 'headers': "a"}})
         assert(dockerhub("a_url", requests)._query_tags("a") == json.loads(a_json))

@@ -17,7 +17,7 @@ def template():
     return Template()
 
 
-class TestTemplate:
+class TestTemplate(object):
     def test_new_template(self):
         data = {
             'name': 'a_template',

@@ -16,7 +16,7 @@ def dockerprivate(url, the_username, requests_module):
     return DockerPrivate(url, the_username, password, requests_module)
 
 
-class TestDockerPrivate:
+class TestDockerPrivate(object):
     def test_search_with_username(self):
         requests = requestsMock({"a_url/v1/search?q=talien/crane": {'response': '{"results": "the_results", "b": "a"}',
                                                                     'headers': 'a'}})

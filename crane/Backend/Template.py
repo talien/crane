@@ -5,7 +5,7 @@ from crane.Backend.Models.TemplateModel import TemplateModel
 from crane.webserver import db
 
 
-class Template:
+class Template(object):
     def __init__(self):
         pass
 
@@ -23,7 +23,7 @@ class Template:
         version = last_template.template_version
         last_template.latest = False
         db.session.add(last_template)
-        template = TemplateModel(data['name'],json.dumps(data['template']), last_template.template_id, version + 1)
+        template = TemplateModel(data['name'], json.dumps(data['template']), last_template.template_id, version + 1)
         db.session.add(template)
         db.session.commit()
 

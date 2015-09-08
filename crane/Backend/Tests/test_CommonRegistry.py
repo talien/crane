@@ -12,7 +12,7 @@ def common_registry():
     return CommonRegistry(a_url, username, password)
 
 
-class TestCommonRegistry:
+class TestCommonRegistry(object):
     def test_initialization(self):
         assert(common_registry().url == a_url)
         assert(common_registry().username == username)
