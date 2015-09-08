@@ -3,7 +3,7 @@ import paramiko
 
 from crane.webserver import db
 from crane.Backend.Models.HostModel import HostModel
-
+from crane.logger import logger
 
 class HostProvider(object):
     def __init__(self, ssh_connection):
@@ -17,6 +17,7 @@ class HostProvider(object):
                          data['sshkey'] if 'sshkey' in data else "", )
         db.session.add(host)
         db.session.commit()
+        logger.info("Host '{0}' with address '{1}' added as id: {2}.".format(data['name'], data['host'], host.id))
         return host.id
 
     def update_host(self, id, data):
@@ -28,6 +29,7 @@ class HostProvider(object):
         host.sshkey = data['sshkey'] if 'sshkey' in data and (data['sshkey'][:3] != "FP:") else ""
         db.session.add(host)
         db.session.commit()
+        logger.info("Host '{0}' with address '{1}', id '{2}' updated.".format(data['name'], data['host'], host.id))
 
     def query_hosts(self):
         return HostModel.query.all()
