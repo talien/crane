@@ -1,4 +1,5 @@
 import pytest
+
 from crane.Backend.HostProvider import HostProvider
 from crane.Backend.Tests.Mocks import MockSSH
 from crane.webserver import app, db
@@ -18,7 +19,7 @@ def host_provider(mockssh):
     return HostProvider(mockssh)
 
 
-class TestHostProvider:
+class TestHostProvider(object):
     def test_run_command_on_host(self):
         sshmock = MockSSH([{'type': 'execute',
                             'command': 'docker almafa',
@@ -135,6 +136,6 @@ class TestHostProvider:
         host_id = host_provider(dummymock).add_host(data)
         host = host_provider(dummymock).get_host_by_id(host_id)
         assert host.sshkey[:3] != 'FP:'
-        queried_hosts =  host_provider(dummymock).query_hosts_with_masked_credentials()
+        queried_hosts = host_provider(dummymock).query_hosts_with_masked_credentials()
         assert queried_hosts[0]['sshkey'][:3] == 'FP:'
         host_provider(dummymock).delete_host(host_id)

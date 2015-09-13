@@ -1,7 +1,7 @@
-from flask import request
-from webserver import app
-from Backend.HostProvider import HostProvider
-from flask import jsonify
+from flask import request, jsonify
+
+from crane.webserver import app
+from crane.Backend.HostProvider import HostProvider
 from crane.Backend.Utils.SSHConnection import SSHConnection
 
 host = HostProvider(SSHConnection())

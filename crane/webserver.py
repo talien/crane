@@ -1,7 +1,7 @@
-from crane.config import config
-
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask import Flask
+
+from crane.config import config
 
 
 app = Flask(__name__)

@@ -1,10 +1,11 @@
+import requests
+import pytest
+
 from crane.Backend.Registry import Registry
 from crane.Backend.DockerHub import DockerHub
 from crane.Backend.DockerPrivate import DockerPrivate
 from crane.Backend.RegistryProviderFactory import RegistryProviderFactory
 from crane.webserver import app, db
-import requests
-import pytest
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 
@@ -20,10 +21,10 @@ def registry(providerfactory=RegistryProviderFactory()):
     return Registry(providerfactory)
 
 
-class TestRegistry:
+class TestRegistry(object):
     def test_expand_results_with_registry_name(self):
         results_parameter = [{'a': "a"}, {'b': "b"}]
-        class registry_parameter:
+        class registry_parameter(object):
             name = "Almafa"
             id = "42"
 
@@ -40,13 +41,13 @@ class TestRegistry:
         assert registry()._expand_results_with_registry_name(results_parameter, registry_parameter) == expected
 
     def test_get_provider(self):
-        class registry_parameter_dockerhub:
+        class registry_parameter_dockerhub(object):
             provider = "dockerhub"
             url = "a"
             username = "b"
             password = "c"
             requests = None
-        class registry_parameter_dockerprivate:
+        class registry_parameter_dockerprivate(object):
             provider = "private"
             url = "csill"
             username = "am"
@@ -196,14 +197,14 @@ class TestRegistry:
         registry(MockProviderFactory()).delete_registry(a_registry)
         registry(MockProviderFactory()).delete_registry(b_registry)
 
-class MockProviderFactory:
+class MockProviderFactory(object):
     def create_provider(self, registry):
         if registry.provider == 'dockerhub':
-           return DockerHubMock(registry.url, registry.username, registry.password, requests)
+            return DockerHubMock(registry.url, registry.username, registry.password, requests)
         elif registry.provider == 'private':
-           return DockerPrivateMock(registry.url, registry.username, registry.password, requests)
+            return DockerPrivateMock(registry.url, registry.username, registry.password, requests)
 
-class DockerHubMock:
+class DockerHubMock(object):
     def __init__(self, a, b, c, d):
         pass
     def tags(self, a):
@@ -214,7 +215,7 @@ class DockerHubMock:
         return [{'stuff': 'hub_query'}]
 
 
-class DockerPrivateMock:
+class DockerPrivateMock(object):
     def __init__(self, a, b, c, d):
         pass
     def tags(self, a):

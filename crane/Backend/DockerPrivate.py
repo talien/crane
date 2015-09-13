@@ -1,5 +1,6 @@
 import json
 from requests.auth import HTTPBasicAuth
+
 from crane.Backend.CommonRegistry import CommonRegistry
 
 class DockerPrivate(CommonRegistry):

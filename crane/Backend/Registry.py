@@ -1,7 +1,7 @@
 from crane.webserver import db
 from crane.Backend.Models.RegistryModel import RegistryModel
 
-class Registry:
+class Registry(object):
     def __init__(self, providerfactory):
         self.providerfactory = providerfactory
 

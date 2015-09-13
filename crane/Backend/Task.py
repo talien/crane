@@ -1,16 +1,16 @@
-from Deployer import Deployer
-from Container import Container
-from Models.TaskModel import TaskModel
-from crane.webserver import db
-
 import concurrent.futures
 from datetime import datetime
 import uuid
 import traceback
 
+from crane.Backend.Deployer import Deployer
+from crane.Backend.Container import Container
+from crane.Backend.Models.TaskModel import TaskModel
+from crane.webserver import db
+
 taskrunner = concurrent.futures.ThreadPoolExecutor(max_workers=100)
 
-class Tasks:
+class Tasks(object):
     def __init__(self, host_provider):
         self.host_provider = host_provider
         self.deployer = Deployer(host_provider)
@@ -36,7 +36,7 @@ class Tasks:
             res = self.deployer.task(data['host_id'], data)
             self.__finish_task(task_uuid)
         except Exception as e:
-            f = open("/tmp/exception.log","w")
+            f = open("/tmp/exception.log", "w")
             f.write(traceback.format_exc())
             f.close()
             raise
@@ -46,16 +46,13 @@ class Tasks:
 
     def query(self):
         tasks = TaskModel.query.all()
-        result = [ 
-                  {
-                   'name':task.name, 
-                   'container_id':task.container_name, 
-                   'state':task.state, 
-                   'host': task.host_id, 
-                   'started':task.started, 
-                   'finished':task.finished
-                  } 
-                  for task in tasks ]
+        result = [{'name': task.name,
+                   'container_id': task.container_name,
+                   'state': task.state,
+                   'host': task.host_id,
+                   'started': task.started,
+                   'finished': task.finished}
+                  for task in tasks]
         return result
 
     def stop(self, id):

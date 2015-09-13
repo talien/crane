@@ -2,10 +2,10 @@ import StringIO
 import paramiko
 
 from crane.webserver import db
-from Models.HostModel import HostModel
+from crane.Backend.Models.HostModel import HostModel
 
 
-class HostProvider:
+class HostProvider(object):
     def __init__(self, ssh_connection):
         self.ssh_connection = ssh_connection
 

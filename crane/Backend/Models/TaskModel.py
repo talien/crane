@@ -1,5 +1,7 @@
-from crane.webserver import db
 from datetime import datetime
+
+from crane.webserver import db
+
 
 class TaskModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)

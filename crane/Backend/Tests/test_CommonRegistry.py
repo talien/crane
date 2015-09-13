@@ -1,5 +1,6 @@
-from crane.Backend.CommonRegistry import CommonRegistry
 import pytest
+
+from crane.Backend.CommonRegistry import CommonRegistry
 
 a_url = "a_url"
 username = "a_username"
@@ -11,7 +12,7 @@ def common_registry():
     return CommonRegistry(a_url, username, password)
 
 
-class TestCommonRegistry:
+class TestCommonRegistry(object):
     def test_initialization(self):
         assert(common_registry().url == a_url)
         assert(common_registry().username == username)

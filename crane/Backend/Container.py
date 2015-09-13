@@ -1,15 +1,15 @@
-from crane.utils import parallel_map_reduce
 import json
 
-class Container:
+from crane.utils import parallel_map_reduce
 
+
+class Container(object):
     def __init__(self, host_provider):
         self.host_provider = host_provider
 
     def get_containers(self):
         hosts = self.host_provider.query_hosts()
-        result = parallel_map_reduce(
-            lambda x: self.__get_container_from_host(x), lambda x, y: x + y, hosts, [])
+        result = parallel_map_reduce(lambda x: self.__get_container_from_host(x), lambda x, y: x + y, hosts, [])
         result.sort(key=lambda x: x['name'])
         return result
 

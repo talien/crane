@@ -1,5 +1,6 @@
-from crane.Backend.CommonRegistry import CommonRegistry
 import json
+
+from crane.Backend.CommonRegistry import CommonRegistry
 from crane.utils import parallel_map_reduce
 
 

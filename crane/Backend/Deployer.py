@@ -22,7 +22,7 @@ class DeploySuccess(DeployResult):
         self.result['container'] = container
 
 
-class Deployer:
+class Deployer(object):
 
     def __init__(self, host_provider):
         self.host_provider = host_provider

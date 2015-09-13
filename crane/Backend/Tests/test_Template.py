@@ -1,8 +1,8 @@
-from crane.Backend.Template import Template
-from crane.webserver import app, db
 import pytest
 import json
 
+from crane.Backend.Template import Template
+from crane.webserver import app, db
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 
@@ -17,7 +17,7 @@ def template():
     return Template()
 
 
-class TestTemplate:
+class TestTemplate(object):
     def test_new_template(self):
         data = {
             'name': 'a_template',

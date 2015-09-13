@@ -1,6 +1,7 @@
+import pytest
+
 from crane.Backend.Deployer import Deployer
 from crane.Backend.Tests.Mocks import MockProvider, MockSSH
-import pytest
 
 mock_provider = MockProvider()
 
@@ -10,7 +11,7 @@ def deployer():
     return Deployer(mock_provider)
 
 
-class TestDeployer:
+class TestDeployer(object):
     def test_generate_parameters(self):
         expected = "-v a -v b -v c "
         assert deployer()._generate_parameters("a b c", "-v") == expected
@@ -70,7 +71,7 @@ class TestDeployer:
                               'predeploy': {'exit_code': 1, 'stderr': '', 'stdout': 'alma'}}
 
     def test_deploy_fail(self):
-        mock_provider.ssh = MockSSH([{'type': 'execute', 'command': "docker run -d --name alma       redis ", 'result':{'stdout': 'alma', 'stderr': '', 'exit_code': 1} }])
+        mock_provider.ssh = MockSSH([{'type': 'execute', 'command': "docker run -d --name alma       redis ", 'result': {'stdout': 'alma', 'stderr': '', 'exit_code': 1}}])
         res = deployer().deploy(1, {'deploy': 'raw', 'container': {
             'name': 'alma', 'image': 'redis'}})
         assert res.result == {'status': 'error',

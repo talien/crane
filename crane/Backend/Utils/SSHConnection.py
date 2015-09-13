@@ -2,7 +2,7 @@ import StringIO
 import paramiko
 
 
-class SSHConnection:
+class SSHConnection(object):
     def __init__(self):
         self.ssh = paramiko.SSHClient()
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
