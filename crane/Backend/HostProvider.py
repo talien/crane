@@ -3,6 +3,7 @@ import paramiko
 
 from crane.webserver import db
 from crane.Backend.Models.HostModel import HostModel
+from crane.Backend.Exceptions import InvalidInputDataException
 
 
 class HostProvider(object):
@@ -10,6 +11,12 @@ class HostProvider(object):
         self.ssh_connection = ssh_connection
 
     def add_host(self, data):
+        required_fields = set(['name', 'host', 'username'])
+        data_keys = set(data.keys())
+
+        if not required_fields.issubset(data_keys):
+            raise InvalidInputDataException(",".join(required_fields-data_keys))
+
         host = HostModel(data['name'],
                          data['host'],
                          data['username'],
