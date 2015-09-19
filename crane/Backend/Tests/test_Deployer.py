@@ -12,12 +12,6 @@ def deployer():
 
 
 class TestDeployer(object):
-    def test_generate_parameters(self):
-        expected = "-v a -v b -v c "
-        assert deployer()._generate_parameters("a b c", "-v") == expected
-        expected = ""
-        assert deployer()._generate_parameters("", "-v") == expected
-
     def test_deploy(self):
         mock_provider.ssh = MockSSH(
             [{'type': 'execute', 'command': "docker run -d --name alma       redis "}])
