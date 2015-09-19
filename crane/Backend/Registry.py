@@ -7,7 +7,7 @@ class Registry(object):
 
     def get_registries(self):
         registries = db.session.execute(RegistryModel.__table__ .select())
-        transformed_registries = map(lambda x: dict(x), registries)
+        transformed_registries = [dict(item) for item in registries]
         return transformed_registries
 
     def get_registry_by_id(self, registry_id):

@@ -1,15 +1,15 @@
+from crane.utils import parallel_map_reduce
 import json
 
-from crane.utils import parallel_map_reduce
+class Container:
 
-
-class Container(object):
     def __init__(self, host_provider):
         self.host_provider = host_provider
 
     def get_containers(self):
         hosts = self.host_provider.query_hosts()
-        result = parallel_map_reduce(lambda x: self.__get_container_from_host(x), lambda x, y: x + y, hosts, [])
+        result = parallel_map_reduce(
+            lambda x: self.__get_container_from_host(x), lambda x, y: x + y, hosts, [])
         result.sort(key=lambda x: x['name'])
         return result
 
@@ -73,5 +73,5 @@ class Container(object):
         if containers:
             container_params = " ".join(containers)
             inspections = self.host_provider.run_command_on_host(host, "docker inspect {0}".format(container_params))['stdout']
-            container_list = map(lambda x: self._get_info_from_container(x, host), json.loads(inspections))
+            container_list = [self._get_info_from_container(item, host) for item in json.loads(inspections)]
         return container_list
