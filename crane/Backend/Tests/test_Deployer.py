@@ -44,6 +44,14 @@ class TestDeployer(object):
             'name': '%(alma)%', 'image': 'redis'}}, 'parameters': {'alma': 'korte'}})
         assert res.result == {'status': 'success', 'container': 'alma'}
 
+    def test_template_deploy_with_volume(self):
+        mock_provider.ssh = MockSSH(
+            [{'type': 'execute', 'command': "docker run -d --name korte -v a_volume       redis "}])
+        res = deployer().deploy(1, {'deploy': 'template', 'template': {'deploy': {
+            'name': '%(alma)%', 'image': 'redis', 'volumes': "a_volume"}},
+            'parameters': {'alma': 'korte'}})
+        assert res.result == {'status': 'success', 'container': 'alma'}
+
     def test_template_deploy_with_unclosed_variable(self):
         mock_provider.ssh = MockSSH(
             [{'type': 'execute', 'command': "docker run -d --name %(alma       redis "}])
