@@ -17,6 +17,9 @@ class EnvironmentProvider(object):
             result.append({'name': environment.name, 'hosts': hosts, 'id': environment.id})
         return result
 
+    def get_environment_by_id(self, env_id):
+        return EnvironmentModel.query.filter_by(id=env_id).first()
+
     def add_environment(self, name):
         environment = EnvironmentModel(name)
         db.session.add(environment)
