@@ -1,6 +1,5 @@
 import concurrent.futures
 from datetime import datetime
-import uuid
 import traceback
 
 from crane.Backend.Deployer import Deployer
@@ -11,9 +10,11 @@ from crane.webserver import db
 taskrunner = concurrent.futures.ThreadPoolExecutor(max_workers=100)
 
 class Tasks(object):
-    def __init__(self, host_provider):
+    def __init__(self, host_provider, runner, uuid):
         self.host_provider = host_provider
         self.deployer = Deployer(host_provider)
+        self.runner = runner
+        self.uuid = uuid
 
     def __add_task(self, name, host_id, task_uuid):
         model = TaskModel(name, host_id, task_uuid)
@@ -30,7 +31,7 @@ class Tasks(object):
 
     def __deploy_task(self, data):
         try:
-            task_uuid = str(uuid.uuid4())
+            task_uuid = str(self.uuid.uuid4())
             self.__add_task(data['name'], data['host_id'], task_uuid)
             data['container']['name'] = task_uuid
             res = self.deployer.task(data['host_id'], data)
@@ -42,7 +43,7 @@ class Tasks(object):
             raise
 
     def create(self, data):
-        taskrunner.submit(self.__deploy_task, data)
+        self.runner.submit(self.__deploy_task, data)
 
     def query(self):
         tasks = TaskModel.query.all()

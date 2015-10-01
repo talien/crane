@@ -1,12 +1,14 @@
+import uuid
+
 from flask import jsonify, request
 
 from crane.webserver import app
 from crane.Backend.HostProvider import HostProvider
-from crane.Backend.Task import Tasks
+from crane.Backend.Task import Tasks, taskrunner
 from crane.Backend.Utils.SSHConnection import SSHConnection
 
 host_provider = HostProvider(SSHConnection())
-tasker = Tasks(host_provider)
+tasker = Tasks(host_provider, taskrunner, uuid)
 
 @app.route('/tasks', methods=['POST'])
 def create_task():
