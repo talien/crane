@@ -28,6 +28,10 @@ class MockSSH(object):
         else:
             result = {'stdout': 'alma', 'stderr': '', 'exit_code': 0}
         self.command_index = self.command_index + 1
+        if (self.command_index < len(self.expectations)) and (self.expectations[self.command_index]['type'] == 'after_execute'):
+           command_index = self.command_index
+           self.command_index = self.command_index + 1
+           self.expectations[command_index]['function']()
         return result
 
     def put_file(self, file, content):
