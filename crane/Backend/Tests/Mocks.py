@@ -56,3 +56,25 @@ class MockHost(object):
     def __init__(self, id, name):
         self.id = id
         self.name = name
+
+
+class MockTaskRunner(object):
+
+    def submit(self, task, params):
+        self.task = task
+        self.params = params
+
+    def run(self):
+        self.task(self.params)
+
+
+class MockUuid(object):
+
+    def __init__(self, values=['alma']):
+        self.values = values
+        self.index = 0 
+
+    def uuid4(self):
+        index = self.index
+        self.index = self.index + 1 
+        return self.values[index]
