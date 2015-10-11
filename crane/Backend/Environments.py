@@ -13,7 +13,7 @@ class EnvironmentProvider(object):
         environments = EnvironmentModel.query.all()
         result = []
         for environment in environments:
-            hosts = map(lambda x: {'name': x.name, 'id': x.id}, environment.hosts)
+            hosts = [{'name': host.name, 'id': host.id} for host in environment.hosts]
             result.append({'name': environment.name, 'hosts': hosts, 'id': environment.id})
         return result
 
