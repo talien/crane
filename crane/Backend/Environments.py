@@ -38,10 +38,9 @@ class EnvironmentProvider(object):
 
     def delete_environment(self, env_id):
         environment = EnvironmentModel.query.filter_by(id=env_id).first()
-        if len(environment.hosts) != 0:
-            return
-        db.session.delete(environment)
-        db.session.commit()
+        if len(environment.hosts) == 0:
+            db.session.delete(environment)
+            db.session.commit()
 
     def get_hosts_for_deployment(self, env_id, host_count):
         environment = EnvironmentModel.query.filter_by(id=env_id).first()
